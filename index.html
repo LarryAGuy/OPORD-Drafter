@@ -325,11 +325,11 @@
         }
 
         .main-content {
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.sidebar-collapsed {
-            margin-left: -260px; /* Adjust for collapsed sidebar */
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 0; /* Allow content to shrink */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            width: 100%;
         }
 
         /* Mobile responsive adjustments */
@@ -409,26 +409,30 @@
 
             /* Mobile menu button improvements */
             .mobile-menu-header {
-                background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-                border-bottom: 1px solid #374151;
-                position: relative;
-                z-index: 10;
+                background: linear-gradient(135deg, #1f2937 0%, #111827 100%) !important;
+                border-bottom: 1px solid #374151 !important;
+                position: relative !important;
+                z-index: 10 !important;
                 display: block !important;
                 width: 100% !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
 
             .mobile-menu-btn {
                 display: flex !important;
-                align-items: center;
-                padding: 16px;
-                color: white;
-                background: transparent;
-                border: none;
-                font-size: 16px;
-                cursor: pointer;
-                transition: background-color 0.2s ease;
-                width: 100%;
-                text-align: left;
+                align-items: center !important;
+                padding: 16px !important;
+                color: white !important;
+                background: transparent !important;
+                border: none !important;
+                font-size: 16px !important;
+                cursor: pointer !important;
+                transition: background-color 0.2s ease !important;
+                width: 100% !important;
+                text-align: left !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
 
             .mobile-menu-btn:hover {
@@ -449,8 +453,8 @@
                 padding-right: 0 !important;
                 display: block !important;
                 position: relative !important;
-                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
                 min-height: calc(100vh - 120px) !important; /* Account for disclaimers */
+                overflow-y: auto !important;
             }
 
             /* Fix content padding on mobile */
@@ -459,6 +463,17 @@
                 padding-right: 16px !important;
                 padding-top: 16px !important;
                 padding-bottom: 16px !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            /* Ensure all content is visible on mobile */
+            #main-content-area .section-card,
+            #main-content-area #main-content,
+            #main-content-area .time-display {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
 
             /* Ensure mobile menu is always visible */
@@ -475,6 +490,25 @@
                 display: block !important;
                 width: 100% !important;
                 min-height: calc(100vh - 120px) !important;
+            }
+
+            /* Force visibility of all mobile content */
+            @media (max-width: 768px) {
+                * {
+                    visibility: visible !important;
+                }
+
+                .section-card {
+                    background: rgba(31, 41, 55, 0.95) !important;
+                    border: 1px solid rgba(75, 85, 99, 0.3) !important;
+                    display: block !important;
+                }
+
+                .time-display {
+                    background: rgba(55, 65, 81, 0.8) !important;
+                    color: white !important;
+                    display: block !important;
+                }
             }
         }
 
@@ -10935,10 +10969,9 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
 
                     if (this.isCollapsed) {
                         this.sidebar.classList.add('collapsed');
-                        this.mainContent.classList.add('sidebar-collapsed');
+                        // Let flexbox handle the layout automatically
                     } else {
                         this.sidebar.classList.remove('collapsed');
-                        this.mainContent.classList.remove('sidebar-collapsed');
                     }
                 }
 
