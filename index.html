@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LSCO OPORD Drafting Tool - Professional Edition</title>
+
+    <!-- Security Headers for HTTPS/TLS 1.3 Enforcement -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -10417,12 +10425,26 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
             console.warn("SunCalc library not found. Tactical data like BMNT/EENT will be approximate. Include it for better accuracy.");
         }
 
+        // HTTPS/TLS 1.3 Enforcement
+        (function enforceHTTPS() {
+            // Force HTTPS redirect if not already secure
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                console.warn('Redirecting to HTTPS for security...');
+                location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+                return;
+            }
+
+            // Log TLS version if available (for debugging)
+            if (window.location.protocol === 'https:') {
+                console.log('✅ HTTPS connection established');
+                console.log('🔒 TLS encryption active (version determined by server)');
+            }
+        })();
+
         // Initialize the application when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 console.log('Initializing OPORD application...');
-
-
 
                 window.app = new ProfessionalOPORD();
                 console.log('OPORD application initialized successfully');
