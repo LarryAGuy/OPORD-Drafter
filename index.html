@@ -330,6 +330,10 @@
 
         /* Mobile responsive adjustments */
         @media (max-width: 768px) {
+            .flex.flex-1.min-h-0 {
+                display: block !important;
+            }
+
             .sidebar {
                 position: fixed;
                 left: 0;
@@ -368,6 +372,11 @@
             }
 
             .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+
+            .main-content.sidebar-collapsed {
                 margin-left: 0 !important;
             }
 
@@ -423,6 +432,22 @@
 
             .mobile-menu-btn:active {
                 background-color: rgba(59, 130, 246, 0.2);
+            }
+
+            /* Ensure content takes full width on mobile */
+            #main-content-area {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            /* Fix content padding on mobile */
+            #main-content-area > div {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
             }
         }
 
@@ -10831,6 +10856,10 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     this.sidebar.classList.remove('collapsed');
                     this.mainContent.classList.remove('sidebar-collapsed');
 
+                    // Ensure main content takes full width on mobile
+                    this.mainContent.style.marginLeft = '0';
+                    this.mainContent.style.width = '100%';
+
                     if (this.isCollapsed) {
                         this.sidebar.classList.remove('mobile-open');
                         this.mobileOverlay?.classList.remove('active');
@@ -10848,6 +10877,10 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     // Desktop behavior
                     this.sidebar.classList.remove('mobile-open');
                     this.mobileOverlay?.classList.remove('active');
+
+                    // Reset mobile-specific styles
+                    this.mainContent.style.marginLeft = '';
+                    this.mainContent.style.width = '';
 
                     if (this.isCollapsed) {
                         this.sidebar.classList.add('collapsed');
