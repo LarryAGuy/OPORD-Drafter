@@ -227,6 +227,149 @@
             max-height: 2000px;
         }
 
+        /* Collapsible Sidebar Styles */
+        .sidebar {
+            transition: width 0.3s ease, transform 0.3s ease;
+            width: 320px;
+            position: relative;
+            z-index: 50;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar.collapsed .sidebar-text {
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-text {
+            transition: opacity 0.3s ease, width 0.3s ease;
+            flex: 1;
+        }
+
+        .sidebar-content {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-icon {
+            min-width: 20px;
+            width: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-icon {
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .tab-btn {
+            justify-content: center;
+            padding: 12px 8px;
+        }
+
+        .sidebar.collapsed .progress-section,
+        .sidebar.collapsed .header-text {
+            opacity: 0;
+            pointer-events: none;
+            height: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .progress-section,
+        .header-text {
+            transition: opacity 0.3s ease, height 0.3s ease;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: 2px solid #1f2937;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100; /* Higher z-index to stay above main content */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .sidebar-toggle:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .sidebar-toggle i {
+            color: white;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .main-content {
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: -245px; /* Leave space for toggle button */
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                z-index: 50;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -254,26 +397,35 @@
         <span data-translate="disclaimer_text">This product is a training aid and is not endorsed by the United States Army or the Department of Defense. Use at your own discretion. Do Not Input Classified Materials.</span>
     </div>
 
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
     <div class="flex flex-1 min-h-0">
-        <!-- Enhanced Sidebar -->
-        <aside class="w-80 glass-effect border-r border-gray-700 flex flex-col overflow-hidden">
-            <!-- Header -->
-            <div class="p-6 border-b border-gray-700">
+        <!-- Enhanced Collapsible Sidebar -->
+        <aside id="sidebar" class="sidebar glass-effect border-r border-gray-700 flex flex-col overflow-hidden relative">
+            <!-- Collapse Toggle Button -->
+            <button id="sidebar-toggle" class="sidebar-toggle" title="Toggle Sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <!-- Sidebar Content Container -->
+            <div class="sidebar-content flex flex-col h-full">
+                <!-- Header -->
+                <div class="p-6 border-b border-gray-700">
                 <div class="flex items-center mb-3">
-                    <i class="fas fa-shield-alt text-2xl text-blue-400 mr-3"></i>
-                    <div>
+                    <i class="fas fa-shield-alt text-2xl text-blue-400 mr-3 sidebar-icon"></i>
+                    <div class="sidebar-text">
                         <h1 class="text-xl font-bold text-white" data-translate="opord_tool">LSCO OPORD Tool</h1>
                         <p class="text-sm text-gray-400" data-translate="military_planning">Professional Edition v2.0</p>
                     </div>
                 </div>
-                <div class="flex items-center text-xs text-gray-400">
+                <div class="flex items-center text-xs text-gray-400 header-text">
                     <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                     <span>System Ready</span>
                 </div>
             </div>
 
             <!-- Progress Indicator -->
-            <div class="p-4 border-b border-gray-700">
+            <div class="p-4 border-b border-gray-700 progress-section">
                 <div class="flex justify-between text-xs text-gray-400 mb-2">
                     <span>OPORD Completion</span>
                     <span id="completion-percentage">0%</span>
@@ -289,11 +441,11 @@
 
             <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">OPORD Sections</div>
+                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 sidebar-text">OPORD Sections</div>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in active" data-tab="situation">
-                    <i class="fas fa-map fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-map fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="situation">1. Situation</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_situation_desc">Enemy, Friendly, Environment</div>
                     </div>
@@ -301,8 +453,8 @@
                 </button>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="mission">
-                    <i class="fas fa-bullseye fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-bullseye fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="mission">2. Mission</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_mission_desc">Who, What, When, Where, Why</div>
                     </div>
@@ -310,8 +462,8 @@
                 </button>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="execution">
-                    <i class="fas fa-cogs fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-cogs fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="execution">3. Execution</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_execution_desc">Intent, Concept, Tasks</div>
                     </div>
@@ -319,8 +471,8 @@
                 </button>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="sustainment">
-                    <i class="fas fa-truck fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-truck fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="sustainment">4. Sustainment</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_sustainment_desc">Logistics, Personnel, Health</div>
                     </div>
@@ -328,19 +480,19 @@
                 </button>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="command">
-                    <i class="fas fa-headset fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-headset fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="command_signal">5. Command & Signal</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_command_desc">C2, Communications</div>
                     </div>
                     <span class="tooltiptext">Command relationships and communication procedures</span>
                 </button>
 
-                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-6">Tools & Resources</div>
+                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-6 sidebar-text">Tools & Resources</div>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="annexes">
-                    <i class="fas fa-folder-open fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-folder-open fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="manage_annexes">Manage Annexes</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_annexes_desc">A-H + Additional Annexes</div>
                     </div>
@@ -348,8 +500,8 @@
                 </button>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="example">
-                    <i class="fas fa-book fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-book fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="example_opord">Example OPORD</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_example_desc">Complete Reference</div>
                     </div>
@@ -357,8 +509,8 @@
                 </button>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="draft">
-                    <i class="fas fa-pen-alt fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-pen-alt fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="draft_opord">Draft Your OPORD</div>
                         <div class="text-xs text-gray-500" data-translate="sidebar_draft_desc">Input & Generate</div>
                     </div>
@@ -368,8 +520,8 @@
                 <hr class="border-gray-600 my-4">
 
                 <button id="help-guide" class="w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip">
-                    <i class="fas fa-question-circle fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-question-circle fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="help_guide">Help Guide</div>
                         <div class="text-xs text-gray-500" data-translate="user_manual">User Manual</div>
                     </div>
@@ -377,8 +529,8 @@
                 </button>
 
                 <button id="clear-draft" class="w-full text-left px-4 py-3 text-gray-300 hover:bg-red-700 hover:text-white rounded-lg flex items-center tooltip">
-                    <i class="fas fa-trash fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-trash fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="clear_draft">Clear Draft</div>
                         <div class="text-xs text-gray-500" data-translate="reset_all">Reset All</div>
                     </div>
@@ -386,18 +538,27 @@
                 </button>
 
                 <button id="donate-btn" class="w-full text-left px-4 py-3 text-gray-300 hover:bg-green-700 hover:text-white rounded-lg flex items-center tooltip">
-                    <i class="fas fa-heart fa-fw mr-3 w-5 text-center"></i>
-                    <div class="flex-1">
+                    <i class="fas fa-heart fa-fw mr-3 w-5 text-center sidebar-icon"></i>
+                    <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="donate">Support Development</div>
                         <div class="text-xs text-gray-500" data-translate="donate_desc">Help Keep This Tool Free</div>
                     </div>
                     <span class="tooltiptext">Support the development of this free military planning tool</span>
                 </button>
             </nav>
+            </div> <!-- End sidebar-content -->
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto">
+        <main id="main-content-area" class="main-content flex-1 overflow-y-auto">
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden bg-gray-800 p-4 border-b border-gray-700">
+                <button id="mobile-menu-btn" class="text-white hover:text-blue-400 transition-colors">
+                    <i class="fas fa-bars text-xl mr-3"></i>
+                    <span data-translate="menu">Menu</span>
+                </button>
+            </div>
+
             <div class="p-6">
                 <!-- Enhanced Time Clocks -->
                 <div class="section-card p-6 mb-6 rounded-xl">
@@ -894,6 +1055,7 @@
                 opord_tool: "OPORD Tool",
                 military_planning: "Military Planning Assistant",
                 copy_dtg: "Copy Zulu DTG",
+                menu: "Menu",
 
                 // Tab Navigation
                 help_guide: "Help Guide",
@@ -1726,6 +1888,7 @@
                 opord_tool: "Herramienta OPORD",
                 military_planning: "Asistente de Planificación Militar",
                 copy_dtg: "Copiar DTG Zulu",
+                menu: "Menú",
 
                 // Tab Navigation
                 help_guide: "Guía de Ayuda",
@@ -2567,6 +2730,7 @@
                 opord_tool: "Outil OPORD",
                 military_planning: "Assistant de Planification Militaire",
                 copy_dtg: "Copier DTG Zulu",
+                menu: "Menu",
 
                 // Tab Navigation
                 help_guide: "Guide d'Aide",
@@ -3399,6 +3563,7 @@
                 opord_tool: "OPORD-Tool",
                 military_planning: "Militärischer Planungsassistent",
                 copy_dtg: "Zulu DTG Kopieren",
+                menu: "Menü",
 
                 // Tab Navigation
                 help_guide: "Hilfsleitfaden",
@@ -4231,6 +4396,7 @@
                 opord_tool: "작전명령 도구",
                 military_planning: "군사 계획 지원 도구",
                 copy_dtg: "줄루 DTG 복사",
+                menu: "메뉴",
 
                 // Tab Navigation
                 help_guide: "도움말 가이드",
@@ -10427,8 +10593,17 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
 
         // HTTPS/TLS 1.3 Enforcement
         (function enforceHTTPS() {
-            // Force HTTPS redirect if not already secure
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            // Skip HTTPS enforcement for local file:// protocol and localhost
+            if (location.protocol === 'file:' ||
+                location.hostname === 'localhost' ||
+                location.hostname === '127.0.0.1' ||
+                location.hostname === '') {
+                console.log('🔧 Local development mode - HTTPS enforcement skipped');
+                return;
+            }
+
+            // Force HTTPS redirect if not already secure (only for web servers)
+            if (location.protocol !== 'https:') {
                 console.warn('Redirecting to HTTPS for security...');
                 location.replace('https:' + window.location.href.substring(window.location.protocol.length));
                 return;
@@ -10440,6 +10615,193 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('🔒 TLS encryption active (version determined by server)');
             }
         })();
+
+        // Collapsible Sidebar Functionality
+        class SidebarManager {
+            constructor() {
+                this.sidebar = null;
+                this.toggleBtn = null;
+                this.mainContent = null;
+                this.mobileOverlay = null;
+                this.isCollapsed = false;
+                this.isMobile = false;
+                this.init();
+            }
+
+            init() {
+                // Wait for DOM to be ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => this.setupElements());
+                } else {
+                    this.setupElements();
+                }
+            }
+
+            setupElements() {
+                this.sidebar = document.getElementById('sidebar');
+                this.toggleBtn = document.getElementById('sidebar-toggle');
+                this.mainContent = document.getElementById('main-content-area');
+                this.mobileOverlay = document.getElementById('mobile-overlay');
+                this.mobileMenuBtn = document.getElementById('mobile-menu-btn');
+
+                if (!this.sidebar || !this.toggleBtn || !this.mainContent) {
+                    console.warn('Sidebar elements not found');
+                    return;
+                }
+
+                // Check if mobile
+                this.checkMobile();
+
+                // Load saved state
+                this.loadState();
+
+                // Setup event listeners
+                this.setupEventListeners();
+
+                // Initial setup
+                this.updateSidebar();
+            }
+
+            setupEventListeners() {
+                // Toggle button click
+                this.toggleBtn.addEventListener('click', () => this.toggle());
+
+                // Mobile overlay click
+                if (this.mobileOverlay) {
+                    this.mobileOverlay.addEventListener('click', () => this.closeMobile());
+                }
+
+                // Mobile menu button click
+                if (this.mobileMenuBtn) {
+                    this.mobileMenuBtn.addEventListener('click', () => this.openMobile());
+                }
+
+                // Window resize
+                window.addEventListener('resize', () => {
+                    this.checkMobile();
+                    this.updateSidebar();
+                });
+
+                // Keyboard shortcut (Ctrl + B)
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'b') {
+                        e.preventDefault();
+                        this.toggle();
+                    }
+                });
+
+                // ESC key to close on mobile
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isMobile && !this.isCollapsed) {
+                        this.closeMobile();
+                    }
+                });
+            }
+
+            checkMobile() {
+                this.isMobile = window.innerWidth <= 768;
+            }
+
+            toggle() {
+                if (this.isMobile) {
+                    this.toggleMobile();
+                } else {
+                    this.toggleDesktop();
+                }
+            }
+
+            toggleDesktop() {
+                this.isCollapsed = !this.isCollapsed;
+                this.saveState();
+                this.updateSidebar();
+            }
+
+            toggleMobile() {
+                this.isCollapsed = !this.isCollapsed;
+                this.updateSidebar();
+            }
+
+            openMobile() {
+                if (this.isMobile) {
+                    this.isCollapsed = false;
+                    this.updateSidebar();
+                }
+            }
+
+            closeMobile() {
+                if (this.isMobile) {
+                    this.isCollapsed = true;
+                    this.updateSidebar();
+                }
+            }
+
+            updateSidebar() {
+                if (!this.sidebar || !this.mainContent) return;
+
+                if (this.isMobile) {
+                    // Mobile behavior
+                    this.sidebar.classList.remove('collapsed');
+                    this.mainContent.classList.remove('sidebar-collapsed');
+
+                    if (this.isCollapsed) {
+                        this.sidebar.classList.remove('mobile-open');
+                        this.mobileOverlay?.classList.remove('active');
+                    } else {
+                        this.sidebar.classList.add('mobile-open');
+                        this.mobileOverlay?.classList.add('active');
+                    }
+                } else {
+                    // Desktop behavior
+                    this.sidebar.classList.remove('mobile-open');
+                    this.mobileOverlay?.classList.remove('active');
+
+                    if (this.isCollapsed) {
+                        this.sidebar.classList.add('collapsed');
+                        this.mainContent.classList.add('sidebar-collapsed');
+                    } else {
+                        this.sidebar.classList.remove('collapsed');
+                        this.mainContent.classList.remove('sidebar-collapsed');
+                    }
+                }
+
+                // Update toggle button tooltip
+                const tooltip = this.isCollapsed ? 'Expand Sidebar (Ctrl+B)' : 'Collapse Sidebar (Ctrl+B)';
+                this.toggleBtn.setAttribute('title', tooltip);
+            }
+
+            saveState() {
+                if (!this.isMobile) {
+                    localStorage.setItem('opord-sidebar-collapsed', this.isCollapsed.toString());
+                }
+            }
+
+            loadState() {
+                if (!this.isMobile) {
+                    const saved = localStorage.getItem('opord-sidebar-collapsed');
+                    this.isCollapsed = saved === 'true';
+                }
+            }
+
+            // Public methods for external use
+            expand() {
+                this.isCollapsed = false;
+                this.updateSidebar();
+                if (!this.isMobile) this.saveState();
+            }
+
+            collapse() {
+                this.isCollapsed = true;
+                this.updateSidebar();
+                if (!this.isMobile) this.saveState();
+            }
+
+            isOpen() {
+                return !this.isCollapsed;
+            }
+        }
+
+        // Initialize sidebar manager
+        window.sidebarManager = new SidebarManager();
 
         // Initialize the application when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
