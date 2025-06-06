@@ -309,6 +309,17 @@
             left: 45px; /* Position when sidebar is collapsed */
         }
 
+        /* Desktop-specific toggle positioning */
+        @media (min-width: 1025px) {
+            .sidebar-toggle {
+                left: 305px !important;
+            }
+
+            .sidebar.collapsed .sidebar-toggle {
+                left: 45px !important;
+            }
+        }
+
         .sidebar-toggle:hover {
             background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
@@ -385,7 +396,12 @@
             }
 
             .sidebar-toggle {
-                display: none; /* Hide desktop toggle on mobile */
+                display: flex !important; /* Keep toggle visible on all screen sizes */
+                position: fixed !important;
+                z-index: 70 !important; /* Above mobile overlay */
+                left: 15px !important; /* Position for mobile */
+                top: 50% !important;
+                transform: translateY(-50%) !important;
             }
 
             .mobile-overlay {
@@ -509,6 +525,57 @@
                     color: white !important;
                     display: block !important;
                 }
+
+                /* Ensure content is visible in portrait mode */
+                body {
+                    min-height: 100vh !important;
+                    height: auto !important;
+                }
+
+                #main-content-area {
+                    min-height: calc(100vh - 120px) !important;
+                    height: auto !important;
+                    display: block !important;
+                }
+
+                .flex.flex-1.min-h-0 {
+                    min-height: calc(100vh - 120px) !important;
+                    height: auto !important;
+                }
+            }
+        }
+
+        /* Small mobile devices (portrait phones) */
+        @media (max-width: 480px) {
+            #main-content-area {
+                min-height: calc(100vh - 120px) !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            .section-card {
+                display: block !important;
+                visibility: visible !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .sidebar-toggle {
+                left: 10px !important;
+                width: 25px !important;
+                height: 25px !important;
+            }
+        }
+
+        /* Medium mobile devices (landscape phones) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            #main-content-area {
+                min-height: calc(100vh - 120px) !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            .sidebar-toggle {
+                left: 15px !important;
             }
         }
 
@@ -524,6 +591,15 @@
 
             .main-content.sidebar-collapsed {
                 margin-left: -215px;
+            }
+
+            .sidebar-toggle {
+                display: flex !important;
+                left: 305px !important;
+            }
+
+            .sidebar.collapsed .sidebar-toggle {
+                left: 45px !important;
             }
         }
 
