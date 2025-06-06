@@ -335,8 +335,10 @@
                 left: 0;
                 top: 0;
                 height: 100vh;
-                z-index: 50;
+                width: 280px !important; /* Fixed width for mobile */
+                z-index: 60;
                 transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
 
             .sidebar.mobile-open {
@@ -347,8 +349,30 @@
                 transform: translateX(-100%);
             }
 
+            /* Reset sidebar content for mobile */
+            .sidebar.collapsed .sidebar-text,
+            .sidebar.collapsed .progress-section,
+            .sidebar.collapsed .header-text {
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                width: auto !important;
+                height: auto !important;
+                overflow: visible !important;
+                margin: initial !important;
+                padding: initial !important;
+            }
+
+            .sidebar.collapsed .tab-btn {
+                justify-content: flex-start !important;
+                padding: 12px 16px !important;
+            }
+
             .main-content {
-                margin-left: 0;
+                margin-left: 0 !important;
+            }
+
+            .sidebar-toggle {
+                display: none; /* Hide desktop toggle on mobile */
             }
 
             .mobile-overlay {
@@ -357,16 +381,63 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 40;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 50;
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
+                backdrop-filter: blur(2px);
             }
 
             .mobile-overlay.active {
                 opacity: 1;
                 visibility: visible;
+            }
+
+            /* Mobile menu button improvements */
+            .mobile-menu-header {
+                background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+                border-bottom: 1px solid #374151;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                padding: 16px;
+                color: white;
+                background: transparent;
+                border: none;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+                width: 100%;
+                text-align: left;
+            }
+
+            .mobile-menu-btn:hover {
+                background-color: rgba(59, 130, 246, 0.1);
+            }
+
+            .mobile-menu-btn:active {
+                background-color: rgba(59, 130, 246, 0.2);
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sidebar {
+                width: 280px;
+            }
+
+            .sidebar.collapsed {
+                width: 50px;
+            }
+
+            .main-content.sidebar-collapsed {
+                margin-left: -215px;
             }
         }
 
@@ -552,10 +623,11 @@
         <!-- Main Content Area -->
         <main id="main-content-area" class="main-content flex-1 overflow-y-auto">
             <!-- Mobile Menu Button -->
-            <div class="md:hidden bg-gray-800 p-4 border-b border-gray-700">
-                <button id="mobile-menu-btn" class="text-white hover:text-blue-400 transition-colors">
-                    <i class="fas fa-bars text-xl mr-3"></i>
-                    <span data-translate="menu">Menu</span>
+            <div class="md:hidden mobile-menu-header">
+                <button id="mobile-menu-btn" class="mobile-menu-btn">
+                    <i class="fas fa-bars text-xl mr-3 text-blue-400"></i>
+                    <span data-translate="menu" class="font-medium">Menu</span>
+                    <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
                 </button>
             </div>
 
@@ -10696,10 +10768,26 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                         this.closeMobile();
                     }
                 });
+
+                // Touch gesture support for mobile
+                this.setupTouchGestures();
             }
 
             checkMobile() {
+                const wasMobile = this.isMobile;
                 this.isMobile = window.innerWidth <= 768;
+
+                // If switching from mobile to desktop, ensure proper state
+                if (wasMobile && !this.isMobile) {
+                    this.isCollapsed = this.loadSavedState();
+                    this.sidebar?.classList.remove('mobile-open');
+                    this.mobileOverlay?.classList.remove('active');
+                }
+
+                // If switching from desktop to mobile, close sidebar
+                if (!wasMobile && this.isMobile) {
+                    this.isCollapsed = true;
+                }
             }
 
             toggle() {
@@ -10739,16 +10827,22 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 if (!this.sidebar || !this.mainContent) return;
 
                 if (this.isMobile) {
-                    // Mobile behavior
+                    // Mobile behavior - always show full sidebar when open
                     this.sidebar.classList.remove('collapsed');
                     this.mainContent.classList.remove('sidebar-collapsed');
 
                     if (this.isCollapsed) {
                         this.sidebar.classList.remove('mobile-open');
                         this.mobileOverlay?.classList.remove('active');
+                        // Update mobile menu button icon
+                        this.updateMobileMenuButton(false);
                     } else {
                         this.sidebar.classList.add('mobile-open');
                         this.mobileOverlay?.classList.add('active');
+                        // Update mobile menu button icon
+                        this.updateMobileMenuButton(true);
+                        // Auto-close sidebar when clicking navigation items on mobile
+                        this.setupMobileNavAutoClose();
                     }
                 } else {
                     // Desktop behavior
@@ -10766,7 +10860,36 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
 
                 // Update toggle button tooltip
                 const tooltip = this.isCollapsed ? 'Expand Sidebar (Ctrl+B)' : 'Collapse Sidebar (Ctrl+B)';
-                this.toggleBtn.setAttribute('title', tooltip);
+                this.toggleBtn?.setAttribute('title', tooltip);
+            }
+
+            updateMobileMenuButton(isOpen) {
+                if (this.mobileMenuBtn) {
+                    const icon = this.mobileMenuBtn.querySelector('i.fa-bars, i.fa-times');
+                    const chevron = this.mobileMenuBtn.querySelector('i.fa-chevron-right, i.fa-chevron-down');
+
+                    if (icon) {
+                        icon.className = isOpen ? 'fas fa-times text-xl mr-3 text-blue-400' : 'fas fa-bars text-xl mr-3 text-blue-400';
+                    }
+
+                    if (chevron) {
+                        chevron.className = isOpen ? 'fas fa-chevron-down ml-auto text-gray-400' : 'fas fa-chevron-right ml-auto text-gray-400';
+                    }
+                }
+            }
+
+            setupMobileNavAutoClose() {
+                if (!this.isMobile) return;
+
+                // Add click listeners to navigation buttons to auto-close on mobile
+                const navButtons = this.sidebar.querySelectorAll('.tab-btn');
+                navButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        if (this.isMobile && !this.isCollapsed) {
+                            setTimeout(() => this.closeMobile(), 300); // Small delay for smooth UX
+                        }
+                    }, { once: true });
+                });
             }
 
             saveState() {
@@ -10779,7 +10902,15 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 if (!this.isMobile) {
                     const saved = localStorage.getItem('opord-sidebar-collapsed');
                     this.isCollapsed = saved === 'true';
+                } else {
+                    // Mobile always starts collapsed
+                    this.isCollapsed = true;
                 }
+            }
+
+            loadSavedState() {
+                const saved = localStorage.getItem('opord-sidebar-collapsed');
+                return saved === 'true';
             }
 
             // Public methods for external use
@@ -10797,6 +10928,58 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
 
             isOpen() {
                 return !this.isCollapsed;
+            }
+
+            setupTouchGestures() {
+                if (!this.isMobile) return;
+
+                let startX = 0;
+                let startY = 0;
+                let isScrolling = false;
+
+                // Touch start
+                document.addEventListener('touchstart', (e) => {
+                    if (!this.isMobile) return;
+
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isScrolling = false;
+                }, { passive: true });
+
+                // Touch move
+                document.addEventListener('touchmove', (e) => {
+                    if (!this.isMobile || isScrolling) return;
+
+                    const currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    const diffX = currentX - startX;
+                    const diffY = currentY - startY;
+
+                    // Determine if user is scrolling vertically
+                    if (Math.abs(diffY) > Math.abs(diffX)) {
+                        isScrolling = true;
+                        return;
+                    }
+                }, { passive: true });
+
+                // Touch end
+                document.addEventListener('touchend', (e) => {
+                    if (!this.isMobile || isScrolling) return;
+
+                    const endX = e.changedTouches[0].clientX;
+                    const diffX = endX - startX;
+                    const threshold = 50; // Minimum swipe distance
+
+                    // Swipe right from left edge to open sidebar
+                    if (startX < 20 && diffX > threshold && this.isCollapsed) {
+                        this.openMobile();
+                    }
+
+                    // Swipe left to close sidebar when open
+                    if (diffX < -threshold && !this.isCollapsed) {
+                        this.closeMobile();
+                    }
+                }, { passive: true });
             }
         }
 
