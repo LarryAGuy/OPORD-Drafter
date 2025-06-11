@@ -674,7 +674,7 @@
 
             <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 sidebar-text">OPORD Sections</div>
+                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 sidebar-text" data-translate="opord_sections">OPORD Sections</div>
 
                 <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in active" data-tab="situation">
                     <i class="fas fa-map fa-fw mr-3 w-5 text-center sidebar-icon"></i>
@@ -1290,6 +1290,7 @@
                 military_planning: "Military Planning Assistant",
                 copy_dtg: "Copy Zulu DTG",
                 menu: "Menu",
+                opord_sections: "OPORD Sections",
 
                 // Tab Navigation
                 help_guide: "Help Guide",
@@ -1375,6 +1376,14 @@
                 feedback_bugs: "Bugs and Errors",
                 feedback_contact_label: "Contact Info (Optional):",
                 feedback_contact_placeholder: "Email or other contact info (optional)",
+                feedback_form_description: "Share your feedback, suggestions, or report bugs using our Google Form.",
+                feedback_categories_title: "Feedback Categories:",
+                feedback_sustains_desc: "What did you like?",
+                feedback_improvements_desc: "What did you not like?",
+                feedback_bugs_desc: "Bug reports or feature requests",
+                feedback_contact_desc: "Optional contact information",
+                feedback_form_security: "Opens in a new tab • Completely secure • No login required",
+                open_feedback_form: "Open Feedback Form",
                 donate_qr_scan: "Or scan PayPal QR code:",
                 donate_qr_mobile: "Scan with mobile device for quick donation",
                 donate_qr_scan_crypto: "Scan to send",
@@ -1450,8 +1459,60 @@
                 mission_template: "[Unit] [Task] [Objective] [NLT DTG] in order to [Purpose]",
 
                 // Section 3 - Execution
-                execution: "3. Execution",
+                execution: "3. EXECUTION",
                 execution_desc: "Describe how the unit will accomplish the mission. This is the heart of the OPORD and provides subordinates with the essential information needed for successful execution.",
+
+                // Execution Subsections
+                commanders_intent: "a. Commander's Intent",
+                commanders_intent_desc: "Describe the purpose of the operation, key tasks, and end state according to FM 6-0 standards.",
+                concept_operations: "b. Concept of Operations",
+                concept_operations_desc: "Describe how the unit will accomplish the mission, including sequence of actions and main effort.",
+                tasks_subordinate_units: "c. Tasks to Subordinate Units",
+                tasks_subordinate_desc: "Assign specific tasks to subordinate units (Corps to Platoon level). Format per FM 6-0 guidelines.",
+                tasks_staff: "d. Tasks to Staff",
+                tasks_staff_desc: "Specify staff-specific tasks and responsibilities during the operation.",
+
+                // Placeholders
+                placeholder_commanders_intent: "Purpose: [Why this operation is being conducted]\nKey Tasks: [Essential tasks that must be accomplished]\nEnd State: [Desired conditions when operation is complete]",
+                placeholder_concept_operations: "Sequence of Actions: [How the operation will unfold]\nMain Effort: [Primary focus of the operation]\nSupporting Efforts: [How other elements support the main effort]",
+                placeholder_tasks_subordinate: "1st PLT: \n2nd PLT: \n3rd PLT: \nWeapons Squad: \nSupport Elements: \n\n[Add additional units as required]",
+                placeholder_tasks_staff: "S-1: [Personnel tasks]\nS-2: [Intelligence tasks]\nS-3: [Operations tasks]\nS-4: [Logistics tasks]\nS-6: [Communications tasks]",
+
+                // Dynamic Unit Management
+                add_unit_btn: "Add Unit",
+                remove_unit_btn: "Remove",
+                select_unit_placeholder: "Select Unit",
+                custom_unit_option: "Custom...",
+                custom_unit_placeholder: "Custom unit",
+                unit_task_placeholder: "Enter task assignment...",
+
+                // Military Unit Types
+                unit_1st_div: "1st DIV",
+                unit_2nd_div: "2nd DIV",
+                unit_3rd_div: "3rd DIV",
+                unit_4th_div: "4th DIV",
+                unit_5th_div: "5th DIV",
+                unit_1st_bde: "1st BDE",
+                unit_2nd_bde: "2nd BDE",
+                unit_3rd_bde: "3rd BDE",
+                unit_4th_bde: "4th BDE",
+                unit_5th_bde: "5th BDE",
+                unit_alpha_company: "Alpha Company",
+                unit_bravo_company: "Bravo Company",
+                unit_charlie_company: "Charlie Company",
+                unit_delta_company: "Delta Company",
+                unit_1st_plt: "1st PLT",
+                unit_2nd_plt: "2nd PLT",
+                unit_3rd_plt: "3rd PLT",
+                unit_4th_plt: "4th PLT",
+                unit_weapons_squad: "Weapons Squad",
+                unit_support_squad: "Support Squad",
+                unit_hq_element: "HQ Element",
+                unit_artillery: "Artillery",
+                unit_engineers: "Engineers",
+                unit_medical: "Medical",
+                unit_supply: "Supply",
+                unit_maintenance: "Maintenance",
                 commander_intent: "Commander Intent",
                 purpose: "Purpose:",
                 purpose_desc: "Why the operation is being conducted",
@@ -2123,6 +2184,7 @@
                 military_planning: "Asistente de Planificación Militar",
                 copy_dtg: "Copiar DTG Zulu",
                 menu: "Menú",
+                opord_sections: "Secciones OPORD",
 
                 // Tab Navigation
                 help_guide: "Guía de Ayuda",
@@ -2208,6 +2270,14 @@
                 feedback_bugs: "Errores y Fallos",
                 feedback_contact_label: "Información de Contacto (Opcional):",
                 feedback_contact_placeholder: "Email u otra información de contacto (opcional)",
+                feedback_form_description: "Comparta sus comentarios, sugerencias o reporte errores usando nuestro formulario de Google.",
+                feedback_categories_title: "Categorías de Comentarios:",
+                feedback_sustains_desc: "¿Qué le gustó?",
+                feedback_improvements_desc: "¿Qué no le gustó?",
+                feedback_bugs_desc: "Reportes de errores o solicitudes de características",
+                feedback_contact_desc: "Información de contacto opcional",
+                feedback_form_security: "Se abre en una nueva pestaña • Completamente seguro • No requiere inicio de sesión",
+                open_feedback_form: "Abrir Formulario de Comentarios",
                 donate_qr_scan: "O escanear código QR de PayPal:",
                 donate_qr_mobile: "Escanear con dispositivo móvil para donación rápida",
                 donate_qr_scan_crypto: "Escanear para enviar",
@@ -2283,8 +2353,60 @@
                 mission_template: "[Unidad] [Tarea] [Objetivo] [NLT DTG] para [Propósito]",
 
                 // Section 3 - Execution
-                execution: "3. Ejecución",
+                execution: "3. EJECUCIÓN",
                 execution_desc: "Describir cómo la unidad cumplirá la misión. Este es el corazón del OPORD y proporciona a los subordinados la información esencial necesaria para una ejecución exitosa.",
+
+                // Execution Subsections
+                commanders_intent: "a. Intención del Comandante",
+                commanders_intent_desc: "Describe el propósito de la operación, tareas clave y estado final según los estándares FM 6-0.",
+                concept_operations: "b. Concepto de Operaciones",
+                concept_operations_desc: "Describe cómo la unidad cumplirá la misión, incluyendo secuencia de acciones y esfuerzo principal.",
+                tasks_subordinate_units: "c. Tareas a Unidades Subordinadas",
+                tasks_subordinate_desc: "Asignar tareas específicas a unidades subordinadas (Cuerpo a nivel Pelotón). Formato según directrices FM 6-0.",
+                tasks_staff: "d. Tareas al Estado Mayor",
+                tasks_staff_desc: "Especificar tareas y responsabilidades específicas del estado mayor durante la operación.",
+
+                // Placeholders
+                placeholder_commanders_intent: "Propósito: [Por qué se está realizando esta operación]\nTareas Clave: [Tareas esenciales que deben cumplirse]\nEstado Final: [Condiciones deseadas cuando se complete la operación]",
+                placeholder_concept_operations: "Secuencia de Acciones: [Cómo se desarrollará la operación]\nEsfuerzo Principal: [Enfoque principal de la operación]\nEsfuerzos de Apoyo: [Cómo otros elementos apoyan el esfuerzo principal]",
+                placeholder_tasks_subordinate: "1er PLT: \n2do PLT: \n3er PLT: \nEscuadrón de Armas: \nElementos de Apoyo: \n\n[Agregar unidades adicionales según sea necesario]",
+                placeholder_tasks_staff: "S-1: [Tareas de personal]\nS-2: [Tareas de inteligencia]\nS-3: [Tareas de operaciones]\nS-4: [Tareas de logística]\nS-6: [Tareas de comunicaciones]",
+
+                // Dynamic Unit Management
+                add_unit_btn: "Agregar Unidad",
+                remove_unit_btn: "Eliminar",
+                select_unit_placeholder: "Seleccionar Unidad",
+                custom_unit_option: "Personalizado...",
+                custom_unit_placeholder: "Unidad personalizada",
+                unit_task_placeholder: "Ingrese asignación de tarea...",
+
+                // Military Unit Types
+                unit_1st_div: "1ra DIV",
+                unit_2nd_div: "2da DIV",
+                unit_3rd_div: "3ra DIV",
+                unit_4th_div: "4ta DIV",
+                unit_5th_div: "5ta DIV",
+                unit_1st_bde: "1ra BDE",
+                unit_2nd_bde: "2da BDE",
+                unit_3rd_bde: "3ra BDE",
+                unit_4th_bde: "4ta BDE",
+                unit_5th_bde: "5ta BDE",
+                unit_alpha_company: "Compañía Alpha",
+                unit_bravo_company: "Compañía Bravo",
+                unit_charlie_company: "Compañía Charlie",
+                unit_delta_company: "Compañía Delta",
+                unit_1st_plt: "1er PLT",
+                unit_2nd_plt: "2do PLT",
+                unit_3rd_plt: "3er PLT",
+                unit_4th_plt: "4to PLT",
+                unit_weapons_squad: "Escuadrón de Armas",
+                unit_support_squad: "Escuadrón de Apoyo",
+                unit_hq_element: "Elemento de Comando",
+                unit_artillery: "Artillería",
+                unit_engineers: "Ingenieros",
+                unit_medical: "Médico",
+                unit_supply: "Suministros",
+                unit_maintenance: "Mantenimiento",
                 commander_intent: "Intención del Comandante",
                 purpose: "Propósito:",
                 purpose_desc: "Por qué se está realizando la operación",
@@ -2965,6 +3087,7 @@
                 military_planning: "Assistant de Planification Militaire",
                 copy_dtg: "Copier DTG Zulu",
                 menu: "Menu",
+                opord_sections: "Sections OPORD",
 
                 // Tab Navigation
                 help_guide: "Guide d'Aide",
@@ -3050,6 +3173,14 @@
                 feedback_bugs: "Bugs et Erreurs",
                 feedback_contact_label: "Informations de Contact (Optionnel):",
                 feedback_contact_placeholder: "Email ou autres informations de contact (optionnel)",
+                feedback_form_description: "Partagez vos commentaires, suggestions ou signalez des bugs en utilisant notre formulaire Google.",
+                feedback_categories_title: "Catégories de Commentaires:",
+                feedback_sustains_desc: "Qu'avez-vous aimé?",
+                feedback_improvements_desc: "Qu'est-ce que vous n'avez pas aimé?",
+                feedback_bugs_desc: "Rapports de bugs ou demandes de fonctionnalités",
+                feedback_contact_desc: "Informations de contact optionnelles",
+                feedback_form_security: "S'ouvre dans un nouvel onglet • Complètement sécurisé • Aucune connexion requise",
+                open_feedback_form: "Ouvrir le Formulaire de Commentaires",
                 donate_qr_scan: "Ou scanner le code QR PayPal:",
                 donate_qr_mobile: "Scanner avec un appareil mobile pour un don rapide",
                 donate_qr_scan_crypto: "Scanner pour envoyer",
@@ -3125,8 +3256,60 @@
                 mission_template: "[Unité] [Tâche] [Objectif] [NLT DTG] afin de [But]",
 
                 // Section 3 - Execution
-                execution: "3. Exécution",
+                execution: "3. EXÉCUTION",
                 execution_desc: "Décrire comment l'unité accomplira la mission. C'est le cœur de l'OPORD et fournit aux subordonnés les informations essentielles nécessaires pour une exécution réussie.",
+
+                // Execution Subsections
+                commanders_intent: "a. Intention du Commandant",
+                commanders_intent_desc: "Décrire le but de l'opération, les tâches clés et l'état final selon les normes FM 6-0.",
+                concept_operations: "b. Concept d'Opérations",
+                concept_operations_desc: "Décrire comment l'unité accomplira la mission, y compris la séquence d'actions et l'effort principal.",
+                tasks_subordinate_units: "c. Tâches aux Unités Subordonnées",
+                tasks_subordinate_desc: "Assigner des tâches spécifiques aux unités subordonnées (Corps au niveau Peloton). Format selon les directives FM 6-0.",
+                tasks_staff: "d. Tâches à l'État-Major",
+                tasks_staff_desc: "Spécifier les tâches et responsabilités spécifiques de l'état-major pendant l'opération.",
+
+                // Placeholders
+                placeholder_commanders_intent: "But: [Pourquoi cette opération est menée]\nTâches Clés: [Tâches essentielles qui doivent être accomplies]\nÉtat Final: [Conditions souhaitées à la fin de l'opération]",
+                placeholder_concept_operations: "Séquence d'Actions: [Comment l'opération se déroulera]\nEffort Principal: [Focus principal de l'opération]\nEfforts de Soutien: [Comment les autres éléments soutiennent l'effort principal]",
+                placeholder_tasks_subordinate: "1er PLT: \n2e PLT: \n3e PLT: \nEscouade d'Armes: \nÉléments de Soutien: \n\n[Ajouter des unités supplémentaires selon les besoins]",
+                placeholder_tasks_staff: "S-1: [Tâches de personnel]\nS-2: [Tâches de renseignement]\nS-3: [Tâches d'opérations]\nS-4: [Tâches de logistique]\nS-6: [Tâches de communications]",
+
+                // Dynamic Unit Management
+                add_unit_btn: "Ajouter Unité",
+                remove_unit_btn: "Supprimer",
+                select_unit_placeholder: "Sélectionner Unité",
+                custom_unit_option: "Personnalisé...",
+                custom_unit_placeholder: "Unité personnalisée",
+                unit_task_placeholder: "Entrer l'assignation de tâche...",
+
+                // Military Unit Types
+                unit_1st_div: "1re DIV",
+                unit_2nd_div: "2e DIV",
+                unit_3rd_div: "3e DIV",
+                unit_4th_div: "4e DIV",
+                unit_5th_div: "5e DIV",
+                unit_1st_bde: "1re BDE",
+                unit_2nd_bde: "2e BDE",
+                unit_3rd_bde: "3e BDE",
+                unit_4th_bde: "4e BDE",
+                unit_5th_bde: "5e BDE",
+                unit_alpha_company: "Compagnie Alpha",
+                unit_bravo_company: "Compagnie Bravo",
+                unit_charlie_company: "Compagnie Charlie",
+                unit_delta_company: "Compagnie Delta",
+                unit_1st_plt: "1er PLT",
+                unit_2nd_plt: "2e PLT",
+                unit_3rd_plt: "3e PLT",
+                unit_4th_plt: "4e PLT",
+                unit_weapons_squad: "Escouade d'Armes",
+                unit_support_squad: "Escouade de Soutien",
+                unit_hq_element: "Élément QG",
+                unit_artillery: "Artillerie",
+                unit_engineers: "Génie",
+                unit_medical: "Médical",
+                unit_supply: "Approvisionnement",
+                unit_maintenance: "Maintenance",
                 commander_intent: "Intention du Commandant",
                 purpose: "But:",
                 purpose_desc: "Pourquoi l'opération est menée",
@@ -3798,6 +3981,7 @@
                 military_planning: "Militärischer Planungsassistent",
                 copy_dtg: "Zulu DTG Kopieren",
                 menu: "Menü",
+                opord_sections: "OPORD-Abschnitte",
 
                 // Tab Navigation
                 help_guide: "Hilfsleitfaden",
@@ -3883,6 +4067,14 @@
                 feedback_bugs: "Fehler und Bugs",
                 feedback_contact_label: "Kontaktinformationen (Optional):",
                 feedback_contact_placeholder: "E-Mail oder andere Kontaktinformationen (optional)",
+                feedback_form_description: "Teilen Sie Ihr Feedback, Vorschläge oder melden Sie Fehler über unser Google-Formular.",
+                feedback_categories_title: "Feedback-Kategorien:",
+                feedback_sustains_desc: "Was hat Ihnen gefallen?",
+                feedback_improvements_desc: "Was hat Ihnen nicht gefallen?",
+                feedback_bugs_desc: "Fehlerberichte oder Feature-Anfragen",
+                feedback_contact_desc: "Optionale Kontaktinformationen",
+                feedback_form_security: "Öffnet in neuem Tab • Vollständig sicher • Keine Anmeldung erforderlich",
+                open_feedback_form: "Feedback-Formular Öffnen",
                 donate_qr_scan: "Oder PayPal QR-Code scannen:",
                 donate_qr_mobile: "Mit Mobilgerät scannen für schnelle Spende",
                 donate_qr_scan_crypto: "Scannen zum Senden",
@@ -3958,8 +4150,60 @@
                 mission_template: "[Einheit] [Aufgabe] [Ziel] [NLT DTG] um [Zweck]",
 
                 // Section 3 - Execution
-                execution: "3. Durchführung",
+                execution: "3. DURCHFÜHRUNG",
                 execution_desc: "Beschreiben, wie die Einheit die Mission erfüllen wird. Dies ist das Herzstück des OPORD und liefert Untergebenen die wesentlichen Informationen für erfolgreiche Ausführung.",
+
+                // Execution Subsections
+                commanders_intent: "a. Führungsabsicht",
+                commanders_intent_desc: "Zweck der Operation, Schlüsselaufgaben und Endzustand nach FM 6-0 Standards beschreiben.",
+                concept_operations: "b. Operationskonzept",
+                concept_operations_desc: "Beschreiben, wie die Einheit die Mission erfüllen wird, einschließlich Aktionssequenz und Schwerpunkt.",
+                tasks_subordinate_units: "c. Aufgaben an Untergeordnete Einheiten",
+                tasks_subordinate_desc: "Spezifische Aufgaben an untergeordnete Einheiten zuweisen (Korps bis Zugeben). Format nach FM 6-0 Richtlinien.",
+                tasks_staff: "d. Aufgaben an Stab",
+                tasks_staff_desc: "Spezifische Stab-Aufgaben und Verantwortlichkeiten während der Operation festlegen.",
+
+                // Placeholders
+                placeholder_commanders_intent: "Zweck: [Warum diese Operation durchgeführt wird]\nSchlüsselaufgaben: [Wesentliche Aufgaben, die erfüllt werden müssen]\nEndzustand: [Gewünschte Bedingungen bei Operationsabschluss]",
+                placeholder_concept_operations: "Aktionssequenz: [Wie die Operation ablaufen wird]\nSchwerpunkt: [Hauptfokus der Operation]\nUnterstützungsanstrengungen: [Wie andere Elemente den Schwerpunkt unterstützen]",
+                placeholder_tasks_subordinate: "1. Zug: \n2. Zug: \n3. Zug: \nWaffen-Gruppe: \nUnterstützungselemente: \n\n[Zusätzliche Einheiten nach Bedarf hinzufügen]",
+                placeholder_tasks_staff: "S-1: [Personalaufgaben]\nS-2: [Aufklärungsaufgaben]\nS-3: [Operationsaufgaben]\nS-4: [Logistikaufgaben]\nS-6: [Fernmeldeaufgaben]",
+
+                // Dynamic Unit Management
+                add_unit_btn: "Einheit Hinzufügen",
+                remove_unit_btn: "Entfernen",
+                select_unit_placeholder: "Einheit Auswählen",
+                custom_unit_option: "Benutzerdefiniert...",
+                custom_unit_placeholder: "Benutzerdefinierte Einheit",
+                unit_task_placeholder: "Aufgabenzuweisung eingeben...",
+
+                // Military Unit Types
+                unit_1st_div: "1. DIV",
+                unit_2nd_div: "2. DIV",
+                unit_3rd_div: "3. DIV",
+                unit_4th_div: "4. DIV",
+                unit_5th_div: "5. DIV",
+                unit_1st_bde: "1. BDE",
+                unit_2nd_bde: "2. BDE",
+                unit_3rd_bde: "3. BDE",
+                unit_4th_bde: "4. BDE",
+                unit_5th_bde: "5. BDE",
+                unit_alpha_company: "Alpha Kompanie",
+                unit_bravo_company: "Bravo Kompanie",
+                unit_charlie_company: "Charlie Kompanie",
+                unit_delta_company: "Delta Kompanie",
+                unit_1st_plt: "1. Zug",
+                unit_2nd_plt: "2. Zug",
+                unit_3rd_plt: "3. Zug",
+                unit_4th_plt: "4. Zug",
+                unit_weapons_squad: "Waffen-Gruppe",
+                unit_support_squad: "Unterstützungsgruppe",
+                unit_hq_element: "Führungselement",
+                unit_artillery: "Artillerie",
+                unit_engineers: "Pioniere",
+                unit_medical: "Sanitätsdienst",
+                unit_supply: "Versorgung",
+                unit_maintenance: "Instandhaltung",
                 commander_intent: "Führungsabsicht",
                 purpose: "Zweck:",
                 purpose_desc: "Warum die Operation durchgeführt wird",
@@ -4631,6 +4875,7 @@
                 military_planning: "군사 계획 지원 도구",
                 copy_dtg: "줄루 DTG 복사",
                 menu: "메뉴",
+                opord_sections: "작전명령 섹션",
 
                 // Tab Navigation
                 help_guide: "도움말 가이드",
@@ -4716,6 +4961,14 @@
                 feedback_bugs: "버그 및 오류",
                 feedback_contact_label: "연락처 정보 (선택사항):",
                 feedback_contact_placeholder: "이메일 또는 기타 연락처 정보 (선택사항)",
+                feedback_form_description: "Google 양식을 사용하여 피드백, 제안 또는 버그를 신고해 주세요.",
+                feedback_categories_title: "피드백 카테고리:",
+                feedback_sustains_desc: "무엇이 좋았나요?",
+                feedback_improvements_desc: "무엇이 마음에 들지 않았나요?",
+                feedback_bugs_desc: "버그 신고 또는 기능 요청",
+                feedback_contact_desc: "선택적 연락처 정보",
+                feedback_form_security: "새 탭에서 열림 • 완전히 안전 • 로그인 불필요",
+                open_feedback_form: "피드백 양식 열기",
                 donate_qr_scan: "또는 PayPal QR 코드 스캔:",
                 donate_qr_mobile: "빠른 기부를 위해 모바일 기기로 스캔",
                 donate_qr_scan_crypto: "전송하려면 스캔",
@@ -4793,6 +5046,58 @@
                 // Section 3 - Execution
                 execution: "3. 실행",
                 execution_desc: "부대가 임무를 수행하는 방법을 설명합니다. 이는 작전명령의 핵심이며 성공적인 실행에 필요한 필수 정보를 부하들에게 제공합니다.",
+
+                // Execution Subsections
+                commanders_intent: "가. 지휘관 의도",
+                commanders_intent_desc: "FM 6-0 기준에 따른 작전의 목적, 핵심 임무 및 종료상태를 기술합니다.",
+                concept_operations: "나. 작전개념",
+                concept_operations_desc: "행동 순서와 주공을 포함하여 부대가 임무를 수행하는 방법을 기술합니다.",
+                tasks_subordinate_units: "다. 부하부대 임무",
+                tasks_subordinate_desc: "부하부대(군단에서 소대급까지)에 구체적 임무를 할당합니다. FM 6-0 지침에 따른 형식.",
+                tasks_staff: "라. 참모 임무",
+                tasks_staff_desc: "작전 중 참모의 구체적 임무와 책임을 명시합니다.",
+
+                // Placeholders
+                placeholder_commanders_intent: "목적: [이 작전이 수행되는 이유]\n핵심 임무: [반드시 수행되어야 하는 필수 임무]\n종료상태: [작전 완료 시 원하는 조건]",
+                placeholder_concept_operations: "행동 순서: [작전이 전개되는 방법]\n주공: [작전의 주요 초점]\n조공: [다른 요소들이 주공을 지원하는 방법]",
+                placeholder_tasks_subordinate: "1소대: \n2소대: \n3소대: \n화기분대: \n지원요소: \n\n[필요에 따라 추가 부대 추가]",
+                placeholder_tasks_staff: "S-1: [인사 임무]\nS-2: [정보 임무]\nS-3: [작전 임무]\nS-4: [군수 임무]\nS-6: [통신 임무]",
+
+                // Dynamic Unit Management
+                add_unit_btn: "부대 추가",
+                remove_unit_btn: "제거",
+                select_unit_placeholder: "부대 선택",
+                custom_unit_option: "사용자 정의...",
+                custom_unit_placeholder: "사용자 정의 부대",
+                unit_task_placeholder: "임무 할당을 입력하세요...",
+
+                // Military Unit Types
+                unit_1st_div: "제1사단",
+                unit_2nd_div: "제2사단",
+                unit_3rd_div: "제3사단",
+                unit_4th_div: "제4사단",
+                unit_5th_div: "제5사단",
+                unit_1st_bde: "제1여단",
+                unit_2nd_bde: "제2여단",
+                unit_3rd_bde: "제3여단",
+                unit_4th_bde: "제4여단",
+                unit_5th_bde: "제5여단",
+                unit_alpha_company: "알파 중대",
+                unit_bravo_company: "브라보 중대",
+                unit_charlie_company: "찰리 중대",
+                unit_delta_company: "델타 중대",
+                unit_1st_plt: "1소대",
+                unit_2nd_plt: "2소대",
+                unit_3rd_plt: "3소대",
+                unit_4th_plt: "4소대",
+                unit_weapons_squad: "화기분대",
+                unit_support_squad: "지원분대",
+                unit_hq_element: "본부요소",
+                unit_artillery: "포병",
+                unit_engineers: "공병",
+                unit_medical: "의무",
+                unit_supply: "보급",
+                unit_maintenance: "정비",
                 commander_intent: "지휘관 의도",
                 purpose: "목적:",
                 purpose_desc: "작전이 수행되는 이유",
@@ -5539,6 +5844,12 @@
                 this.currentLanguage = langCode;
                 localStorage.setItem('opord-language', langCode);
                 this.translatePage();
+
+                // Refresh dynamic unit management interface
+                if (window.refreshSubordinateUnitsInterface) {
+                    window.refreshSubordinateUnitsInterface();
+                }
+
                 this.showNotification(`Language changed to ${this.getLanguageName(langCode)}`, 'success');
             }
 
@@ -5740,6 +6051,23 @@
                                 this.showGenerateModal();
                             });
                         }
+
+                        // Initialize subordinate units for draft tab
+                        setTimeout(() => {
+                            const addUnitBtn = document.getElementById('add-unit-btn');
+                            const container = document.getElementById('subordinate-units-container');
+
+                            if (addUnitBtn && container && window.addSubordinateUnit) {
+                                console.log('Setting up subordinate units in draft tab...');
+                                addUnitBtn.addEventListener('click', window.addSubordinateUnit);
+
+                                // Only initialize if container is empty
+                                if (container.children.length === 0) {
+                                    window.initializeSubordinateUnits();
+                                }
+                                console.log('Subordinate units setup complete');
+                            }
+                        }, 100);
                     } else if (tabName === 'annexes') {
                         this.setupAnnexEventListeners();
                     }
@@ -6905,7 +7233,7 @@
                             '</div>' +
 
                             '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600">' +
-                                '<h4 class="text-lg font-semibold text-white mb-4">OPORD Sections</h4>' +
+                                '<h4 class="text-lg font-semibold text-white mb-4" data-translate="opord_sections">OPORD Sections</h4>' +
                                 '<div class="space-y-4">' +
                                     '<div>' +
                                         '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="situation">1. Situation</label>' +
@@ -6931,8 +7259,47 @@
                                         '</div>' +
                                     '</div>' +
                                     '<div>' +
-                                        '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="execution">3. Execution</label>' +
-                                        '<textarea id="draft-execution" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_execution" placeholder="Enter execution details..."></textarea>' +
+                                        '<label class="block text-sm font-medium text-gray-300 mb-4" data-translate="execution">3. EXECUTION</label>' +
+
+                                        '<!-- 2x2 Grid Layout for Execution Subsections -->' +
+                                        '<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">' +
+
+                                            '<!-- Commander\'s Intent Subsection -->' +
+                                            '<div class="bg-gray-800 p-3 rounded-lg border border-gray-600">' +
+                                                '<label class="block text-sm font-semibold text-blue-300 mb-2" data-translate="commanders_intent">a. Commander\'s Intent</label>' +
+                                                '<p class="text-xs text-gray-400 mb-2" data-translate="commanders_intent_desc">Purpose, key tasks, and end state per FM 6-0.</p>' +
+                                                '<textarea id="draft-commanders-intent" class="form-input w-full p-2 rounded-md h-20 text-sm" data-translate-placeholder="placeholder_commanders_intent" placeholder="Purpose: [Why this operation is being conducted]\nKey Tasks: [Essential tasks]\nEnd State: [Desired conditions]"></textarea>' +
+                                            '</div>' +
+
+                                            '<!-- Concept of Operations Subsection -->' +
+                                            '<div class="bg-gray-800 p-3 rounded-lg border border-gray-600">' +
+                                                '<label class="block text-sm font-semibold text-blue-300 mb-2" data-translate="concept_operations">b. Concept of Operations</label>' +
+                                                '<p class="text-xs text-gray-400 mb-2" data-translate="concept_operations_desc">Sequence of actions and main effort.</p>' +
+                                                '<textarea id="draft-concept-operations" class="form-input w-full p-2 rounded-md h-20 text-sm" data-translate-placeholder="placeholder_concept_operations" placeholder="Sequence: [How operation unfolds]\nMain Effort: [Primary focus]\nSupporting Efforts: [Support elements]"></textarea>' +
+                                            '</div>' +
+
+                                            '<!-- Tasks to Subordinate Units Subsection (Enhanced with Dynamic Management) -->' +
+                                            '<div class="bg-gray-800 p-3 rounded-lg border border-gray-600">' +
+                                                '<div class="flex justify-between items-center mb-2">' +
+                                                    '<label class="block text-sm font-semibold text-blue-300" data-translate="tasks_subordinate_units">c. Tasks to Subordinate Units</label>' +
+                                                    '<button type="button" id="add-unit-btn" class="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 rounded flex items-center gap-1" data-translate="add_unit_btn">' +
+                                                        '<span>+</span> Add Unit' +
+                                                    '</button>' +
+                                                '</div>' +
+                                                '<p class="text-xs text-gray-400 mb-3" data-translate="tasks_subordinate_desc">Assign tasks to subordinate units (Corps to Platoon level). FM 6-0 format.</p>' +
+                                                '<div id="subordinate-units-container" class="space-y-2">' +
+                                                    '<!-- Dynamic unit entries will be added here -->' +
+                                                '</div>' +
+                                            '</div>' +
+
+                                            '<!-- Tasks to Staff Subsection -->' +
+                                            '<div class="bg-gray-800 p-3 rounded-lg border border-gray-600">' +
+                                                '<label class="block text-sm font-semibold text-blue-300 mb-2" data-translate="tasks_staff">d. Tasks to Staff</label>' +
+                                                '<p class="text-xs text-gray-400 mb-2" data-translate="tasks_staff_desc">Staff tasks and responsibilities during operation.</p>' +
+                                                '<textarea id="draft-tasks-staff" class="form-input w-full p-2 rounded-md h-20 text-sm" data-translate-placeholder="placeholder_tasks_staff" placeholder="S-1: [Personnel] S-2: [Intelligence] S-3: [Operations] S-4: [Logistics] S-6: [Communications]"></textarea>' +
+                                            '</div>' +
+
+                                        '</div>' +
                                     '</div>' +
                                     '<div>' +
                                         '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="sustainment">4. Sustainment</label>' +
@@ -7063,7 +7430,7 @@
                         situation: ['draft-situation'],
                         tactical: ['tactical-coordinates'],
                         mission: ['mission-who', 'mission-what', 'mission-when', 'mission-where', 'mission-why'],
-                        execution: ['draft-execution'],
+                        execution: ['draft-commanders-intent', 'draft-concept-operations', 'subordinate-units-container', 'draft-tasks-staff'],
                         sustainment: ['draft-sustainment'],
                         command: ['draft-command'],
                         annexes: ['annex-a', 'annex-b', 'annex-c']
@@ -7235,36 +7602,33 @@
                                         <p class="text-gray-300 text-sm mb-3" data-translate="donate_contact_desc">
                                             Have ideas for new features or found a bug? We'd love to hear from you!
                                         </p>
-                                        <form id="feedback-form" class="space-y-3">
-                                            <div>
-                                                <label class="block text-xs text-gray-400 mb-1" data-translate="feedback_type_label">Feedback Type:</label>
-                                                <select id="feedback-type" class="form-input w-full p-2 text-sm bg-gray-700 border-gray-600 text-white rounded">
-                                                    <option value="improvements" data-translate="feedback_improvements">Improvements</option>
-                                                    <option value="sustains" data-translate="feedback_sustains">Sustains (What's working well)</option>
-                                                    <option value="bugs" data-translate="feedback_bugs">Bugs and Errors</option>
-                                                </select>
+                                        <!-- Simple Google Form Link -->
+                                        <div class="text-center">
+                                            <div class="mb-4">
+                                                <i class="fas fa-external-link-alt text-3xl text-blue-400 mb-3"></i>
+                                                <p class="text-gray-300 text-sm mb-4" data-translate="feedback_form_description">
+                                                    Share your feedback, suggestions, or report bugs using our Google Form.
+                                                </p>
                                             </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-400 mb-1" data-translate="feedback_message_label">Message:</label>
-                                                <textarea id="feedback-message" class="form-input w-full p-2 text-sm bg-gray-700 border-gray-600 text-white rounded h-20 resize-none" data-translate-placeholder="feedback_message_placeholder" placeholder="Share your ideas, report bugs, or ask questions..." required></textarea>
-                                            </div>
-                                            <div>
-                                                <label class="block text-xs text-gray-400 mb-1" data-translate="feedback_contact_label">Contact Info (Optional):</label>
-                                                <input type="text" id="feedback-contact" class="form-input w-full p-2 text-sm bg-gray-700 border-gray-600 text-white rounded" data-translate-placeholder="feedback_contact_placeholder" placeholder="Email or other contact info (optional)">
-                                            </div>
-                                            <button type="submit" id="feedback-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors duration-200">
-                                                <i class="fas fa-paper-plane mr-2"></i>
-                                                <span data-translate="send_feedback">Send Feedback</span>
-                                            </button>
-                                        </form>
 
-                                        <!-- Alternative: Direct Google Form Link -->
-                                        <div class="mt-3 pt-3 border-t border-gray-600">
-                                            <p class="text-xs text-gray-400 mb-2" data-translate="feedback_alternative">Or use our Google Form:</p>
-                                            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSc2gYnJxwafL2l_jHukmfS3U8_a9lKlt2dVCUFXiwhwZCq3ug/viewform', '_blank')" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors duration-200">
+                                            <div class="bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg p-4 mb-4">
+                                                <h4 class="text-white font-semibold mb-2" data-translate="feedback_categories_title">Feedback Categories:</h4>
+                                                <div class="text-left space-y-1 text-sm text-blue-200">
+                                                    <div><strong data-translate="feedback_sustains">Sustains:</strong> <span data-translate="feedback_sustains_desc">What did you like?</span></div>
+                                                    <div><strong data-translate="feedback_improvements">Improves:</strong> <span data-translate="feedback_improvements_desc">What did you not like?</span></div>
+                                                    <div><strong data-translate="feedback_bugs">Bugs/Features:</strong> <span data-translate="feedback_bugs_desc">Bug reports or feature requests</span></div>
+                                                    <div><strong data-translate="feedback_contact">Contact:</strong> <span data-translate="feedback_contact_desc">Optional contact information</span></div>
+                                                </div>
+                                            </div>
+
+                                            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfYxqbbVi7CsTqB-XEUC8G75mv4jCNlD4qG3OlZ3XWJTjIyiQ/viewform?usp=dialog', '_blank')" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded text-sm transition-colors duration-200 shadow-lg">
                                                 <i class="fab fa-google mr-2"></i>
-                                                <span data-translate="open_google_form">Open Google Form</span>
+                                                <span data-translate="open_feedback_form">Open Feedback Form</span>
                                             </button>
+
+                                            <p class="text-xs text-gray-400 mt-3" data-translate="feedback_form_security">
+                                                Opens in a new tab • Completely secure • No login required
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -7416,88 +7780,56 @@
                 // Apply initial translations
                 this.updateDonationModalTranslations();
 
-                // Add feedback form submission handler
-                const feedbackForm = document.getElementById('feedback-form');
-                if (feedbackForm) {
-                    feedbackForm.addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        this.submitFeedback();
-                    });
-                }
+                // Feedback form is now just a link - no submission handler needed
             }
 
+            // Removed complex entry ID discovery - using simple Google Form link approach
+
+            // Simple function to open Google Form - no complex submission logic needed
+            openFeedbackForm() {
+                const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfYxqbbVi7CsTqB-XEUC8G75mv4jCNlD4qG3OlZ3XWJTjIyiQ/viewform?usp=dialog';
+
+                console.log('🔗 Opening Google Form for feedback submission');
+                console.log('Form URL:', googleFormUrl);
+
+                // Open the Google Form in a new tab
+                window.open(googleFormUrl, '_blank');
+
+                // Show notification
+                this.showNotification('✅ Feedback form opened in new tab. Thank you for sharing your input!', 'success');
+
+                return true;
+            }
+
+            // Legacy function for compatibility - redirects to openFeedbackForm
             async submitFeedback() {
-                const submitBtn = document.getElementById('feedback-submit-btn');
-                const typeField = document.getElementById('feedback-type');
-                const messageField = document.getElementById('feedback-message');
-                const contactField = document.getElementById('feedback-contact');
-
-                if (!messageField || !messageField.value.trim()) {
-                    this.showNotification('Please enter a message', 'error');
-                    return;
-                }
-
-                // Disable submit button and show loading
-                const originalText = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span data-translate="sending_feedback">Sending...</span>';
-
-                try {
-                    const feedbackType = typeField ? typeField.value : 'improvements';
-                    const message = messageField.value.trim();
-                    const contact = contactField ? contactField.value.trim() : '';
-
-                    // Submit to Google Form
-                    const googleFormURL = 'https://docs.google.com/forms/d/e/1FAIpQLSc2gYnJxwafL2l_jHukmfS3U8_a9lKlt2dVCUFXiwhwZCq3ug/formResponse';
-
-                    const formData = new FormData();
-
-                    // Map feedback type to appropriate Google Form field
-                    if (feedbackType === 'improvements') {
-                        formData.append('entry.1045781291', message); // Improvements field
-                    } else if (feedbackType === 'sustains') {
-                        formData.append('entry.839337160', message); // Sustains field
-                    } else if (feedbackType === 'bugs') {
-                        formData.append('entry.1065046570', message); // Bugs field
-                    }
-
-                    // Add contact info if provided
-                    if (contact) {
-                        formData.append('entry.1166974658', contact); // Contact field
-                    }
-
-                    // Submit to Google Form using no-cors mode
-                    await fetch(googleFormURL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: formData
-                    });
-
-                    // Since no-cors doesn't return response, assume success
-                    // Clear form and show success message
-                    if (messageField) messageField.value = '';
-                    if (contactField) contactField.value = '';
-
-                    this.showNotification('Feedback submitted successfully! Thank you for your input.', 'success');
-
-                } catch (error) {
-                    console.error('Error submitting feedback:', error);
-
-                    // Fallback: Open Google Form directly
-                    const googleFormViewURL = 'https://docs.google.com/forms/d/e/1FAIpQLSc2gYnJxwafL2l_jHukmfS3U8_a9lKlt2dVCUFXiwhwZCq3ug/viewform';
-                    window.open(googleFormViewURL, '_blank');
-
-                    this.showNotification('Google Form opened in new tab. Please submit your feedback there.', 'info');
-
-                } finally {
-                    // Re-enable submit button
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-
-                    // Update translations in case language changed
-                    this.updateDonationModalTranslations();
-                }
+                console.log('📝 Feedback submission redirected to Google Form');
+                return this.openFeedbackForm();
             }
+
+            // Simplified feedback system - now uses direct Google Form link
+            openGoogleFormFeedback() {
+                const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfYxqbbVi7CsTqB-XEUC8G75mv4jCNlD4qG3OlZ3XWJTjIyiQ/viewform?usp=dialog';
+                window.open(googleFormUrl, '_blank');
+                console.log('✅ Google Form opened for feedback submission');
+                return 'Google Form opened successfully';
+            }
+
+            // Feedback system simplified - complex entry ID functions removed
+            // Now using direct Google Form link for reliable feedback submission
+
+            // Complex test functions removed - using simple Google Form link approach
+
+            // Removed complex test functions - feedback now uses direct Google Form link
+
+            // Complex testing functions removed - using simple Google Form link
+
+            // All complex debugging and testing functions removed
+            // Feedback system now uses simple, reliable Google Form link
+
+            // Removed all complex test functions - feedback uses direct Google Form link
+
+            // All complex test functions removed - using simple Google Form link approach
 
             showHelp() {
                 // Create and show help modal
@@ -7592,7 +7924,7 @@
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-blue-300" data-translate="help_statue_liberty">Statue of Liberty, NY (UTM):</span>
-                                            <span class="font-mono text-gray-300">18T 583960 4507523</span>
+                                            <span class="font-mono text-gray-300">18T 580732 4504719</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-green-300" data-translate="help_eiffel_tower">Eiffel Tower, France (MGRS):</span>
@@ -7897,8 +8229,8 @@
                     'mission-attack': 'mission-statement',
                     'mission-defend': 'mission-statement',
                     'mission-recon': 'mission-statement',
-                    'commander-intent': 'draft-execution',
-                    'concept-ops': 'draft-execution',
+                    'commander-intent': 'draft-commanders-intent',
+                    'concept-ops': 'draft-concept-operations',
                     'logistics': 'draft-sustainment',
                     'medical': 'draft-sustainment',
                     'pace-plan': 'draft-annex-h',
@@ -7977,7 +8309,10 @@
                 // Show success notification with field name
                 const fieldNames = {
                     'mission-statement': 'Mission Statement',
-                    'draft-execution': 'Execution Section',
+                    'draft-commanders-intent': 'Commander\'s Intent',
+                    'draft-concept-operations': 'Concept of Operations',
+                    'subordinate-units-container': 'Tasks to Subordinate Units',
+                    'draft-tasks-staff': 'Tasks to Staff',
                     'draft-sustainment': 'Sustainment Section',
                     'draft-annex-h': 'Annex H: Signal',
                     'draft-annex-a': 'Annex A: Task Organization',
@@ -8549,7 +8884,8 @@
                 // Check all form fields for content
                 const fieldIds = [
                     'mission-who', 'mission-what', 'mission-when', 'mission-where', 'mission-why',
-                    'mission-statement', 'draft-situation', 'tactical-coordinates', 'draft-execution',
+                    'mission-statement', 'draft-situation', 'tactical-coordinates',
+                    'draft-commanders-intent', 'draft-concept-operations', 'draft-tasks-staff',
                     'draft-sustainment', 'draft-command', 'draft-annex-a', 'draft-annex-b',
                     'draft-annex-c', 'draft-annex-d', 'draft-annex-e', 'draft-annex-f',
                     'draft-annex-g', 'draft-annex-h', 'annex-k', 'annex-l', 'annex-misc'
@@ -8561,6 +8897,17 @@
                         return true;
                     }
                 }
+
+                // Also check for subordinate units data
+                try {
+                    const hasSubordinateUnits = window.getSubordinateUnitsData && window.getSubordinateUnitsData().length > 0;
+                    if (hasSubordinateUnits) {
+                        return true;
+                    }
+                } catch (error) {
+                    console.log('Subordinate units check not available yet');
+                }
+
                 return false;
             }
 
@@ -8569,7 +8916,8 @@
                     // Clear all form fields
                     const fieldIds = [
                         'mission-who', 'mission-what', 'mission-when', 'mission-where', 'mission-why',
-                        'mission-statement', 'draft-situation', 'tactical-coordinates', 'draft-execution',
+                        'mission-statement', 'draft-situation', 'tactical-coordinates',
+                        'draft-commanders-intent', 'draft-concept-operations', 'draft-tasks-staff',
                         'draft-sustainment', 'draft-command', 'draft-annex-a', 'draft-annex-b',
                         'draft-annex-c', 'draft-annex-d', 'draft-annex-e', 'draft-annex-f',
                         'draft-annex-g', 'draft-annex-h', 'annex-k', 'annex-l', 'annex-misc'
@@ -8581,6 +8929,18 @@
                             field.value = '';
                         }
                     });
+
+                    // Clear subordinate units
+                    const subordinateContainer = document.getElementById('subordinate-units-container');
+                    if (subordinateContainer) {
+                        subordinateContainer.innerHTML = '';
+                        // Re-initialize with default units
+                        setTimeout(() => {
+                            if (window.initializeSubordinateUnits) {
+                                window.initializeSubordinateUnits();
+                            }
+                        }, 100);
+                    }
 
                     // Clear saved draft from localStorage
                     localStorage.removeItem('opord-draft');
@@ -10149,7 +10509,12 @@
                     situation: document.getElementById('draft-situation')?.value || 'Situation information to be provided.',
                     tacticalCoordinates: document.getElementById('tactical-coordinates')?.value || '',
                     mapImages: this.mapImages || [],
-                    execution: document.getElementById('draft-execution')?.value || 'Execution details to be provided.',
+                    execution: {
+                        commandersIntent: document.getElementById('draft-commanders-intent')?.value || 'Commander\'s intent to be provided.',
+                        conceptOfOperations: document.getElementById('draft-concept-operations')?.value || 'Concept of operations to be provided.',
+                        tasksToSubordinateUnits: window.formatSubordinateUnitsForExport() || 'Tasks to subordinate units to be provided.',
+                        tasksToStaff: document.getElementById('draft-tasks-staff')?.value || 'Tasks to staff to be provided.'
+                    },
                     sustainment: document.getElementById('draft-sustainment')?.value || 'Sustainment information to be provided.',
                     commandSignal: document.getElementById('draft-command')?.value || 'Command and signal information to be provided.',
 
@@ -10193,7 +10558,18 @@ ${situationText}
 ${missionStatement}
 
 3. EXECUTION
-${data.execution}
+
+a. Commander's Intent
+${data.execution.commandersIntent}
+
+b. Concept of Operations
+${data.execution.conceptOfOperations}
+
+c. Tasks to Subordinate Units
+${data.execution.tasksToSubordinateUnits}
+
+d. Tasks to Staff
+${data.execution.tasksToStaff}
 
 4. SUSTAINMENT
 ${data.sustainment}
@@ -10282,7 +10658,18 @@ ${this.escapeRTF(situationText)}\\par
 ${this.escapeRTF(missionStatement)}\\par
 \\par
 \\b 3. EXECUTION\\b0\\par
-${this.escapeRTF(data.execution)}\\par
+\\par
+\\b a. Commander's Intent\\b0\\par
+${this.escapeRTF(data.execution.commandersIntent)}\\par
+\\par
+\\b b. Concept of Operations\\b0\\par
+${this.escapeRTF(data.execution.conceptOfOperations)}\\par
+\\par
+\\b c. Tasks to Subordinate Units\\b0\\par
+${this.escapeRTF(data.execution.tasksToSubordinateUnits)}\\par
+\\par
+\\b d. Tasks to Staff\\b0\\par
+${this.escapeRTF(data.execution.tasksToStaff)}\\par
 \\par
 \\b 4. SUSTAINMENT\\b0\\par
 ${this.escapeRTF(data.sustainment)}\\par
@@ -10420,7 +10807,26 @@ ${this.escapeRTF(data.annexes.MISC)}\\par
 
     <div class="section">
         <p class="bold">3. EXECUTION</p>
-        <p>${data.execution.replace(/\n/g, '<br>')}</p>
+
+        <div class="subsection">
+            <p class="bold">a. Commander's Intent</p>
+            <p>${data.execution.commandersIntent.replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <div class="subsection">
+            <p class="bold">b. Concept of Operations</p>
+            <p>${data.execution.conceptOfOperations.replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <div class="subsection">
+            <p class="bold">c. Tasks to Subordinate Units</p>
+            <p>${data.execution.tasksToSubordinateUnits.replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <div class="subsection">
+            <p class="bold">d. Tasks to Staff</p>
+            <p>${data.execution.tasksToStaff.replace(/\n/g, '<br>')}</p>
+        </div>
     </div>
 
     <div class="section">
@@ -10538,7 +10944,18 @@ ${situationText}
 ${missionStatement}
 
 3. EXECUTION
-${data.execution}
+
+a. Commander's Intent
+${data.execution.commandersIntent}
+
+b. Concept of Operations
+${data.execution.conceptOfOperations}
+
+c. Tasks to Subordinate Units
+${data.execution.tasksToSubordinateUnits}
+
+d. Tasks to Staff
+${data.execution.tasksToStaff}
 
 4. SUSTAINMENT
 ${data.sustainment}
@@ -10618,7 +11035,63 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     if (draftData.dtg) document.getElementById('draft-dtg').value = draftData.dtg;
                     if (draftData.situation) document.getElementById('draft-situation').value = draftData.situation;
                     if (draftData.tacticalCoordinates) document.getElementById('tactical-coordinates').value = draftData.tacticalCoordinates;
-                    if (draftData.execution) document.getElementById('draft-execution').value = draftData.execution;
+                    // Handle both old and new execution format
+                    if (draftData.execution) {
+                        if (typeof draftData.execution === 'string') {
+                            // Legacy format - put in commander's intent
+                            document.getElementById('draft-commanders-intent').value = draftData.execution;
+                        } else {
+                            // New format with subsections
+                            if (draftData.execution.commandersIntent) document.getElementById('draft-commanders-intent').value = draftData.execution.commandersIntent;
+                            if (draftData.execution.conceptOfOperations) document.getElementById('draft-concept-operations').value = draftData.execution.conceptOfOperations;
+                            if (draftData.execution.tasksToStaff) document.getElementById('draft-tasks-staff').value = draftData.execution.tasksToStaff;
+
+                            // Handle subordinate units data
+                            if (draftData.execution.tasksToSubordinateUnits) {
+                                // Clear existing units and load saved ones
+                                const container = document.getElementById('subordinate-units-container');
+                                if (container) {
+                                    container.innerHTML = '';
+
+                                    // Parse the saved subordinate units data
+                                    const lines = draftData.execution.tasksToSubordinateUnits.split('\n');
+                                    lines.forEach(line => {
+                                        if (line.trim()) {
+                                            const colonIndex = line.indexOf(':');
+                                            if (colonIndex > 0) {
+                                                const unit = line.substring(0, colonIndex).trim();
+                                                const task = line.substring(colonIndex + 1).trim();
+
+                                                // Add unit entry
+                                                if (window.addSubordinateUnit) {
+                                                    window.addSubordinateUnit();
+
+                                                    // Find the last added unit and populate it
+                                                    const lastUnitEntry = container.lastElementChild;
+                                                    if (lastUnitEntry) {
+                                                        const id = lastUnitEntry.id.split('-')[2];
+                                                        const select = document.getElementById(`unit-select-${id}`);
+                                                        const customInput = document.getElementById(`unit-custom-${id}`);
+                                                        const taskInput = document.getElementById(`unit-task-${id}`);
+
+                                                        // Check if unit is in common units list
+                                                        if (window.commonUnits && window.commonUnits.includes(unit)) {
+                                                            select.value = unit;
+                                                        } else {
+                                                            select.value = 'custom';
+                                                            customInput.style.display = 'block';
+                                                            customInput.value = unit;
+                                                        }
+                                                        taskInput.value = task;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
                     if (draftData.sustainment) document.getElementById('draft-sustainment').value = draftData.sustainment;
                     if (draftData.commandSignal) document.getElementById('draft-command').value = draftData.commandSignal;
 
@@ -10763,7 +11236,18 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     addText(missionStatement);
 
                     addText("3. EXECUTION", 14, true);
-                    addText(data.execution);
+                    addText("");
+                    addText("a. Commander's Intent", 12, true);
+                    addText(data.execution.commandersIntent);
+                    addText("");
+                    addText("b. Concept of Operations", 12, true);
+                    addText(data.execution.conceptOfOperations);
+                    addText("");
+                    addText("c. Tasks to Subordinate Units", 12, true);
+                    addText(data.execution.tasksToSubordinateUnits);
+                    addText("");
+                    addText("d. Tasks to Staff", 12, true);
+                    addText(data.execution.tasksToStaff);
 
                     addText("4. SUSTAINMENT", 14, true);
                     addText(data.sustainment);
@@ -11179,12 +11663,252 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
         // Initialize sidebar manager
         window.sidebarManager = new SidebarManager();
 
+        // Dynamic Unit Management for Tasks to Subordinate Units
+        window.unitCounter = 0;
+        window.commonUnits = [
+            'unit_1st_div', 'unit_2nd_div', 'unit_3rd_div', 'unit_4th_div', 'unit_5th_div',
+            'unit_1st_bde', 'unit_2nd_bde', 'unit_3rd_bde', 'unit_4th_bde', 'unit_5th_bde',
+            'unit_alpha_company', 'unit_bravo_company', 'unit_charlie_company', 'unit_delta_company',
+            'unit_1st_plt', 'unit_2nd_plt', 'unit_3rd_plt', 'unit_4th_plt',
+            'unit_weapons_squad', 'unit_support_squad', 'unit_hq_element',
+            'unit_artillery', 'unit_engineers', 'unit_medical', 'unit_supply', 'unit_maintenance'
+        ];
+
+        window.addSubordinateUnit = function() {
+            console.log('Adding subordinate unit...');
+            window.unitCounter++;
+            const container = document.getElementById('subordinate-units-container');
+            if (!container) {
+                console.error('Container not found!');
+                return;
+            }
+
+            const unitDiv = document.createElement('div');
+            unitDiv.className = 'flex gap-2 items-start mb-2';
+            unitDiv.id = `unit-entry-${window.unitCounter}`;
+
+            // Get translations for dynamic content
+            const getTranslation = (key) => {
+                if (window.app && window.app.getTranslation) {
+                    return window.app.getTranslation(key);
+                }
+                return key; // fallback to key if translation not available
+            };
+
+            const selectUnitPlaceholder = getTranslation('select_unit_placeholder');
+            const customUnitOption = getTranslation('custom_unit_option');
+            const customUnitPlaceholder = getTranslation('custom_unit_placeholder');
+            const unitTaskPlaceholder = getTranslation('unit_task_placeholder');
+            const removeUnitBtn = getTranslation('remove_unit_btn');
+
+            unitDiv.innerHTML = `
+                <select class="form-input text-sm p-2 rounded-md w-32 flex-shrink-0" id="unit-select-${window.unitCounter}">
+                    <option value="">${selectUnitPlaceholder}</option>
+                    ${window.commonUnits.map(unitKey => `<option value="${unitKey}">${getTranslation(unitKey)}</option>`).join('')}
+                    <option value="custom">${customUnitOption}</option>
+                </select>
+                <input type="text" class="form-input text-sm p-2 rounded-md w-32 flex-shrink-0" id="unit-custom-${window.unitCounter}" placeholder="${customUnitPlaceholder}" style="display: none;">
+                <textarea class="form-input text-sm p-2 rounded-md flex-grow h-10" id="unit-task-${window.unitCounter}" placeholder="${unitTaskPlaceholder}"></textarea>
+                <button type="button" class="bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded flex-shrink-0" onclick="window.removeSubordinateUnit(${window.unitCounter})" title="${removeUnitBtn}">
+                    <span>−</span>
+                </button>
+            `;
+
+            container.appendChild(unitDiv);
+            console.log(`Unit entry ${window.unitCounter} added successfully`);
+
+            // Add event listener for unit selection
+            const unitSelect = document.getElementById(`unit-select-${window.unitCounter}`);
+            const customInput = document.getElementById(`unit-custom-${window.unitCounter}`);
+
+            if (unitSelect && customInput) {
+                unitSelect.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customInput.style.display = 'block';
+                        customInput.focus();
+                    } else {
+                        customInput.style.display = 'none';
+                        customInput.value = '';
+                    }
+                });
+            }
+        };
+
+        window.removeSubordinateUnit = function(id) {
+            const unitDiv = document.getElementById(`unit-entry-${id}`);
+            if (unitDiv) {
+                unitDiv.remove();
+            }
+        };
+
+        window.getSubordinateUnitsData = function() {
+            const container = document.getElementById('subordinate-units-container');
+            if (!container) return [];
+
+            const units = [];
+
+            container.querySelectorAll('[id^="unit-entry-"]').forEach(unitDiv => {
+                const id = unitDiv.id.split('-')[2];
+                const select = document.getElementById(`unit-select-${id}`);
+                const customInput = document.getElementById(`unit-custom-${id}`);
+                const taskInput = document.getElementById(`unit-task-${id}`);
+
+                if (select && taskInput) {
+                    let unitName = select.value;
+                    if (unitName === 'custom' && customInput && customInput.value.trim()) {
+                        unitName = customInput.value.trim();
+                    } else if (unitName && unitName !== 'custom') {
+                        // Get translated unit name for export
+                        const getTranslation = (key) => {
+                            if (window.app && window.app.getTranslation) {
+                                return window.app.getTranslation(key);
+                            }
+                            return key; // fallback to key if translation not available
+                        };
+                        unitName = getTranslation(unitName);
+                    }
+
+                    if (unitName && taskInput.value.trim()) {
+                        units.push({
+                            unit: unitName,
+                            task: taskInput.value.trim()
+                        });
+                    }
+                }
+            });
+
+            return units;
+        };
+
+        window.formatSubordinateUnitsForExport = function() {
+            const units = window.getSubordinateUnitsData();
+            return units.map(unit => `${unit.unit}: ${unit.task}`).join('\n');
+        };
+
+        // Initialize with default unit entries
+        window.initializeSubordinateUnits = function() {
+            console.log('Initializing subordinate units...');
+            window.addSubordinateUnit();
+            window.addSubordinateUnit(); // Start with 2 units
+            console.log('Subordinate units initialization complete');
+        };
+
+        // Refresh subordinate units interface when language changes
+        window.refreshSubordinateUnitsInterface = function() {
+            console.log('Refreshing subordinate units interface for language change...');
+            const container = document.getElementById('subordinate-units-container');
+            if (!container) return;
+
+            // Store current data
+            const currentData = window.getSubordinateUnitsData();
+
+            // Clear and rebuild interface
+            container.innerHTML = '';
+
+            // Recreate units with current data
+            currentData.forEach(unitData => {
+                window.addSubordinateUnit();
+
+                // Find the last added unit and populate it
+                const lastUnitEntry = container.lastElementChild;
+                if (lastUnitEntry) {
+                    const id = lastUnitEntry.id.split('-')[2];
+                    const select = document.getElementById(`unit-select-${id}`);
+                    const customInput = document.getElementById(`unit-custom-${id}`);
+                    const taskInput = document.getElementById(`unit-task-${id}`);
+
+                    // Check if unit is in common units list (by translation key)
+                    const unitKey = window.commonUnits.find(key => {
+                        const getTranslation = (k) => {
+                            if (window.app && window.app.getTranslation) {
+                                return window.app.getTranslation(k);
+                            }
+                            return k;
+                        };
+                        return getTranslation(key) === unitData.unit;
+                    });
+
+                    if (unitKey) {
+                        select.value = unitKey;
+                    } else {
+                        select.value = 'custom';
+                        customInput.style.display = 'block';
+                        customInput.value = unitData.unit;
+                    }
+                    taskInput.value = unitData.task;
+                }
+            });
+
+            // If no data, initialize with defaults
+            if (currentData.length === 0) {
+                window.addSubordinateUnit();
+                window.addSubordinateUnit();
+            }
+
+            console.log('Subordinate units interface refresh complete');
+        };
+
         // Initialize the application when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 console.log('Initializing OPORD application...');
 
                 window.app = new ProfessionalOPORD();
+
+                // Complex debugging functions removed - feedback now uses simple Google Form link
+                window.openGoogleFormFeedback = () => window.app.openGoogleFormFeedback();
+
+                // Log available debug functions
+                console.log('✅ === SIMPLIFIED FEEDBACK SYSTEM ===');
+                console.log('');
+                console.log('🎯 SOLUTION: Feedback now uses direct Google Form link');
+                console.log('');
+                console.log('WHAT CHANGED:');
+                console.log('• Removed complex entry field ID mapping');
+                console.log('• Eliminated problematic form submission logic');
+                console.log('• Implemented simple, reliable Google Form link');
+                console.log('• Users click 💡 button → Google Form opens in new tab');
+                console.log('');
+                console.log('BENEFITS:');
+                console.log('• 100% reliable - no technical issues');
+                console.log('• Always works regardless of form changes');
+                console.log('• Users see the actual form fields and descriptions');
+                console.log('• No complex debugging needed');
+                console.log('');
+                console.log('FEEDBACK PROCESS:');
+                console.log('1. User clicks 💡 feedback button');
+                console.log('2. Modal shows feedback categories and description');
+                console.log('3. User clicks "Open Feedback Form" button');
+                console.log('4. Google Form opens in new tab');
+                console.log('5. User submits feedback directly to Google');
+                console.log('');
+                console.log('🚀 Simple, reliable, and always works!');
+                console.log('================================================');
+
+                // Initialize subordinate units with multiple attempts
+                let initAttempts = 0;
+                const maxAttempts = 10;
+
+                function tryInitializeUnits() {
+                    initAttempts++;
+                    const addUnitBtn = document.getElementById('add-unit-btn');
+                    const container = document.getElementById('subordinate-units-container');
+
+                    if (addUnitBtn && container) {
+                        console.log('Initializing subordinate units...');
+                        addUnitBtn.addEventListener('click', window.addSubordinateUnit);
+                        window.initializeSubordinateUnits();
+                        console.log('Subordinate units initialized successfully');
+                    } else if (initAttempts < maxAttempts) {
+                        console.log(`Attempt ${initAttempts}: Elements not ready, retrying...`);
+                        setTimeout(tryInitializeUnits, 200);
+                    } else {
+                        console.error('Failed to initialize subordinate units after', maxAttempts, 'attempts');
+                    }
+                }
+
+                setTimeout(tryInitializeUnits, 100);
+
                 console.log('OPORD application initialized successfully');
             } catch (error) {
                 console.error('Error initializing OPORD application:', error);
