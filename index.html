@@ -227,6 +227,34 @@
             max-height: 2000px;
         }
 
+        .collapsible-content.hidden {
+            max-height: 0 !important;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .collapsible-header {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(55, 65, 81, 0.5);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: rgba(75, 85, 99, 0.7);
+        }
+
+        .collapsible-header i.fa-chevron-right,
+        .collapsible-header i.fa-chevron-down {
+            transition: transform 0.2s ease;
+        }
+
         /* Collapsible Sidebar Styles */
         .sidebar {
             transition: width 0.3s ease, transform 0.3s ease;
@@ -620,6 +648,71 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #6b7280;
         }
+
+        /* Generate OPORD Button Row Responsive Design */
+        .generate-opord-horizontal {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Ensure all Generate OPORD buttons match Map & Weather button size */
+        .generate-opord-horizontal button {
+            padding: 0.5rem 1rem; /* px-4 py-2 equivalent */
+            border-radius: 0.5rem; /* rounded-lg equivalent */
+            font-size: 0.875rem; /* text-sm equivalent */
+            white-space: nowrap;
+            min-height: 40px; /* Match Map & Weather button height */
+        }
+
+        @media (max-width: 1024px) {
+            .generate-opord-horizontal {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .generate-opord-horizontal button {
+                padding: 0.375rem 0.75rem; /* Slightly smaller on tablets */
+                font-size: 0.75rem; /* text-xs equivalent */
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Stack the entire header on mobile */
+            .draft-header-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .generate-opord-horizontal {
+                justify-content: center;
+                order: 2; /* Place Generate OPORD buttons in middle */
+            }
+
+            .map-snippets-container {
+                order: 3; /* Place Map & Weather / Snippets at bottom */
+                justify-content: center;
+            }
+
+            .draft-title-container {
+                order: 1; /* Keep title at top */
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .generate-opord-horizontal {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .generate-opord-horizontal button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white h-screen flex flex-col overflow-hidden">
@@ -741,7 +834,7 @@
                     <span class="tooltiptext">View complete example OPORD for reference</span>
                 </button>
 
-                <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="draft">
+                <button class="tab-btn w-full text-left px-4 py-3 text-gray-300 hover:bg-green-700 hover:text-white rounded-lg flex items-center tooltip slide-in" data-tab="draft">
                     <i class="fas fa-pen-alt fa-fw mr-3 w-5 text-center sidebar-icon"></i>
                     <div class="flex-1 sidebar-text">
                         <div class="font-medium" data-translate="draft_opord">Draft Your OPORD</div>
@@ -1587,6 +1680,7 @@
                 map_weather: "Map & Weather",
                 snippets: "Snippets",
                 mission_builder: "Mission Statement Builder",
+                complete_mission_statement: "Complete Mission Statement",
                 auto_generate: "Auto-Generate from 5 Ws",
 
                 // Draft OPORD Section
@@ -2481,6 +2575,7 @@
                 map_weather: "Mapa y Clima",
                 snippets: "Fragmentos",
                 mission_builder: "Constructor de Declaración de Misión",
+                complete_mission_statement: "Declaración de Misión Completa",
                 auto_generate: "Auto-Generar desde 5 Preguntas",
 
                 // Draft OPORD Section
@@ -3384,6 +3479,7 @@
                 map_weather: "Carte et Météo",
                 snippets: "Extraits",
                 mission_builder: "Constructeur de Déclaration de Mission",
+                complete_mission_statement: "Déclaration de Mission Complète",
                 auto_generate: "Auto-Générer depuis 5 Questions",
 
                 // Draft OPORD Section
@@ -4278,6 +4374,7 @@
                 map_weather: "Karte & Wetter",
                 snippets: "Ausschnitte",
                 mission_builder: "Auftragserklärungs-Generator",
+                complete_mission_statement: "Vollständige Auftragserklärung",
                 auto_generate: "Auto-Generieren aus 5 W-Fragen",
 
                 // Draft OPORD Section
@@ -5172,6 +5269,7 @@
                 map_weather: "지도 및 날씨",
                 snippets: "스니펫",
                 mission_builder: "임무 선언문 작성기",
+                complete_mission_statement: "완전한 임무 선언문",
                 auto_generate: "5W로 자동 생성",
 
                 // Draft OPORD Section
@@ -6044,10 +6142,18 @@
                     if (tabName === 'draft') {
                         this.setupDraftEventListeners();
 
-                        // Setup Generate OPORD button
+                        // Setup Generate OPORD button (header)
                         const generateBtn = document.getElementById('generate-opord');
                         if (generateBtn) {
                             generateBtn.addEventListener('click', () => {
+                                this.showGenerateModal();
+                            });
+                        }
+
+                        // Setup Generate OPORD button (bottom)
+                        const generateBtnBottom = document.getElementById('generate-opord-bottom');
+                        if (generateBtnBottom) {
+                            generateBtnBottom.addEventListener('click', () => {
                                 this.showGenerateModal();
                             });
                         }
@@ -7183,11 +7289,14 @@
             getDraftContent() {
                 return '<div class="space-y-6">' +
                     '<div class="section-card p-6 rounded-xl">' +
-                        '<div class="flex items-center justify-between mb-6">' +
-                            '<h3 class="text-2xl font-semibold text-white flex items-center">' +
-                                '<i class="fas fa-pen-alt mr-3 text-blue-400"></i><span data-translate="draft_opord">Draft Your OPORD</span>' +
-                            '</h3>' +
-                            '<div class="flex space-x-3">' +
+                        '<!-- Header Section with Title -->' +
+                        '<div class="flex items-center justify-between mb-4">' +
+                            '<div class="draft-title-container flex items-center">' +
+                                '<h3 class="text-2xl font-semibold text-white flex items-center">' +
+                                    '<i class="fas fa-pen-alt mr-3 text-blue-400"></i><span data-translate="draft_opord">Draft Your OPORD</span>' +
+                                '</h3>' +
+                            '</div>' +
+                            '<div class="map-snippets-container flex space-x-3">' +
                                 '<button class="btn-primary px-4 py-2 rounded-lg text-sm" onclick="app.openMapModal()">' +
                                     '<i class="fas fa-map mr-2"></i><span data-translate="map_weather">Map & Weather</span>' +
                                 '</button>' +
@@ -7196,11 +7305,38 @@
                                 '</button>' +
                             '</div>' +
                         '</div>' +
+                        '<!-- Generate OPORD Buttons - Centered Layout -->' +
+                        '<div class="flex justify-center mb-6">' +
+                            '<div class="generate-opord-horizontal">' +
+                                '<button id="generate-opord" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center">' +
+                                    '<i class="fas fa-magic mr-2"></i><span data-translate="generate_opord">Generate OPORD</span>' +
+                                '</button>' +
+                                '<button class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.generateOPORD(\'txt\')" title="Export as Text File">' +
+                                    '<i class="fas fa-file-text mr-2"></i><span data-translate="txt_format">.TXT</span>' +
+                                '</button>' +
+                                '<button class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.generateOPORD(\'docx\')" title="Export as RTF Document">' +
+                                    '<i class="fas fa-file-word mr-2"></i><span data-translate="rtf_format">.RTF</span>' +
+                                '</button>' +
+                                '<button class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.generateOPORD(\'pdf\')" title="Export as PDF">' +
+                                    '<i class="fas fa-file-pdf mr-2"></i><span data-translate="pdf_format">.PDF</span>' +
+                                '</button>' +
+                                '<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.saveDraft()" title="Save Draft">' +
+                                    '<i class="fas fa-save mr-2"></i><span data-translate="save_draft">Save Draft</span>' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>' +
                         '<p class="text-gray-300 mb-6" data-translate="draft_opord_description">Create your OPORD with integrated mapping and weather tools. Use the Map & Weather tool to get coordinates and tactical data for your operation.</p>' +
 
                         '<div class="space-y-6">' +
-                            '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600">' +
-                                '<h4 class="text-lg font-semibold text-white mb-4" data-translate="mission_builder">Mission Statement Builder</h4>' +
+                            '<!-- Mission Statement Builder - Collapsible -->' +
+                            '<div>' +
+                                '<div class="collapsible-header cursor-pointer" data-target="mission-builder-content" aria-expanded="false" tabindex="0">' +
+                                    '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                    '<i class="fas fa-magic mr-3 text-blue-400"></i>' +
+                                    '<span class="text-lg font-semibold text-white" data-translate="mission_builder">Mission Statement Builder</span>' +
+                                '</div>' +
+                                '<div id="mission-builder-content" class="collapsible-content hidden">' +
+                                    '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2">' +
                                 '<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">' +
                                     '<div>' +
                                         '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="who">Who</label>' +
@@ -7224,45 +7360,77 @@
                                     '</div>' +
                                 '</div>' +
                                 '<div class="mb-4">' +
-                                    '<label class="block text-sm font-medium text-gray-300 mb-2">Complete Mission Statement</label>' +
+                                    '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="complete_mission_statement">Complete Mission Statement</label>' +
                                     '<textarea id="mission-statement" class="form-input w-full p-3 rounded-md h-24" data-translate-placeholder="placeholder_mission_statement" placeholder="[Unit] [Task] [Objective] [NLT DTG] in order to [Purpose]"></textarea>' +
                                 '</div>' +
-                                '<button id="generate-mission" class="btn-primary px-4 py-2 rounded-md text-sm">' +
-                                    '<i class="fas fa-magic mr-2"></i><span data-translate="auto_generate">Auto-Generate from 5 Ws</span>' +
-                                '</button>' +
+                                        '<button id="generate-mission" class="btn-primary px-4 py-2 rounded-md text-sm">' +
+                                            '<i class="fas fa-magic mr-2"></i><span data-translate="auto_generate">Auto-Generate from 5 Ws</span>' +
+                                        '</button>' +
+                                    '</div>' +
+                                '</div>' +
                             '</div>' +
 
-                            '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600">' +
-                                '<h4 class="text-lg font-semibold text-white mb-4" data-translate="opord_sections">OPORD Sections</h4>' +
-                                '<div class="space-y-4">' +
-                                    '<div>' +
-                                        '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="situation">1. Situation</label>' +
-                                        '<textarea id="draft-situation" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_situation" placeholder="Enter situation details..."></textarea>' +
+                            '<!-- OPORD Sections - Individual Collapsible Sections -->' +
+                            '<div class="space-y-4">' +
+                                '<!-- Section 1: Situation - Collapsible -->' +
+                                '<div>' +
+                                    '<div class="collapsible-header cursor-pointer" data-target="situation-content" aria-expanded="false" tabindex="0">' +
+                                        '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                        '<i class="fas fa-map mr-3 text-green-400"></i>' +
+                                        '<span class="text-lg font-semibold text-white" data-translate="situation">1. Situation</span>' +
                                     '</div>' +
-                                    '<div class="bg-gray-700 p-4 rounded-lg border border-blue-500">' +
-                                        '<h5 class="text-white font-semibold mb-3 flex items-center">' +
-                                            '<i class="fas fa-map-marked-alt mr-2 text-blue-400"></i>Tactical Graphics & Coordinates' +
-                                        '</h5>' +
-                                        '<div class="space-y-3">' +
-                                            '<div>' +
-                                                '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="key_locations_coordinates">Key Locations & Coordinates</label>' +
-                                                '<textarea id="tactical-coordinates" class="form-input w-full p-3 rounded-md h-24" data-translate-placeholder="placeholder_coordinates" placeholder="Enter key locations with coordinates (e.g., OBJ ALPHA: 18TWL8396007523, CP BRAVO: 44R 206915 3009291)"></textarea>' +
-                                            '</div>' +
-                                            '<div class="flex space-x-2">' +
-                                                '<button class="btn-secondary px-3 py-2 text-sm flex-1" onclick="app.insertCurrentLocation()">' +
-                                                    '<i class="fas fa-crosshairs mr-2"></i>Insert Current Map Location' +
-                                                '</button>' +
-                                                '<button class="btn-secondary px-3 py-2 text-sm flex-1" onclick="app.insertSavedLocations()">' +
-                                                    '<i class="fas fa-bookmark mr-2"></i>Insert Saved Locations' +
-                                                '</button>' +
+                                    '<div id="situation-content" class="collapsible-content hidden">' +
+                                        '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2 space-y-4">' +
+                                            '<textarea id="draft-situation" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_situation" placeholder="Enter situation details..."></textarea>' +
+                                            '<div class="bg-gray-700 p-4 rounded-lg border border-blue-500">' +
+                                                '<h5 class="text-white font-semibold mb-3 flex items-center">' +
+                                                    '<i class="fas fa-map-marked-alt mr-2 text-blue-400"></i>Tactical Graphics & Coordinates' +
+                                                '</h5>' +
+                                                '<div class="space-y-3">' +
+                                                    '<div>' +
+                                                        '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="key_locations_coordinates">Key Locations & Coordinates</label>' +
+                                                        '<textarea id="tactical-coordinates" class="form-input w-full p-3 rounded-md h-24" data-translate-placeholder="placeholder_coordinates" placeholder="Enter key locations with coordinates (e.g., OBJ ALPHA: 18TWL8396007523, CP BRAVO: 44R 206915 3009291)"></textarea>' +
+                                                    '</div>' +
+                                                    '<div class="flex space-x-2">' +
+                                                        '<button class="btn-secondary px-3 py-2 text-sm flex-1" onclick="app.insertCurrentLocation()">' +
+                                                            '<i class="fas fa-crosshairs mr-2"></i>Insert Current Map Location' +
+                                                        '</button>' +
+                                                        '<button class="btn-secondary px-3 py-2 text-sm flex-1" onclick="app.insertSavedLocations()">' +
+                                                            '<i class="fas fa-bookmark mr-2"></i>Insert Saved Locations' +
+                                                        '</button>' +
+                                                    '</div>' +
+                                                '</div>' +
                                             '</div>' +
                                         '</div>' +
                                     '</div>' +
-                                    '<div>' +
-                                        '<label class="block text-sm font-medium text-gray-300 mb-4" data-translate="execution">3. EXECUTION</label>' +
+                                '</div>' +
 
-                                        '<!-- 2x2 Grid Layout for Execution Subsections -->' +
-                                        '<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">' +
+                                '<!-- Section 2: Mission - Collapsible -->' +
+                                '<div>' +
+                                    '<div class="collapsible-header cursor-pointer" data-target="mission-content" aria-expanded="false" tabindex="0">' +
+                                        '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                        '<i class="fas fa-bullseye mr-3 text-yellow-400"></i>' +
+                                        '<span class="text-lg font-semibold text-white" data-translate="mission">2. Mission</span>' +
+                                    '</div>' +
+                                    '<div id="mission-content" class="collapsible-content hidden">' +
+                                        '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2">' +
+                                            '<p class="text-gray-300 text-sm mb-3">Reference the Mission Statement Builder above or enter your mission statement directly:</p>' +
+                                            '<textarea id="draft-mission" class="form-input w-full p-3 rounded-md h-32" placeholder="Enter mission statement using the 5 Ws format: [Unit] [Task] [Objective] [NLT DTG] in order to [Purpose]"></textarea>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+
+                                '<!-- Section 3: Execution - Collapsible -->' +
+                                '<div>' +
+                                    '<div class="collapsible-header cursor-pointer" data-target="execution-content" aria-expanded="false" tabindex="0">' +
+                                        '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                        '<i class="fas fa-cogs mr-3 text-orange-400"></i>' +
+                                        '<span class="text-lg font-semibold text-white" data-translate="execution">3. Execution</span>' +
+                                    '</div>' +
+                                    '<div id="execution-content" class="collapsible-content hidden">' +
+                                        '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2">' +
+                                            '<!-- 2x2 Grid Layout for Execution Subsections -->' +
+                                            '<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">' +
 
                                             '<!-- Commander\'s Intent Subsection -->' +
                                             '<div class="bg-gray-800 p-3 rounded-lg border border-gray-600">' +
@@ -7299,23 +7467,51 @@
                                                 '<textarea id="draft-tasks-staff" class="form-input w-full p-2 rounded-md h-20 text-sm" data-translate-placeholder="placeholder_tasks_staff" placeholder="S-1: [Personnel] S-2: [Intelligence] S-3: [Operations] S-4: [Logistics] S-6: [Communications]"></textarea>' +
                                             '</div>' +
 
+                                            '</div>' +
                                         '</div>' +
                                     '</div>' +
-                                    '<div>' +
-                                        '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="sustainment">4. Sustainment</label>' +
-                                        '<textarea id="draft-sustainment" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_sustainment" placeholder="Enter sustainment details..."></textarea>' +
+                                '</div>' +
+
+                                '<!-- Section 4: Sustainment - Collapsible -->' +
+                                '<div>' +
+                                    '<div class="collapsible-header cursor-pointer" data-target="sustainment-content" aria-expanded="false" tabindex="0">' +
+                                        '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                        '<i class="fas fa-truck mr-3 text-purple-400"></i>' +
+                                        '<span class="text-lg font-semibold text-white" data-translate="sustainment">4. Sustainment</span>' +
                                     '</div>' +
-                                    '<div>' +
-                                        '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="command_signal">5. Command and Signal</label>' +
-                                        '<textarea id="draft-command" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_command" placeholder="Enter command and signal details..."></textarea>' +
+                                    '<div id="sustainment-content" class="collapsible-content hidden">' +
+                                        '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2">' +
+                                            '<textarea id="draft-sustainment" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_sustainment" placeholder="Enter sustainment details..."></textarea>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+
+                                '<!-- Section 5: Command and Signal - Collapsible -->' +
+                                '<div>' +
+                                    '<div class="collapsible-header cursor-pointer" data-target="command-content" aria-expanded="false" tabindex="0">' +
+                                        '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                        '<i class="fas fa-headset mr-3 text-cyan-400"></i>' +
+                                        '<span class="text-lg font-semibold text-white" data-translate="command_signal">5. Command and Signal</span>' +
+                                    '</div>' +
+                                    '<div id="command-content" class="collapsible-content hidden">' +
+                                        '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2">' +
+                                            '<textarea id="draft-command" class="form-input w-full p-3 rounded-md h-32" data-translate-placeholder="placeholder_command" placeholder="Enter command and signal details..."></textarea>' +
+                                        '</div>' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
 
-                            '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600">' +
-                                '<h4 class="text-lg font-semibold text-white mb-4" data-translate="annexes_fm60_structure">Annexes (FM 6-0 Structure)</h4>' +
-                                '<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">' +
-                                    '<div class="space-y-4">' +
+                            '<!-- Annexes Section - Collapsible -->' +
+                            '<div>' +
+                                '<div class="collapsible-header cursor-pointer" data-target="annexes-content" aria-expanded="false" tabindex="0">' +
+                                    '<i class="fas fa-chevron-right mr-3 transition-transform duration-200"></i>' +
+                                    '<i class="fas fa-folder-open mr-3 text-yellow-400"></i>' +
+                                    '<span class="text-lg font-semibold text-white" data-translate="annexes_fm60_structure">Annexes (FM 6-0 Structure)</span>' +
+                                '</div>' +
+                                '<div id="annexes-content" class="collapsible-content hidden">' +
+                                    '<div class="bg-gray-800 p-4 rounded-lg border border-gray-600 mt-2">' +
+                                        '<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">' +
+                                            '<div class="space-y-4">' +
                                         '<div>' +
                                             '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="annex_a">Annex A: Task Organization</label>' +
                                             '<textarea id="draft-annex-a" class="form-input w-full p-3 rounded-md h-24" data-translate-placeholder="placeholder_task_organization" placeholder="Enter task organization..."></textarea>' +
@@ -7362,41 +7558,37 @@
                                         '</div>' +
                                         '<div>' +
                                             '<label class="block text-sm font-medium text-gray-300 mb-2" data-translate="misc_annexes">Miscellaneous Annexes</label>' +
-                                            '<textarea id="annex-misc" class="form-input w-full p-3 rounded-md h-24" data-translate-placeholder="placeholder_misc_annexes" placeholder="Enter additional annexes as required (e.g., Annex P - Host Nation Support, Annex S - Special Technical Operations, etc.)..."></textarea>' +
+                                                '<textarea id="annex-misc" class="form-input w-full p-3 rounded-md h-24" data-translate-placeholder="placeholder_misc_annexes" placeholder="Enter additional annexes as required (e.g., Annex P - Host Nation Support, Annex S - Special Technical Operations, etc.)..."></textarea>' +
+                                            '</div>' +
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
                             '</div>' +
+                        '</div>' +
 
-                            '<!-- Generate OPORD Section -->' +
-                            '<div class="mt-8 p-6 section-card rounded-xl">' +
-                                '<div class="text-center">' +
-                                    '<h4 class="text-xl font-semibold text-white mb-3 flex items-center justify-center">' +
-                                        '<i class="fas fa-file-alt mr-3 text-blue-400"></i><span data-translate="generate_complete_opord">Generate Your Complete OPORD</span>' +
-                                    '</h4>' +
-                                    '<p class="text-gray-300 mb-6 text-sm" data-translate="generate_opord_description">Ready to create your professional military operation order? Choose your preferred format and generate a complete, formatted OPORD with all sections and annexes.</p>' +
-                                    '<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">' +
-                                        '<button id="generate-opord" class="btn-primary font-semibold px-8 py-4 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center">' +
-                                            '<i class="fas fa-magic mr-3 text-xl"></i><span data-translate="generate_opord">Generate OPORD</span>' +
-                                        '</button>' +
-                                        '<div class="flex flex-wrap gap-2 justify-center">' +
-                                            '<button class="btn-secondary px-4 py-2 rounded-md text-sm flex items-center" onclick="app.generateOPORD(\'txt\')">' +
-                                                '<i class="fas fa-file-text mr-2"></i>.TXT' +
-                                            '</button>' +
-                                            '<button class="btn-secondary px-4 py-2 rounded-md text-sm flex items-center" onclick="app.generateOPORD(\'docx\')">' +
-                                                '<i class="fas fa-file-word mr-2"></i>.RTF' +
-                                            '</button>' +
-                                            '<button class="btn-secondary px-4 py-2 rounded-md text-sm flex items-center" onclick="app.generateOPORD(\'pdf\')">' +
-                                                '<i class="fas fa-file-pdf mr-2"></i>.PDF' +
-                                            '</button>' +
-                                            '<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm flex items-center" onclick="app.saveDraft()">' +
-                                                '<i class="fas fa-save mr-2"></i><span data-translate="save_draft">Save Draft</span>' +
-                                            '</button>' +
-                                        '</div>' +
-                                    '</div>' +
-                                    '<p class="text-gray-400 text-xs mt-4" data-translate="all_formats_include">All formats include complete OPORD structure with annexes per FM 6-0 standards</p>' +
+                        '<!-- Bottom Generate OPORD Section - Clean Button Layout -->' +
+                        '<div class="mt-8 pt-6 border-t border-gray-600">' +
+                            '<div class="flex justify-center">' +
+                                '<div class="generate-opord-horizontal">' +
+                                    '<button id="generate-opord-bottom" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center">' +
+                                        '<i class="fas fa-magic mr-2"></i><span data-translate="generate_opord">Generate OPORD</span>' +
+                                    '</button>' +
+                                    '<button class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.generateOPORD(\'txt\')" title="Export as Text File">' +
+                                        '<i class="fas fa-file-text mr-2"></i><span data-translate="txt_format">.TXT</span>' +
+                                    '</button>' +
+                                    '<button class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.generateOPORD(\'docx\')" title="Export as RTF Document">' +
+                                        '<i class="fas fa-file-word mr-2"></i><span data-translate="rtf_format">.RTF</span>' +
+                                    '</button>' +
+                                    '<button class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.generateOPORD(\'pdf\')" title="Export as PDF">' +
+                                        '<i class="fas fa-file-pdf mr-2"></i><span data-translate="pdf_format">.PDF</span>' +
+                                    '</button>' +
+                                    '<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center" onclick="app.saveDraft()" title="Save Draft">' +
+                                        '<i class="fas fa-save mr-2"></i><span data-translate="save_draft">Save Draft</span>' +
+                                    '</button>' +
                                 '</div>' +
                             '</div>' +
+                        '</div>' +
+
                         '</div>' +
                     '</div>' +
                 '</div>';
@@ -11909,11 +12101,90 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
 
                 setTimeout(tryInitializeUnits, 100);
 
+                // Initialize collapsible functionality
+                initializeCollapsibleSections();
+
                 console.log('OPORD application initialized successfully');
             } catch (error) {
                 console.error('Error initializing OPORD application:', error);
             }
         });
+
+        // Collapsible Content Functionality
+        function initializeCollapsibleSections() {
+            console.log('Initializing collapsible sections...');
+
+            // Add event listeners to all collapsible headers
+            document.addEventListener('click', function(e) {
+                const header = e.target.closest('.collapsible-header');
+                if (header) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleCollapsibleSection(header);
+                }
+            });
+
+            // Add keyboard support for accessibility
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const header = e.target.closest('.collapsible-header');
+                    if (header) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleCollapsibleSection(header);
+                    }
+                }
+            });
+
+            console.log('Collapsible sections initialized successfully');
+        }
+
+        function toggleCollapsibleSection(header) {
+            const targetId = header.getAttribute('data-target');
+            const content = document.getElementById(targetId);
+            const chevron = header.querySelector('.fa-chevron-right, .fa-chevron-down');
+            const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+            console.log(`Toggling section: ${targetId}, currently expanded: ${isExpanded}`);
+
+            if (!content) {
+                console.warn('Collapsible content not found:', targetId);
+                return;
+            }
+
+            if (isExpanded) {
+                // Collapse
+                content.classList.remove('expanded');
+                content.classList.add('hidden');
+                header.setAttribute('aria-expanded', 'false');
+                if (chevron) {
+                    chevron.classList.remove('fa-chevron-down');
+                    chevron.classList.add('fa-chevron-right');
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+                console.log(`Collapsed section: ${targetId}`);
+            } else {
+                // Expand
+                content.classList.remove('hidden');
+                content.classList.add('expanded');
+                header.setAttribute('aria-expanded', 'true');
+                if (chevron) {
+                    chevron.classList.remove('fa-chevron-right');
+                    chevron.classList.add('fa-chevron-down');
+                    chevron.style.transform = 'rotate(90deg)';
+                }
+                console.log(`Expanded section: ${targetId}`);
+            }
+
+            // Smooth animation by temporarily setting max-height
+            if (!isExpanded) {
+                setTimeout(() => {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }, 10);
+            } else {
+                content.style.maxHeight = '0px';
+            }
+        }
     </script>
 </body>
 </html>
