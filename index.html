@@ -13,7 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Copyright (c) [2025] [Larry Hedrick]-->
-    <!--REMOVE LINE 8807 TO ACTIVATE OTHER CLASSIFICATIONS AND FEATURES-->
+    <!--REMOVE LINE 8829 TO ACTIVATE OTHER CLASSIFICATIONS AND FEATURES-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LSCO OPORD Drafting Tool - Professional Edition</title>
@@ -8510,6 +8510,12 @@ Copyright (c) [2025] [Larry Hedrick]-->
                             // Initialize portion marking quick-select buttons with multiple attempts
                             this.initializePortionMarkingButtons();
 
+                            // CRITICAL SECURITY: Force update portion marking buttons after hardlock
+                            setTimeout(() => {
+                                console.log('🔒 CRITICAL SECURITY: Force updating portion marking buttons after hardlock');
+                                this.updatePortionMarkingButtons();
+                            }, 100);
+
                             // Backup initialization attempts
                             setTimeout(() => this.initializePortionMarkingButtons(), 500);
                             setTimeout(() => this.initializePortionMarkingButtons(), 1000);
@@ -8820,7 +8826,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
             setupClassificationSystem() {
                 try {
                     // REMOVE THIS LINE TO ACTIVATE OTHER CLASSIFICATIONS AND FEATURES
-
+                    
 
                     // Initialize secure classification escalation system (SECURE BY DEFAULT)
                     this.initializeSecureClassificationEscalation();
@@ -9556,8 +9562,8 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         return ['U'];
 
                     case 'CUI':
-                        // CUI-authorized networks - UNCLASSIFIED + CUI
-                        console.log('   • CUI network: (U) and (CUI) markings authorized');
+                        // NIPR (.mil/.gov) networks - UNCLASSIFIED and CUI only
+                        console.log('   • CUI network (NIPR): (U) and (CUI) markings authorized');
                         return ['U', 'CUI'];
 
                     case 'CONFIDENTIAL':
@@ -9566,8 +9572,8 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         return ['U', 'CUI', 'C'];
 
                     case 'SECRET':
-                        // NIPR (.mil/.gov) and SIPR (.smil.mil) networks - up to SECRET
-                        console.log('   • SECRET network (NIPR/SIPR): (U), (CUI), (C), (S) markings authorized');
+                        // SIPR (.smil.mil) networks - up to SECRET
+                        console.log('   • SECRET network (SIPR): (U), (CUI), (C), (S) markings authorized');
                         return ['U', 'CUI', 'C', 'S'];
 
                     case 'TOP SECRET':
@@ -10043,27 +10049,41 @@ Copyright (c) [2025] [Larry Hedrick]-->
             determineNetworkAuthorization() {
                 try {
                     const currentDomain = window.location.hostname.toLowerCase();
+                    const protocol = window.location.protocol.toLowerCase();
+
+                    console.log(`🔍 NETWORK DETECTION: Domain="${currentDomain}", Protocol="${protocol}"`);
+
+                    // CRITICAL FIX: Handle file:// protocol and localhost
+                    if (protocol === 'file:' || currentDomain === '' || currentDomain === 'localhost' || currentDomain === '127.0.0.1') {
+                        console.log('🔒 LOCAL/FILE ACCESS DETECTED: Restricting to UNCLASSIFIED only');
+                        return 'UNCLASSIFIED';
+                    }
 
                     // Commercial domains (.com, .io, etc.) - UNCLASSIFIED only
                     const commercialDomains = ['.com', '.io', '.org', '.net', '.info', '.biz'];
                     if (commercialDomains.some(domain => currentDomain.endsWith(domain))) {
+                        console.log(`🔒 COMMERCIAL DOMAIN DETECTED: ${currentDomain} - Restricting to UNCLASSIFIED only`);
                         return 'UNCLASSIFIED';
                     }
 
                     // DoD/IC network patterns
                     if (currentDomain.includes('.smil.mil')) {
+                        console.log(`🔒 SIPR NETWORK DETECTED: ${currentDomain} - SECRET authorization`);
                         return 'SECRET'; // SIPR network
                     }
 
                     if (currentDomain.includes('.ic.gov') || currentDomain.includes('.ic.mil')) {
+                        console.log(`🔒 JWICS NETWORK DETECTED: ${currentDomain} - TOP SECRET authorization`);
                         return 'TOP SECRET'; // JWICS network
                     }
 
                     if (currentDomain.includes('.mil') || currentDomain.includes('.gov')) {
-                        return 'SECRET'; // NIPR can handle up to SECRET
+                        console.log(`🔒 NIPR NETWORK DETECTED: ${currentDomain} - CUI authorization (UNCLASSIFIED/CUI only)`);
+                        return 'CUI'; // NIPR networks handle UNCLASSIFIED and CUI only
                     }
 
                     // Default to UNCLASSIFIED for unknown domains
+                    console.log(`🔒 UNKNOWN DOMAIN: ${currentDomain} - Defaulting to UNCLASSIFIED only`);
                     return 'UNCLASSIFIED';
 
                 } catch (error) {
@@ -23814,6 +23834,10 @@ CLASSIFICATION GUIDELINES:
                     if (authorizedPortionMarkings.includes('CUI')) {
                         markings.push({ code: '(CUI)', description: 'CONTROLLED UNCLASSIFIED INFORMATION', color: '#502b85' });
                         console.log('✅ Added CUI marking (network authorized)');
+
+                        // Add FOUO marking for CUI-authorized networks (NIPR)
+                        markings.push({ code: '(U//FOUO)', description: 'UNCLASSIFIED//FOR OFFICIAL USE ONLY', color: '#007a33' });
+                        console.log('✅ Added U//FOUO marking (CUI network authorized)');
                     }
 
                     if (authorizedPortionMarkings.includes('C')) {
@@ -23831,30 +23855,64 @@ CLASSIFICATION GUIDELINES:
                         console.log('✅ Added TOP SECRET marking (network authorized)');
                     }
 
-                    // Add NOFORN combinations (allowed on SIPR)
-                    markings.push({ code: '(C//NOFORN)', description: 'CONFIDENTIAL//NOFORN', color: '#0033a0' });
-                    markings.push({ code: '(S//NOFORN)', description: 'SECRET//NOFORN', color: '#c8102e' });
-                    markings.push({ code: '(TS//NOFORN)', description: 'TOP SECRET//NOFORN', color: '#ff8c00' });
+                    // CRITICAL SECURITY FIX: Only add caveat combinations if authorized by network
+                    console.log('🔒 NETWORK AUTHORIZATION MODE: Adding caveat combinations based on network authorization');
 
-                    // Add RELTO FVEY combinations (allowed on SIPR)
-                    markings.push({ code: '(S//REL FVEY)', description: 'SECRET//REL TO FVEY', color: '#c8102e' });
-                    markings.push({ code: '(TS//REL FVEY)', description: 'TOP SECRET//REL TO FVEY', color: '#ff8c00' });
+                    // Add NOFORN combinations (only if base classification is authorized)
+                    if (authorizedPortionMarkings.includes('C')) {
+                        markings.push({ code: '(C//NOFORN)', description: 'CONFIDENTIAL//NOFORN', color: '#0033a0' });
+                        console.log('✅ Added C//NOFORN marking (network authorized)');
+                    }
 
-                    // Add SI combinations ONLY if not on SIPR network
+                    if (authorizedPortionMarkings.includes('S')) {
+                        markings.push({ code: '(S//NOFORN)', description: 'SECRET//NOFORN', color: '#c8102e' });
+                        console.log('✅ Added S//NOFORN marking (network authorized)');
+                    }
+
+                    if (authorizedPortionMarkings.includes('TS')) {
+                        markings.push({ code: '(TS//NOFORN)', description: 'TOP SECRET//NOFORN', color: '#ff8c00' });
+                        console.log('✅ Added TS//NOFORN marking (network authorized)');
+                    }
+
+                    // Add RELTO FVEY combinations (only if base classification is authorized)
+                    if (authorizedPortionMarkings.includes('S')) {
+                        markings.push({ code: '(S//REL FVEY)', description: 'SECRET//REL TO FVEY', color: '#c8102e' });
+                        console.log('✅ Added S//REL FVEY marking (network authorized)');
+                    }
+
+                    if (authorizedPortionMarkings.includes('TS')) {
+                        markings.push({ code: '(TS//REL FVEY)', description: 'TOP SECRET//REL TO FVEY', color: '#ff8c00' });
+                        console.log('✅ Added TS//REL FVEY marking (network authorized)');
+                    }
+
+                    // Add SI combinations ONLY if not on SIPR network AND base classification is authorized
                     if (!siCaveatsBlocked) {
-                        console.log('✅ Adding SI caveat combinations (not on SIPR)');
-                        markings.push({ code: '(C//SI)', description: 'CONFIDENTIAL//SPECIAL INTELLIGENCE', color: '#0033a0' });
-                        markings.push({ code: '(S//SI)', description: 'SECRET//SPECIAL INTELLIGENCE', color: '#c8102e' });
-                        markings.push({ code: '(TS//SI)', description: 'TOP SECRET//SPECIAL INTELLIGENCE', color: '#ff8c00' });
+                        console.log('✅ Adding SI caveat combinations (not on SIPR and network authorized)');
 
-                        // Add complex SI combinations
-                        markings.push({ code: '(TS//SI//REL FVEY)', description: 'TOP SECRET//SPECIAL INTELLIGENCE//REL TO FVEY', color: '#ff8c00' });
-                        markings.push({ code: '(TS//SI//NOFORN)', description: 'TOP SECRET//SPECIAL INTELLIGENCE//NOFORN', color: '#ff8c00' });
+                        if (authorizedPortionMarkings.includes('C')) {
+                            markings.push({ code: '(C//SI)', description: 'CONFIDENTIAL//SPECIAL INTELLIGENCE', color: '#0033a0' });
+                            console.log('✅ Added C//SI marking (network authorized)');
+                        }
+
+                        if (authorizedPortionMarkings.includes('S')) {
+                            markings.push({ code: '(S//SI)', description: 'SECRET//SPECIAL INTELLIGENCE', color: '#c8102e' });
+                            console.log('✅ Added S//SI marking (network authorized)');
+                        }
+
+                        if (authorizedPortionMarkings.includes('TS')) {
+                            markings.push({ code: '(TS//SI)', description: 'TOP SECRET//SPECIAL INTELLIGENCE', color: '#ff8c00' });
+                            console.log('✅ Added TS//SI marking (network authorized)');
+
+                            // Add complex SI combinations (only for TOP SECRET networks)
+                            markings.push({ code: '(TS//SI//REL FVEY)', description: 'TOP SECRET//SPECIAL INTELLIGENCE//REL TO FVEY', color: '#ff8c00' });
+                            markings.push({ code: '(TS//SI//NOFORN)', description: 'TOP SECRET//SPECIAL INTELLIGENCE//NOFORN', color: '#ff8c00' });
+                            console.log('✅ Added complex TS//SI combinations (network authorized)');
+                        }
                     } else {
                         console.log('🔒 SIPR RESTRICTION: SI caveat combinations excluded');
                     }
 
-                    console.log('📋 Final markings (DEVELOPMENT MODE):', markings);
+                    console.log('📋 Final markings (NETWORK AUTHORIZATION MODE):', markings);
                     return markings;
 
                 } catch (error) {
@@ -23967,7 +24025,21 @@ CLASSIFICATION GUIDELINES:
                 try {
                     // If restricted to UNCLASSIFIED, only allow (U)
                     if (this.classificationRestrictedToUnclassified) {
+                        console.log(`🔒 HARDLOCK RESTRICTION: Only (U) allowed, blocking ${marking}`);
                         return marking === '(U)';
+                    }
+
+                    // CRITICAL SECURITY: Check network authorization
+                    const networkAuth = this.determineNetworkAuthorization();
+                    const authorizedPortionMarkings = this.getAuthorizedPortionMarkings(networkAuth);
+
+                    // Extract base classification from marking (remove parentheses and caveats)
+                    const baseClassification = marking.replace(/[()]/g, '').split('//')[0];
+
+                    // Check if base classification is authorized by network
+                    if (!authorizedPortionMarkings.includes(baseClassification)) {
+                        console.log(`🔒 NETWORK RESTRICTION: ${marking} exceeds network authorization (${networkAuth})`);
+                        return false;
                     }
 
                     // SIPR SECURITY CHECK: Block SI caveats on SIPR networks
@@ -23976,8 +24048,7 @@ CLASSIFICATION GUIDELINES:
                         return false;
                     }
 
-                    // DEVELOPMENT MODE: Allow all other markings for testing
-                    console.log(`🔓 DEVELOPMENT MODE: Authorizing marking ${marking} for testing`);
+                    console.log(`✅ NETWORK AUTHORIZATION: ${marking} is authorized for ${networkAuth} network`);
                     return true;
 
                 } catch (error) {
@@ -24039,6 +24110,285 @@ CLASSIFICATION GUIDELINES:
                 }, 1000);
 
                 console.log('✅ Test sequence initiated. Check console for results.');
+            }
+
+            // CRITICAL SECURITY TEST: Comprehensive portion marking network authorization test
+            testPortionMarkingNetworkAuthorization() {
+                console.log('');
+                console.log('🚨 CRITICAL SECURITY TEST: Portion Marking Network Authorization');
+                console.log('================================================================');
+                console.log('');
+
+                try {
+                    // Test 1: Network Detection
+                    console.log('📊 Test 1: Network Authorization Detection');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const protocol = window.location.protocol.toLowerCase();
+                    const networkAuth = this.determineNetworkAuthorization();
+                    const authorizedMarkings = this.getAuthorizedPortionMarkings(networkAuth);
+
+                    console.log(`   • Current Domain: "${currentDomain}"`);
+                    console.log(`   • Protocol: "${protocol}"`);
+                    console.log(`   • Network Authorization: ${networkAuth}`);
+                    console.log(`   • Authorized Portion Markings: [${authorizedMarkings.join(', ')}]`);
+
+                    // Test 2: Available Portion Markings Function
+                    console.log('');
+                    console.log('📊 Test 2: Available Portion Markings Function');
+                    const availableMarkings = this.getAvailablePortionMarkings();
+                    console.log(`   • Available markings count: ${availableMarkings.length}`);
+                    console.log('   • Available markings:');
+                    availableMarkings.forEach(marking => {
+                        console.log(`     - ${marking.code}: ${marking.description}`);
+                    });
+
+                    // Check if available markings match network authorization
+                    const availableCodes = availableMarkings.map(m => m.code.replace(/[()]/g, '').split('//')[0]);
+                    const unauthorizedMarkings = availableCodes.filter(code => !authorizedMarkings.includes(code));
+
+                    if (unauthorizedMarkings.length === 0) {
+                        console.log('   ✅ Available markings match network authorization');
+                    } else {
+                        console.log('   ❌ CRITICAL FAILURE: Unauthorized markings available:');
+                        unauthorizedMarkings.forEach(marking => {
+                            console.log(`     • UNAUTHORIZED: ${marking}`);
+                        });
+                    }
+
+                    // Test 3: Force Update Portion Marking Buttons
+                    console.log('');
+                    console.log('📊 Test 3: Force Update Portion Marking Buttons');
+                    console.log('   • Manually triggering portion marking button update...');
+                    this.updatePortionMarkingButtons();
+
+                    // Test 4: Check Existing Portion Marking Buttons in DOM
+                    console.log('');
+                    console.log('📊 Test 4: Check Existing Portion Marking Buttons');
+                    const buttonContainers = document.querySelectorAll('.portion-marking-buttons');
+                    console.log(`   • Found ${buttonContainers.length} portion marking button containers`);
+
+                    let totalButtons = 0;
+                    let unauthorizedButtons = [];
+
+                    buttonContainers.forEach((container, index) => {
+                        const fieldId = container.id.replace('portion-buttons-', '');
+                        const buttons = container.querySelectorAll('.portion-marking-btn');
+                        totalButtons += buttons.length;
+
+                        console.log(`   • Container ${index + 1} (${fieldId}): ${buttons.length} buttons`);
+
+                        buttons.forEach(button => {
+                            const buttonText = button.textContent.trim();
+                            const buttonCode = buttonText.replace(/[()]/g, '').split('//')[0];
+
+                            console.log(`     - Button: ${buttonText}`);
+
+                            if (!authorizedMarkings.includes(buttonCode)) {
+                                unauthorizedButtons.push(`${fieldId}: ${buttonText}`);
+                                console.log(`     ❌ UNAUTHORIZED BUTTON: ${buttonText}`);
+                            } else {
+                                console.log(`     ✅ Authorized button: ${buttonText}`);
+                            }
+                        });
+                    });
+
+                    // Test 5: Summary and Recommendations
+                    console.log('');
+                    console.log('📊 Test 5: Security Compliance Summary');
+                    console.log(`   • Total buttons found: ${totalButtons}`);
+                    console.log(`   • Unauthorized buttons: ${unauthorizedButtons.length}`);
+
+                    if (unauthorizedButtons.length === 0) {
+                        console.log('   ✅ SECURITY COMPLIANT: All portion marking buttons respect network authorization');
+                    } else {
+                        console.log('   ❌ SECURITY VIOLATION: Unauthorized buttons detected:');
+                        unauthorizedButtons.forEach(button => {
+                            console.log(`     • ${button}`);
+                        });
+                        console.log('');
+                        console.log('   🔧 RECOMMENDED ACTIONS:');
+                        console.log('     1. Force update portion marking buttons: window.app.updatePortionMarkingButtons()');
+                        console.log('     2. Refresh the page to reinitialize security restrictions');
+                        console.log('     3. Check console for any initialization errors');
+                    }
+
+                    console.log('');
+                    console.log('🔒 PORTION MARKING NETWORK AUTHORIZATION TEST COMPLETE');
+
+                } catch (error) {
+                    console.error('❌ CRITICAL ERROR during portion marking test:', error);
+                    console.log('');
+                    console.log('🚨 SECURITY ALERT: Test failed - manual verification required');
+                    console.log('   • Check network authorization detection');
+                    console.log('   • Verify portion marking generation logic');
+                    console.log('   • Ensure DOM button updates are working');
+                }
+            }
+
+            // Quick fix function to force refresh portion marking buttons
+            fixPortionMarkingButtons() {
+                console.log('🔧 FORCE FIXING PORTION MARKING BUTTONS...');
+                console.log('');
+
+                try {
+                    // Step 1: Clear all existing portion marking buttons
+                    console.log('Step 1: Clearing existing buttons...');
+                    const buttonContainers = document.querySelectorAll('.portion-marking-buttons');
+                    buttonContainers.forEach(container => {
+                        container.innerHTML = '';
+                        console.log(`   • Cleared container: ${container.id}`);
+                    });
+
+                    // Step 2: Force network authorization detection
+                    console.log('');
+                    console.log('Step 2: Detecting network authorization...');
+                    const networkAuth = this.determineNetworkAuthorization();
+                    const authorizedMarkings = this.getAuthorizedPortionMarkings(networkAuth);
+                    console.log(`   • Network: ${networkAuth}`);
+                    console.log(`   • Authorized: [${authorizedMarkings.join(', ')}]`);
+
+                    // Step 3: Apply network restrictions
+                    console.log('');
+                    console.log('Step 3: Applying network restrictions...');
+                    this.applyNetworkAuthorizationRestrictions(networkAuth);
+
+                    // Step 4: Regenerate buttons
+                    console.log('');
+                    console.log('Step 4: Regenerating portion marking buttons...');
+                    this.updatePortionMarkingButtons();
+
+                    // Step 5: Verify results
+                    console.log('');
+                    console.log('Step 5: Verification...');
+                    setTimeout(() => {
+                        this.testPortionMarkingNetworkAuthorization();
+                    }, 500);
+
+                    console.log('');
+                    console.log('✅ PORTION MARKING BUTTON FIX COMPLETE');
+                    console.log('   Check results above and refresh page if issues persist.');
+
+                } catch (error) {
+                    console.error('❌ Error during portion marking button fix:', error);
+                }
+            }
+
+            // CRITICAL SECURITY TEST: Verify NIPR network restrictions
+            testNIPRNetworkRestrictions() {
+                console.log('');
+                console.log('🚨 CRITICAL SECURITY TEST: NIPR Network Restrictions (.mil/.gov domains)');
+                console.log('=======================================================================');
+                console.log('');
+
+                try {
+                    // Test the network authorization logic for .mil/.gov domains
+                    console.log('📊 Test 1: Network Authorization for .mil/.gov Domains');
+
+                    // Simulate different domain types
+                    const testDomains = [
+                        { domain: 'example.mil', expected: 'CUI', description: 'Standard .mil domain (NIPR)' },
+                        { domain: 'test.gov', expected: 'CUI', description: 'Standard .gov domain (NIPR)' },
+                        { domain: 'secure.smil.mil', expected: 'SECRET', description: 'SIPR domain' },
+                        { domain: 'classified.ic.gov', expected: 'TOP SECRET', description: 'JWICS domain' },
+                        { domain: 'commercial.com', expected: 'UNCLASSIFIED', description: 'Commercial domain' }
+                    ];
+
+                    testDomains.forEach(test => {
+                        // Temporarily override hostname for testing
+                        const originalHostname = window.location.hostname;
+                        Object.defineProperty(window.location, 'hostname', {
+                            writable: true,
+                            value: test.domain
+                        });
+
+                        const networkAuth = this.determineNetworkAuthorization();
+                        const authorizedMarkings = this.getAuthorizedPortionMarkings(networkAuth);
+
+                        console.log(`   • ${test.description}:`);
+                        console.log(`     - Domain: ${test.domain}`);
+                        console.log(`     - Expected: ${test.expected}`);
+                        console.log(`     - Actual: ${networkAuth}`);
+                        console.log(`     - Authorized Markings: [${authorizedMarkings.join(', ')}]`);
+
+                        if (networkAuth === test.expected) {
+                            console.log(`     ✅ CORRECT: Network authorization matches expected value`);
+                        } else {
+                            console.log(`     ❌ CRITICAL FAILURE: Expected ${test.expected}, got ${networkAuth}`);
+                        }
+
+                        // Verify specific restrictions for NIPR networks
+                        if (test.domain.includes('.mil') || test.domain.includes('.gov')) {
+                            if (!test.domain.includes('.smil.mil') && !test.domain.includes('.ic.')) {
+                                // This should be a NIPR network - check restrictions
+                                const hasClassifiedMarkings = authorizedMarkings.some(marking =>
+                                    ['C', 'S', 'TS'].includes(marking)
+                                );
+
+                                if (hasClassifiedMarkings) {
+                                    console.log(`     ❌ SECURITY VIOLATION: NIPR network has classified markings!`);
+                                    console.log(`     🚨 CRITICAL: ${test.domain} should only have U, CUI markings`);
+                                } else {
+                                    console.log(`     ✅ SECURITY COMPLIANT: NIPR network properly restricted to U/CUI`);
+                                }
+                            }
+                        }
+
+                        console.log('');
+
+                        // Restore original hostname
+                        Object.defineProperty(window.location, 'hostname', {
+                            writable: true,
+                            value: originalHostname
+                        });
+                    });
+
+                    // Test 2: Verify Current Domain Restrictions
+                    console.log('📊 Test 2: Current Domain Security Verification');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const currentProtocol = window.location.protocol.toLowerCase();
+                    const currentNetworkAuth = this.determineNetworkAuthorization();
+                    const currentAuthorizedMarkings = this.getAuthorizedPortionMarkings(currentNetworkAuth);
+
+                    console.log(`   • Current Domain: "${currentDomain}"`);
+                    console.log(`   • Current Protocol: "${currentProtocol}"`);
+                    console.log(`   • Current Network Authorization: ${currentNetworkAuth}`);
+                    console.log(`   • Current Authorized Markings: [${currentAuthorizedMarkings.join(', ')}]`);
+
+                    // Check for security violations
+                    const isLocalOrCommercial = currentProtocol === 'file:' ||
+                                               currentDomain === '' ||
+                                               currentDomain === 'localhost' ||
+                                               ['.com', '.io', '.org', '.net'].some(ext => currentDomain.includes(ext));
+
+                    if (isLocalOrCommercial && currentNetworkAuth !== 'UNCLASSIFIED') {
+                        console.log('   ❌ SECURITY VIOLATION: Local/commercial access should be UNCLASSIFIED only');
+                    } else if (isLocalOrCommercial) {
+                        console.log('   ✅ SECURITY COMPLIANT: Local/commercial access properly restricted');
+                    }
+
+                    const isNIPR = (currentDomain.includes('.mil') || currentDomain.includes('.gov')) &&
+                                   !currentDomain.includes('.smil.mil') &&
+                                   !currentDomain.includes('.ic.');
+
+                    if (isNIPR && currentNetworkAuth !== 'CUI') {
+                        console.log('   ❌ SECURITY VIOLATION: NIPR network should return CUI authorization');
+                    } else if (isNIPR) {
+                        console.log('   ✅ SECURITY COMPLIANT: NIPR network properly returns CUI authorization');
+                    }
+
+                    console.log('');
+                    console.log('🔒 NIPR NETWORK RESTRICTIONS TEST COMPLETE');
+                    console.log('📋 Key Security Requirements:');
+                    console.log('   • .mil/.gov domains → CUI authorization (U, CUI, U//FOUO only)');
+                    console.log('   • .smil.mil domains → SECRET authorization (up to SECRET)');
+                    console.log('   • .ic.gov/.ic.mil domains → TOP SECRET authorization (up to TOP SECRET)');
+                    console.log('   • Commercial/local domains → UNCLASSIFIED authorization (U only)');
+
+                } catch (error) {
+                    console.error('❌ CRITICAL ERROR during NIPR network restrictions test:', error);
+                    console.log('');
+                    console.log('🚨 SECURITY ALERT: Test failed - manual verification required');
+                }
             }
 
             generatePreviewContent(draftData, classificationBanner, classificationColor) {
@@ -28055,6 +28405,139 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     }
                 };
 
+                // CRITICAL SECURITY TEST: Test hardlock enforcement
+                window.testHardlockEnforcement = function() {
+                    console.log('🚨 CRITICAL SECURITY TEST: Hardlock Enforcement');
+                    console.log('');
+
+                    console.log('📊 Test 1: Verify Hardlock Status');
+                    const hardlockActive = window.app.classificationRestrictedToUnclassified;
+                    console.log(`   • Hardlock Active: ${hardlockActive}`);
+
+                    if (hardlockActive) {
+                        console.log('   ✅ Hardlock is active - system should be restricted to UNCLASSIFIED only');
+                    } else {
+                        console.log('   ❌ CRITICAL FAILURE: Hardlock is NOT active');
+                        console.log('   🚨 SECURITY VIOLATION: System not properly restricted');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 2: Test Portion Marking Button Generation');
+
+                    // Test the portion marking generation function directly
+                    const testButtons = window.app.generatePortionMarkingButtons('test-field');
+                    console.log(`   • Generated ${testButtons.length} buttons`);
+
+                    if (testButtons.length === 1 && testButtons[0].textContent === '(U)') {
+                        console.log('   ✅ Portion marking generation correctly restricted to (U) only');
+                    } else {
+                        console.log('   ❌ CRITICAL FAILURE: Unauthorized buttons generated');
+                        testButtons.forEach((button, index) => {
+                            console.log(`     - Button ${index + 1}: ${button.textContent}`);
+                        });
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 3: Test Available Portion Markings Function');
+
+                    const availableMarkings = window.app.getAvailablePortionMarkings();
+                    console.log(`   • Available markings count: ${availableMarkings.length}`);
+                    console.log('   • Available markings:');
+                    availableMarkings.forEach(marking => {
+                        console.log(`     - ${marking.code}: ${marking.description}`);
+                    });
+
+                    if (availableMarkings.length === 1 && availableMarkings[0].code === '(U)') {
+                        console.log('   ✅ Available markings correctly restricted to (U) only');
+                    } else {
+                        console.log('   ❌ CRITICAL FAILURE: Unauthorized markings available');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 4: Test Existing DOM Buttons');
+
+                    const buttonContainers = document.querySelectorAll('.portion-marking-buttons');
+                    let totalUnauthorizedButtons = 0;
+
+                    console.log(`   • Found ${buttonContainers.length} portion marking button containers`);
+
+                    buttonContainers.forEach((container, index) => {
+                        const fieldId = container.id.replace('portion-buttons-', '');
+                        const buttons = container.querySelectorAll('.portion-marking-btn');
+
+                        console.log(`   • Container ${index + 1} (${fieldId}): ${buttons.length} buttons`);
+
+                        buttons.forEach(button => {
+                            const buttonText = button.textContent.trim();
+                            if (buttonText !== '(U)') {
+                                totalUnauthorizedButtons++;
+                                console.log(`     ❌ UNAUTHORIZED: ${buttonText}`);
+                            } else {
+                                console.log(`     ✅ Authorized: ${buttonText}`);
+                            }
+                        });
+                    });
+
+                    console.log('');
+                    console.log('📊 Test 5: Force Update and Re-test');
+
+                    console.log('   • Forcing portion marking button update...');
+                    window.app.updatePortionMarkingButtons();
+
+                    setTimeout(() => {
+                        const updatedContainers = document.querySelectorAll('.portion-marking-buttons');
+                        let updatedUnauthorizedButtons = 0;
+
+                        updatedContainers.forEach(container => {
+                            const buttons = container.querySelectorAll('.portion-marking-btn');
+                            buttons.forEach(button => {
+                                const buttonText = button.textContent.trim();
+                                if (buttonText !== '(U)') {
+                                    updatedUnauthorizedButtons++;
+                                }
+                            });
+                        });
+
+                        console.log(`   • Unauthorized buttons after update: ${updatedUnauthorizedButtons}`);
+
+                        if (updatedUnauthorizedButtons === 0) {
+                            console.log('   ✅ Update successful - all unauthorized buttons removed');
+                        } else {
+                            console.log('   ❌ Update failed - unauthorized buttons still present');
+                        }
+
+                        console.log('');
+                        console.log('🔒 HARDLOCK ENFORCEMENT TEST COMPLETE');
+
+                        if (hardlockActive &&
+                            testButtons.length === 1 && testButtons[0].textContent === '(U)' &&
+                            availableMarkings.length === 1 && availableMarkings[0].code === '(U)' &&
+                            updatedUnauthorizedButtons === 0) {
+
+                            console.log('✅ SECURITY STATUS: FULLY COMPLIANT');
+                            console.log('🛡️ Hardlock properly enforced - system restricted to UNCLASSIFIED only');
+
+                        } else {
+                            console.log('❌ SECURITY STATUS: NON-COMPLIANT');
+                            console.log('🚨 CRITICAL SECURITY FAILURES DETECTED');
+                            console.log('🚨 IMMEDIATE ACTION REQUIRED');
+
+                            if (!hardlockActive) {
+                                console.log('🚨 Hardlock not active');
+                            }
+                            if (testButtons.length !== 1 || testButtons[0].textContent !== '(U)') {
+                                console.log('🚨 Button generation not restricted');
+                            }
+                            if (availableMarkings.length !== 1 || availableMarkings[0].code !== '(U)') {
+                                console.log('🚨 Available markings not restricted');
+                            }
+                            if (updatedUnauthorizedButtons > 0) {
+                                console.log(`🚨 ${updatedUnauthorizedButtons} unauthorized buttons in DOM`);
+                            }
+                        }
+                    }, 200);
+                };
+
                 // Add function to test silent security enforcement (need-to-know compliance)
                 window.testSilentSecurityEnforcement = function() {
                     console.log('🔒 Testing Silent Security Enforcement (Need-to-Know Compliance)...');
@@ -29134,6 +29617,49 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
 
         console.log('✅ PDF processing improvements loaded successfully!');
         console.log('🧪 To test PDF processing, run: testPDFProcessing()');
+
+        // Global test functions for portion marking network authorization testing
+        window.testPortionMarkings = function() {
+            if (window.app) {
+                return window.app.testPortionMarkingNetworkAuthorization();
+            } else {
+                console.error('❌ OPORD App not available');
+            }
+        };
+
+        window.fixPortionMarkings = function() {
+            if (window.app) {
+                return window.app.fixPortionMarkingButtons();
+            } else {
+                console.error('❌ OPORD App not available');
+            }
+        };
+
+        window.checkNetworkAuth = function() {
+            if (window.app) {
+                const networkAuth = window.app.determineNetworkAuthorization();
+                const authorizedMarkings = window.app.getAuthorizedPortionMarkings(networkAuth);
+                console.log(`Network: ${networkAuth}, Authorized: [${authorizedMarkings.join(', ')}]`);
+                return { networkAuth, authorizedMarkings };
+            } else {
+                console.error('❌ OPORD App not available');
+            }
+        };
+
+        window.testNIPRRestrictions = function() {
+            if (window.app) {
+                return window.app.testNIPRNetworkRestrictions();
+            } else {
+                console.error('❌ OPORD App not available');
+            }
+        };
+
+        console.log('');
+        console.log('🔧 PORTION MARKING TEST FUNCTIONS AVAILABLE:');
+        console.log('   • testPortionMarkings() - Run comprehensive portion marking test');
+        console.log('   • fixPortionMarkings() - Force fix portion marking buttons');
+        console.log('   • checkNetworkAuth() - Check current network authorization');
+        console.log('   • testNIPRRestrictions() - Test NIPR network security restrictions (CRITICAL)');
     </script>
 </body>
 </html>
