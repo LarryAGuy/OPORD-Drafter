@@ -7889,7 +7889,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
                 this.map = null;
                 this.layerControl = null;
 
-                // Classification system
+                // Classification system - SECURE BY DEFAULT
                 this.currentClassification = 'UNCLASSIFIED';
                 this.currentCaveats = [];
                 this.currentReltoCountries = [];
@@ -7900,6 +7900,21 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
                 // Network classification restriction state
                 this.classificationRestrictedToUnclassified = false;
+
+                // Secure Classification Escalation System
+                this.classificationEscalationState = {
+                    initialized: false,
+                    defaultLevel: 'UNCLASSIFIED',
+                    authorizedLevel: 'UNCLASSIFIED',
+                    networkAuthorization: 'UNCLASSIFIED',
+                    escalationSource: 'default',
+                    escalationHistory: [],
+                    autoEscalationEnabled: true,
+                    lastEscalation: null
+                };
+
+                // AI Assistant authority - SECURE BY DEFAULT
+                this.aiClassificationAuthority = 'UNCLASSIFIED_ONLY';
 
                 this.portionMarkings = {
                     situation: 'U',
@@ -8805,7 +8820,10 @@ Copyright (c) [2025] [Larry Hedrick]-->
             setupClassificationSystem() {
                 try {
                     // REMOVE THIS LINE TO ACTIVATE OTHER CLASSIFICATIONS AND FEATURES
-                               
+
+
+                    // Initialize secure classification escalation system (SECURE BY DEFAULT)
+                    this.initializeSecureClassificationEscalation();
 
                     // Initialize network classification detection
                     this.initializeNetworkClassificationDetection();
@@ -9343,6 +9361,160 @@ Copyright (c) [2025] [Larry Hedrick]-->
                 });
             }
 
+            // Secure Classification Escalation System - SECURE BY DEFAULT
+            initializeSecureClassificationEscalation() {
+                try {
+                    console.log('🔒 Initializing Secure Classification Escalation System...');
+                    console.log('🛡️ SECURE BY DEFAULT: Starting with UNCLASSIFIED baseline');
+
+                    // Set secure defaults for all classification elements
+                    this.setSecureClassificationDefaults();
+
+                    // Initialize escalation state
+                    this.classificationEscalationState = {
+                        initialized: true,
+                        defaultLevel: 'UNCLASSIFIED',
+                        authorizedLevel: 'UNCLASSIFIED',
+                        networkAuthorization: 'UNCLASSIFIED',
+                        escalationSource: 'secure-default',
+                        escalationHistory: [{
+                            timestamp: new Date().toISOString(),
+                            action: 'initialization',
+                            fromLevel: null,
+                            toLevel: 'UNCLASSIFIED',
+                            source: 'secure-default',
+                            reason: 'System initialization with secure defaults'
+                        }],
+                        autoEscalationEnabled: true,
+                        lastEscalation: new Date().toISOString()
+                    };
+
+                    // Log secure initialization
+                    console.log('✅ Secure Classification Escalation System initialized');
+                    console.log(`   • Default Level: ${this.classificationEscalationState.defaultLevel}`);
+                    console.log(`   • Authorized Level: ${this.classificationEscalationState.authorizedLevel}`);
+                    console.log(`   • Network Authorization: ${this.classificationEscalationState.networkAuthorization}`);
+                    console.log(`   • Auto-escalation: ${this.classificationEscalationState.autoEscalationEnabled ? 'ENABLED' : 'DISABLED'}`);
+                    console.log(`   • AI Authority: ${this.aiClassificationAuthority}`);
+
+                } catch (error) {
+                    console.error('❌ Error initializing secure classification escalation:', error);
+                    // Fail-safe: Ensure secure defaults even if initialization fails
+                    this.setSecureClassificationDefaults();
+                }
+            }
+
+            // Set secure defaults for all classification elements
+            setSecureClassificationDefaults() {
+                try {
+                    console.log('🔒 Setting secure classification defaults...');
+
+                    // Force all classification elements to UNCLASSIFIED
+                    this.currentClassification = 'UNCLASSIFIED';
+                    this.currentCaveats = [];
+                    this.currentReltoCountries = [];
+
+                    // Set AI Assistant to UNCLASSIFIED-only authority
+                    this.aiClassificationAuthority = 'UNCLASSIFIED_ONLY';
+
+                    // Update UI elements to reflect secure defaults
+                    setTimeout(() => {
+                        // Set classification selector to UNCLASSIFIED
+                        const classificationSelector = document.getElementById('classification-selector');
+                        if (classificationSelector) {
+                            classificationSelector.value = 'UNCLASSIFIED';
+                        }
+
+                        // Clear all caveats
+                        const caveatsSelector = document.getElementById('caveats-selector');
+                        if (caveatsSelector) {
+                            const options = caveatsSelector.querySelectorAll('option');
+                            options.forEach(option => option.selected = false);
+                        }
+
+                        // Clear all RELTO countries
+                        const reltoSelector = document.getElementById('relto-countries-selector');
+                        if (reltoSelector) {
+                            const options = reltoSelector.querySelectorAll('option');
+                            options.forEach(option => option.selected = false);
+                        }
+
+                        // Set all portion markings to (U)
+                        this.setAllPortionMarkingsToUnclassified();
+
+                        // Update classification banners
+                        this.updateClassificationBanners();
+
+                        // Update AI security disclaimer
+                        this.updateAISecurityDisclaimer();
+
+                        console.log('✅ Secure classification defaults applied to all UI elements');
+
+                    }, 100); // Small delay to ensure DOM is ready
+
+                    // Detect commercial domains and enforce UNCLASSIFIED
+                    this.detectCommercialDomains();
+
+                } catch (error) {
+                    console.error('❌ Error setting secure classification defaults:', error);
+                }
+            }
+
+            // Set all portion markings to UNCLASSIFIED (U)
+            setAllPortionMarkingsToUnclassified() {
+                try {
+                    console.log('🔒 Setting all portion markings to UNCLASSIFIED (U)...');
+
+                    // Find all portion marking selectors
+                    const portionSelectors = document.querySelectorAll('[id$="-classification"]');
+                    let updatedCount = 0;
+
+                    portionSelectors.forEach(selector => {
+                        if (selector.value !== 'U') {
+                            selector.value = 'U';
+                            updatedCount++;
+                        }
+                    });
+
+                    console.log(`✅ Updated ${updatedCount} portion markings to UNCLASSIFIED (U)`);
+
+                } catch (error) {
+                    console.error('❌ Error setting portion markings to UNCLASSIFIED:', error);
+                }
+            }
+
+            // Detect commercial domains and enforce UNCLASSIFIED
+            detectCommercialDomains() {
+                try {
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const commercialDomains = ['.com', '.io', '.org', '.net', '.info', '.biz'];
+
+                    const isCommercial = commercialDomains.some(domain =>
+                        currentDomain.endsWith(domain) || currentDomain.includes(domain)
+                    );
+
+                    if (isCommercial) {
+                        console.log(`🌐 Commercial domain detected: ${currentDomain}`);
+                        console.log('🔒 Enforcing UNCLASSIFIED-only access for commercial internet sources');
+
+                        // Update escalation state
+                        this.classificationEscalationState.networkAuthorization = 'UNCLASSIFIED';
+                        this.classificationEscalationState.escalationSource = 'commercial-domain';
+
+                        // Log the restriction
+                        this.logClassificationEscalation(
+                            this.currentClassification,
+                            'UNCLASSIFIED',
+                            'commercial-domain',
+                            `Commercial domain ${currentDomain} detected - UNCLASSIFIED only`
+                        );
+                    }
+
+                } catch (error) {
+                    console.error('❌ Error detecting commercial domains:', error);
+                }
+            }
+
             // Network Classification Detection System
             initializeNetworkClassificationDetection() {
                 try {
@@ -9423,6 +9595,133 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         method: 'fallback'
                     });
                 }
+            }
+
+            // Evaluate if classification escalation is authorized
+            evaluateClassificationEscalation(detectionResult) {
+                try {
+                    console.log('🔍 Evaluating classification escalation authorization...');
+
+                    const currentLevel = this.currentClassification;
+                    const detectedLevel = detectionResult.level;
+                    const detectionMethod = detectionResult.method;
+                    const confidence = detectionResult.confidence;
+
+                    // Check if escalation is needed
+                    if (this.getClassificationRank(detectedLevel) <= this.getClassificationRank(currentLevel)) {
+                        return {
+                            authorized: false,
+                            reason: `No escalation needed - current level (${currentLevel}) is equal or higher than detected level (${detectedLevel})`,
+                            action: 'maintain-current'
+                        };
+                    }
+
+                    // Check network authorization based on domain
+                    const networkAuth = this.determineNetworkAuthorization();
+                    if (this.getClassificationRank(detectedLevel) > this.getClassificationRank(networkAuth)) {
+                        return {
+                            authorized: false,
+                            reason: `Detected level (${detectedLevel}) exceeds network authorization (${networkAuth})`,
+                            action: 'block-escalation',
+                            maxAuthorized: networkAuth
+                        };
+                    }
+
+                    // Check if hardlock is active
+                    if (this.classificationRestrictedToUnclassified && detectedLevel !== 'UNCLASSIFIED') {
+                        return {
+                            authorized: false,
+                            reason: 'Security hardlock active - UNCLASSIFIED only mode',
+                            action: 'block-escalation',
+                            maxAuthorized: 'UNCLASSIFIED'
+                        };
+                    }
+
+                    // Evaluate authorization sources in priority order
+                    const authorizationSources = [
+                        { method: 'external-classification-banner', minConfidence: 95, priority: 1 },
+                        { method: 'classification-banner', minConfidence: 95, priority: 2 },
+                        { method: 'domain-name', minConfidence: 85, priority: 3 },
+                        { method: 'network-info', minConfidence: 80, priority: 4 },
+                        { method: 'security-headers', minConfidence: 75, priority: 5 }
+                    ];
+
+                    const sourceAuth = authorizationSources.find(source =>
+                        source.method === detectionMethod && confidence >= source.minConfidence
+                    );
+
+                    if (sourceAuth) {
+                        return {
+                            authorized: true,
+                            reason: `Authorized by ${detectionMethod} (${confidence}% confidence, priority ${sourceAuth.priority})`,
+                            action: 'escalate',
+                            source: detectionMethod,
+                            confidence: confidence,
+                            priority: sourceAuth.priority
+                        };
+                    }
+
+                    // Default to requiring manual authorization for lower confidence detections
+                    return {
+                        authorized: false,
+                        reason: `Insufficient confidence (${confidence}%) for automatic escalation via ${detectionMethod}`,
+                        action: 'require-manual-authorization',
+                        requiresManual: true
+                    };
+
+                } catch (error) {
+                    console.error('❌ Error evaluating classification escalation:', error);
+                    return {
+                        authorized: false,
+                        reason: 'Error during escalation evaluation - defaulting to secure',
+                        action: 'block-escalation'
+                    };
+                }
+            }
+
+            // Determine network authorization level based on domain
+            determineNetworkAuthorization() {
+                try {
+                    const currentDomain = window.location.hostname.toLowerCase();
+
+                    // Commercial domains (.com, .io, etc.) - UNCLASSIFIED only
+                    const commercialDomains = ['.com', '.io', '.org', '.net', '.info', '.biz'];
+                    if (commercialDomains.some(domain => currentDomain.endsWith(domain))) {
+                        return 'UNCLASSIFIED';
+                    }
+
+                    // DoD/IC network patterns
+                    if (currentDomain.includes('.smil.mil')) {
+                        return 'SECRET'; // SIPR network
+                    }
+
+                    if (currentDomain.includes('.ic.gov') || currentDomain.includes('.ic.mil')) {
+                        return 'TOP SECRET'; // JWICS network
+                    }
+
+                    if (currentDomain.includes('.mil') || currentDomain.includes('.gov')) {
+                        return 'SECRET'; // NIPR can handle up to SECRET
+                    }
+
+                    // Default to UNCLASSIFIED for unknown domains
+                    return 'UNCLASSIFIED';
+
+                } catch (error) {
+                    console.error('❌ Error determining network authorization:', error);
+                    return 'UNCLASSIFIED'; // Fail-safe
+                }
+            }
+
+            // Get numeric rank for classification comparison
+            getClassificationRank(level) {
+                const ranks = {
+                    'UNCLASSIFIED': 0,
+                    'CUI': 1,
+                    'CONFIDENTIAL': 2,
+                    'SECRET': 3,
+                    'TOP SECRET': 4
+                };
+                return ranks[level] || 0;
             }
 
             applySIPRSecurityControls() {
@@ -10057,6 +10356,25 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         siCaveatsBlocked: result.isSIPR || false
                     };
 
+                    // SECURE ESCALATION: Evaluate if escalation is authorized
+                    const escalationResult = this.evaluateClassificationEscalation(result);
+
+                    if (escalationResult.authorized) {
+                        console.log(`🔒 Network classification escalation authorized: ${escalationResult.reason}`);
+
+                        // Auto-apply if confidence is high enough (95%+) and not in manual mode
+                        if (result.confidence >= 95 && !this.manualOverrideActive && this.classificationEscalationState.autoEscalationEnabled) {
+                            console.log(`🚀 Auto-escalating to ${result.level} (${result.confidence}% confidence via ${result.method})`);
+                            this.performSecureClassificationEscalation(result, 'network-detection');
+                        } else {
+                            // Show notification for manual review
+                            this.showSecureEscalationNotification(result, escalationResult);
+                        }
+                    } else {
+                        console.log(`🚫 Classification escalation blocked: ${escalationResult.reason}`);
+                        this.showEscalationBlockedNotification(result, escalationResult);
+                    }
+
                     // Apply SIPR security controls if detected
                     if (result.isSIPR) {
                         this.applySIPRSecurityControls();
@@ -10580,6 +10898,286 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
                 } catch (error) {
                     console.error('Error simulating network authorization warning:', error);
+                }
+            }
+
+            // Perform secure classification escalation
+            performSecureClassificationEscalation(detectionResult, escalationSource) {
+                try {
+                    const previousLevel = this.currentClassification;
+                    const newLevel = detectionResult.level;
+                    const newCaveats = detectionResult.caveats || [];
+                    const newReltoCountries = detectionResult.reltoCountries || [];
+
+                    console.log(`🔒 Performing secure classification escalation:`);
+                    console.log(`   • From: ${previousLevel}`);
+                    console.log(`   • To: ${newLevel}`);
+                    console.log(`   • Source: ${escalationSource}`);
+                    console.log(`   • Method: ${detectionResult.method}`);
+                    console.log(`   • Confidence: ${detectionResult.confidence}%`);
+
+                    // Update classification state
+                    this.currentClassification = newLevel;
+                    this.currentCaveats = newCaveats;
+                    this.currentReltoCountries = newReltoCountries;
+
+                    // Update escalation state
+                    this.classificationEscalationState.authorizedLevel = newLevel;
+                    this.classificationEscalationState.escalationSource = escalationSource;
+                    this.classificationEscalationState.lastEscalation = new Date().toISOString();
+
+                    // Log the escalation
+                    this.logClassificationEscalation(previousLevel, newLevel, escalationSource,
+                        `Auto-escalated via ${detectionResult.method} (${detectionResult.confidence}% confidence)`);
+
+                    // Update UI elements
+                    this.updateClassificationUI(newLevel, newCaveats, newReltoCountries);
+
+                    // Update AI Assistant authority if needed
+                    this.updateAIClassificationAuthority(newLevel);
+
+                    // Show success notification
+                    this.showEscalationSuccessNotification(previousLevel, newLevel, escalationSource);
+
+                    // Mark as auto-applied
+                    this.networkClassificationState.autoApplied = true;
+
+                    console.log(`✅ Classification successfully escalated to ${newLevel}`);
+
+                } catch (error) {
+                    console.error('❌ Error performing secure classification escalation:', error);
+                    this.showNotification('Error during classification escalation', 'error');
+                }
+            }
+
+            // Update classification UI elements
+            updateClassificationUI(level, caveats, reltoCountries) {
+                try {
+                    // Update classification selector
+                    const classificationSelector = document.getElementById('classification-selector');
+                    if (classificationSelector) {
+                        classificationSelector.value = level;
+                    }
+
+                    // Update caveats selector
+                    const caveatsSelector = document.getElementById('caveats-selector');
+                    if (caveatsSelector) {
+                        const options = caveatsSelector.querySelectorAll('option');
+                        options.forEach(option => {
+                            option.selected = caveats.includes(option.value);
+                        });
+                    }
+
+                    // Update RELTO countries selector
+                    const reltoSelector = document.getElementById('relto-countries-selector');
+                    if (reltoSelector) {
+                        const options = reltoSelector.querySelectorAll('option');
+                        options.forEach(option => {
+                            option.selected = reltoCountries.includes(option.value);
+                        });
+                    }
+
+                    // Update classification banners
+                    this.updateClassificationBanners();
+
+                    // Update portion marking buttons
+                    this.updatePortionMarkingButtons();
+
+                } catch (error) {
+                    console.error('❌ Error updating classification UI:', error);
+                }
+            }
+
+            // Update AI Assistant classification authority
+            updateAIClassificationAuthority(level) {
+                try {
+                    // Only escalate AI authority if not restricted by hardlock
+                    if (!this.classificationRestrictedToUnclassified) {
+                        if (level === 'UNCLASSIFIED') {
+                            this.aiClassificationAuthority = 'UNCLASSIFIED_ONLY';
+                        } else {
+                            this.aiClassificationAuthority = 'FULL_SPECTRUM';
+                        }
+
+                        console.log(`🤖 AI Assistant authority updated to: ${this.aiClassificationAuthority}`);
+                        this.updateAISecurityDisclaimer();
+                    }
+                } catch (error) {
+                    console.error('❌ Error updating AI classification authority:', error);
+                }
+            }
+
+            // Log classification escalation for audit trail
+            logClassificationEscalation(fromLevel, toLevel, source, reason) {
+                try {
+                    const escalationEntry = {
+                        timestamp: new Date().toISOString(),
+                        action: 'escalation',
+                        fromLevel: fromLevel,
+                        toLevel: toLevel,
+                        source: source,
+                        reason: reason,
+                        userAgent: navigator.userAgent,
+                        domain: window.location.hostname
+                    };
+
+                    this.classificationEscalationState.escalationHistory.push(escalationEntry);
+
+                    // Keep only last 50 entries to prevent memory issues
+                    if (this.classificationEscalationState.escalationHistory.length > 50) {
+                        this.classificationEscalationState.escalationHistory =
+                            this.classificationEscalationState.escalationHistory.slice(-50);
+                    }
+
+                    console.log('📝 Classification escalation logged:', escalationEntry);
+
+                } catch (error) {
+                    console.error('❌ Error logging classification escalation:', error);
+                }
+            }
+
+            // Show escalation success notification
+            showEscalationSuccessNotification(fromLevel, toLevel, source) {
+                try {
+                    const message = `Classification escalated from ${fromLevel} to ${toLevel} (Source: ${source})`;
+                    this.showNotification(message, 'success');
+
+                    console.log(`✅ ${message}`);
+                } catch (error) {
+                    console.error('❌ Error showing escalation success notification:', error);
+                }
+            }
+
+            // Show secure escalation notification for manual review
+            showSecureEscalationNotification(detectionResult, escalationResult) {
+                try {
+                    const suggestionHtml = `
+                        <div class="secure-escalation-notification p-4 bg-blue-900 border border-blue-500 rounded-lg mb-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fas fa-shield-alt text-blue-400 mt-1"></i>
+                                <div class="flex-1">
+                                    <h4 class="text-white font-semibold mb-2">🔒 Secure Classification Escalation Available</h4>
+                                    <p class="text-blue-200 text-sm mb-3">
+                                        Detected classification: <strong>${detectionResult.level}</strong><br>
+                                        Source: ${detectionResult.method} (${detectionResult.confidence}% confidence)<br>
+                                        Authorization: ${escalationResult.reason}
+                                    </p>
+                                    <div class="flex space-x-2">
+                                        <button onclick="app.acceptSecureEscalation()"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                                            🚀 Escalate Classification
+                                        </button>
+                                        <button onclick="app.dismissSecureEscalation()"
+                                                class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
+                                            Keep Current
+                                        </button>
+                                    </div>
+                                </div>
+                                <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                        class="text-blue-400 hover:text-white">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Insert notification at the top of the main content
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                        const existingNotification = mainContent.querySelector('.secure-escalation-notification');
+                        if (existingNotification) {
+                            existingNotification.remove();
+                        }
+                        mainContent.insertAdjacentHTML('afterbegin', suggestionHtml);
+                    }
+
+                    // Store the suggested escalation for later use
+                    this.suggestedSecureEscalation = detectionResult;
+
+                } catch (error) {
+                    console.error('❌ Error showing secure escalation notification:', error);
+                }
+            }
+
+            // Show escalation blocked notification
+            showEscalationBlockedNotification(detectionResult, escalationResult) {
+                try {
+                    const blockHtml = `
+                        <div class="escalation-blocked-notification p-4 bg-red-900 border border-red-500 rounded-lg mb-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fas fa-ban text-red-400 mt-1"></i>
+                                <div class="flex-1">
+                                    <h4 class="text-white font-semibold mb-2">🚫 Classification Escalation Blocked</h4>
+                                    <p class="text-red-200 text-sm mb-3">
+                                        Detected classification: <strong>${detectionResult.level}</strong><br>
+                                        Reason: ${escalationResult.reason}<br>
+                                        ${escalationResult.maxAuthorized ? `Maximum authorized: ${escalationResult.maxAuthorized}` : ''}
+                                    </p>
+                                    <div class="flex space-x-2">
+                                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                            Acknowledge
+                                        </button>
+                                    </div>
+                                </div>
+                                <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                        class="text-red-400 hover:text-white">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Insert notification at the top of the main content
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                        const existingNotification = mainContent.querySelector('.escalation-blocked-notification');
+                        if (existingNotification) {
+                            existingNotification.remove();
+                        }
+                        mainContent.insertAdjacentHTML('afterbegin', blockHtml);
+                    }
+
+                } catch (error) {
+                    console.error('❌ Error showing escalation blocked notification:', error);
+                }
+            }
+
+            // Accept secure escalation
+            acceptSecureEscalation() {
+                try {
+                    if (this.suggestedSecureEscalation) {
+                        this.performSecureClassificationEscalation(this.suggestedSecureEscalation, 'manual-authorization');
+
+                        // Remove notification UI
+                        const notification = document.querySelector('.secure-escalation-notification');
+                        if (notification) {
+                            notification.remove();
+                        }
+
+                        this.suggestedSecureEscalation = null;
+                    }
+                } catch (error) {
+                    console.error('❌ Error accepting secure escalation:', error);
+                }
+            }
+
+            // Dismiss secure escalation
+            dismissSecureEscalation() {
+                try {
+                    // Remove notification UI
+                    const notification = document.querySelector('.secure-escalation-notification');
+                    if (notification) {
+                        notification.remove();
+                    }
+
+                    // Mark as manually dismissed
+                    this.manualOverrideActive = true;
+                    this.suggestedSecureEscalation = null;
+
+                    this.showNotification('Classification escalation dismissed', 'info');
+                } catch (error) {
+                    console.error('❌ Error dismissing secure escalation:', error);
                 }
             }
 
@@ -26565,6 +27163,169 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     });
                 };
 
+                // Add function to test the secure classification escalation system
+                window.testSecureClassificationEscalation = function() {
+                    console.log('🔒 Testing Secure Classification Escalation System...');
+                    console.log('');
+
+                    console.log('📊 Test 1: Verify Secure Defaults');
+                    console.log(`   • Current Classification: ${window.app.currentClassification}`);
+                    console.log(`   • Current Caveats: ${window.app.currentCaveats.join(', ') || 'None'}`);
+                    console.log(`   • Current RELTO Countries: ${window.app.currentReltoCountries.join(', ') || 'None'}`);
+                    console.log(`   • AI Authority: ${window.app.aiClassificationAuthority}`);
+                    console.log(`   • Escalation State Initialized: ${window.app.classificationEscalationState?.initialized || false}`);
+                    console.log(`   • Default Level: ${window.app.classificationEscalationState?.defaultLevel || 'Unknown'}`);
+                    console.log(`   • Network Authorization: ${window.app.classificationEscalationState?.networkAuthorization || 'Unknown'}`);
+
+                    if (window.app.currentClassification === 'UNCLASSIFIED' &&
+                        window.app.currentCaveats.length === 0 &&
+                        window.app.currentReltoCountries.length === 0 &&
+                        window.app.aiClassificationAuthority === 'UNCLASSIFIED_ONLY') {
+                        console.log('   ✅ Secure defaults properly set');
+                    } else {
+                        console.log('   ❌ Secure defaults not properly set');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 2: Test Commercial Domain Detection');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const commercialDomains = ['.com', '.io', '.org', '.net', '.info', '.biz'];
+                    const isCommercial = commercialDomains.some(domain => currentDomain.endsWith(domain));
+
+                    console.log(`   • Current Domain: ${currentDomain}`);
+                    console.log(`   • Is Commercial: ${isCommercial}`);
+
+                    if (isCommercial) {
+                        console.log('   ✅ Commercial domain detected - UNCLASSIFIED enforcement expected');
+                    } else {
+                        console.log('   ℹ️ Non-commercial domain - escalation may be possible');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 3: Test Escalation Authorization Logic');
+
+                    // Test escalation evaluation with different scenarios
+                    const testScenarios = [
+                        {
+                            name: 'SIPR Network Detection',
+                            detectionResult: {
+                                level: 'SECRET',
+                                caveats: [],
+                                reltoCountries: [],
+                                confidence: 95,
+                                method: 'domain-name'
+                            }
+                        },
+                        {
+                            name: 'Classification Banner Detection',
+                            detectionResult: {
+                                level: 'SECRET',
+                                caveats: ['NOFORN'],
+                                reltoCountries: [],
+                                confidence: 100,
+                                method: 'external-classification-banner'
+                            }
+                        },
+                        {
+                            name: 'Low Confidence Detection',
+                            detectionResult: {
+                                level: 'SECRET',
+                                caveats: [],
+                                reltoCountries: [],
+                                confidence: 60,
+                                method: 'user-agent'
+                            }
+                        },
+                        {
+                            name: 'Commercial Domain Override',
+                            detectionResult: {
+                                level: 'TOP SECRET',
+                                caveats: ['SI'],
+                                reltoCountries: [],
+                                confidence: 100,
+                                method: 'classification-banner'
+                            }
+                        }
+                    ];
+
+                    testScenarios.forEach((scenario, index) => {
+                        console.log(`   Test 3.${index + 1}: ${scenario.name}`);
+                        const escalationResult = window.app.evaluateClassificationEscalation(scenario.detectionResult);
+                        console.log(`     • Authorized: ${escalationResult.authorized}`);
+                        console.log(`     • Reason: ${escalationResult.reason}`);
+                        console.log(`     • Action: ${escalationResult.action}`);
+                        if (escalationResult.maxAuthorized) {
+                            console.log(`     • Max Authorized: ${escalationResult.maxAuthorized}`);
+                        }
+                    });
+
+                    console.log('');
+                    console.log('📊 Test 4: Test Escalation History');
+                    const history = window.app.classificationEscalationState?.escalationHistory || [];
+                    console.log(`   • Escalation History Entries: ${history.length}`);
+
+                    if (history.length > 0) {
+                        console.log('   • Recent Escalations:');
+                        history.slice(-3).forEach((entry, index) => {
+                            console.log(`     ${index + 1}. ${entry.timestamp}: ${entry.action} from ${entry.fromLevel} to ${entry.toLevel} (${entry.source})`);
+                        });
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 5: Test Network Authorization Determination');
+                    const networkAuth = window.app.determineNetworkAuthorization();
+                    console.log(`   • Determined Network Authorization: ${networkAuth}`);
+                    console.log(`   • Current Domain: ${currentDomain}`);
+
+                    if (currentDomain.includes('.smil.mil')) {
+                        console.log('   ✅ SIPR network detected - SECRET authorization expected');
+                    } else if (currentDomain.includes('.ic.gov') || currentDomain.includes('.ic.mil')) {
+                        console.log('   ✅ JWICS network detected - TOP SECRET authorization expected');
+                    } else if (currentDomain.includes('.mil') || currentDomain.includes('.gov')) {
+                        console.log('   ✅ NIPR network detected - SECRET authorization expected');
+                    } else if (isCommercial) {
+                        console.log('   ✅ Commercial network detected - UNCLASSIFIED authorization expected');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 6: Test Manual Escalation Functions');
+                    console.log('   Available escalation functions:');
+                    console.log('   • acceptSecureEscalation() - Accept pending escalation');
+                    console.log('   • dismissSecureEscalation() - Dismiss pending escalation');
+                    console.log('   • performSecureClassificationEscalation() - Execute escalation');
+                    console.log('   • logClassificationEscalation() - Log escalation event');
+
+                    console.log('');
+                    console.log('🔒 SECURE CLASSIFICATION ESCALATION SYSTEM TEST COMPLETE');
+                    console.log('📋 Security Features Summary:');
+                    console.log('   • ✅ Secure by default - starts with UNCLASSIFIED');
+                    console.log('   • ✅ Commercial domain detection and enforcement');
+                    console.log('   • ✅ Network authorization validation');
+                    console.log('   • ✅ Authorization source prioritization');
+                    console.log('   • ✅ Confidence-based escalation decisions');
+                    console.log('   • ✅ Comprehensive audit logging');
+                    console.log('   • ✅ Manual override capabilities');
+                    console.log('   • ✅ Security hardlock compliance');
+                    console.log('   • ✅ AI Assistant authority management');
+
+                    console.log('');
+                    console.log('🎯 How to Test Escalation:');
+                    console.log('1. Simulate network detection: testNetworkClassificationConfig()');
+                    console.log('2. Test banner detection: testClassificationBannerDetection()');
+                    console.log('3. Check escalation authorization for different scenarios');
+                    console.log('4. Verify commercial domain restrictions');
+                    console.log('5. Test manual escalation acceptance/dismissal');
+
+                    console.log('');
+                    console.log('⚠️ Security Notes:');
+                    console.log('• System defaults to UNCLASSIFIED for maximum security');
+                    console.log('• Commercial domains (.com, .io) are restricted to UNCLASSIFIED only');
+                    console.log('• High-confidence detections (95%+) enable auto-escalation');
+                    console.log('• All escalations are logged for audit compliance');
+                    console.log('• Manual overrides are respected and preserved');
+                    console.log('• Security hardlock overrides all escalation attempts');
+                };
+
                 // Add function to test the security fix for classification banner detection
                 window.testClassificationBannerSecurityFix = function() {
                     console.log('🔒 Testing Classification Banner Detection Security Fix...');
@@ -26979,7 +27740,21 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 // Log available debug functions
                 console.log('✅ === ENHANCED SUBORDINATE UNITS & PORTION MARKING BARS ===');
                 console.log('');
-                console.log('🎯 NEW FEATURES: CRITICAL security fix + accurate DoD/IC network detection + enhanced subordinate units');
+                console.log('🎯 NEW FEATURES: Secure classification escalation + CRITICAL security fix + accurate DoD/IC network detection');
+                console.log('');
+                console.log('SECURE CLASSIFICATION ESCALATION SYSTEM (NEW):');
+                console.log('• SECURE BY DEFAULT: All elements initialize to UNCLASSIFIED baseline');
+                console.log('• DYNAMIC ESCALATION: Auto-escalates when legitimate authorization detected');
+                console.log('• COMMERCIAL DOMAIN ENFORCEMENT: .com/.io domains restricted to UNCLASSIFIED only');
+                console.log('• NETWORK AUTHORIZATION VALIDATION: Escalation limited by detected network capabilities');
+                console.log('• AUTHORIZATION SOURCE PRIORITY: External banners > Domain detection > Manual override');
+                console.log('• CONFIDENCE-BASED DECISIONS: High confidence (95%+) enables auto-escalation');
+                console.log('• COMPREHENSIVE AUDIT LOGGING: All escalations logged with source attribution');
+                console.log('• MANUAL OVERRIDE SUPPORT: Users can escalate when authorized');
+                console.log('• SECURITY HARDLOCK COMPLIANCE: Respects UNCLASSIFIED-only restrictions');
+                console.log('• AI AUTHORITY MANAGEMENT: AI Assistant authority escalates with document level');
+                console.log('• FAIL-SAFE DESIGN: Errors default to maintaining secure baseline');
+                console.log('• REAL-TIME NOTIFICATIONS: Clear user feedback for all escalation decisions');
                 console.log('');
                 console.log('CRITICAL SECURITY FIX (BANNER DETECTION):');
                 console.log('• FIXED FALSE POSITIVE LOOP: Banner detection no longer reads its own generated banners');
@@ -27043,6 +27818,7 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• Consistent styling across all OPORD sections');
                 console.log('');
                 console.log('TESTING FUNCTIONS:');
+                console.log('• testSecureClassificationEscalation() - Test secure escalation system (NEW SECURITY FEATURE)');
                 console.log('• testSecurityHardlock() - Test UNCLASSIFIED-only security hardlock (SECURITY TEST)');
                 console.log('• testNetworkClassificationConfig() - Test network classification detection system (NETWORK TEST)');
                 console.log('• testClassificationBannerDetection() - Test classification banner detection (BANNER TEST)');
@@ -27067,16 +27843,18 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• scrollToLastSubordinateUnit() - Auto-scroll to last unit (used automatically)');
                 console.log('');
                 console.log('HOW TO USE:');
-                console.log('1. Run testClassificationBannerSecurityFix() to verify critical security fix (PRIORITY)');
-                console.log('2. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
-                console.log('3. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
-                console.log('4. Run testClassificationBannerDetection() to test banner parsing capabilities');
-                console.log('5. Check console output for comprehensive security validation');
-                console.log('6. Verify no false positive detection loops occur');
-                console.log('7. Confirm OPORD application elements are properly excluded from detection');
-                console.log('8. Test external banner detection still works for legitimate sources');
-                console.log('9. Verify network detection matches actual DoD/IC architecture patterns');
-                console.log('10. Ensure all security restrictions function correctly without circular references');
+                console.log('1. Run testSecureClassificationEscalation() to verify secure escalation system (NEW FEATURE)');
+                console.log('2. Run testClassificationBannerSecurityFix() to verify critical security fix (PRIORITY)');
+                console.log('3. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
+                console.log('4. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
+                console.log('5. Run testClassificationBannerDetection() to test banner parsing capabilities');
+                console.log('6. Check console output for comprehensive security validation');
+                console.log('7. Verify secure by default initialization (UNCLASSIFIED baseline)');
+                console.log('8. Test commercial domain restrictions (.com/.io = UNCLASSIFIED only)');
+                console.log('9. Verify escalation authorization logic and confidence thresholds');
+                console.log('10. Test manual escalation acceptance/dismissal workflows');
+                console.log('11. Confirm audit logging captures all escalation events');
+                console.log('12. Ensure all security restrictions function correctly without circular references');
                 console.log('');
                 console.log('🚀 Professional, organized, and user-friendly interface!');
                 console.log('================================================');
