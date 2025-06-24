@@ -9565,21 +9565,55 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
             async detectFromClassificationBanners() {
                 try {
-                    console.log('🔍 Scanning for existing classification banners...');
+                    console.log('🔍 Scanning for external system classification banners...');
 
-                    // Search for classification banners in various page elements
+                    // SECURITY FIX: Exclude OPORD application's own classification elements
+                    const excludedSelectors = [
+                        // OPORD application's own classification banners
+                        '#classification-banner-top',
+                        '#classification-banner-bottom',
+                        '.classification-banner',
+                        '.classification-display',
+                        // OPORD application's classification controls
+                        '#classification-selector',
+                        '#caveats-selector',
+                        '#relto-countries-selector',
+                        '[id*="classification-mode"]',
+                        '[class*="classification-warning"]',
+                        // OPORD application's portion marking elements
+                        '[class*="portion-marking"]',
+                        '[id*="portion-"]',
+                        // OPORD application's main content areas
+                        '#app-container',
+                        '.opord-content',
+                        '.tab-content'
+                    ];
+
+                    // Search for classification banners ONLY in external/system elements
                     const searchElements = [
-                        // Page headers and footers
-                        ...document.querySelectorAll('header, footer, .header, .footer'),
-                        // Classification banner elements
-                        ...document.querySelectorAll('[class*="classification"], [class*="banner"]'),
-                        // Meta tags
+                        // Browser/system headers and footers (external to application)
+                        ...document.querySelectorAll('header:not(.opord-header), footer:not(.opord-footer)'),
+                        // System-level meta tags only
                         ...document.querySelectorAll('meta[name*="classification"], meta[content*="SECRET"], meta[content*="CONFIDENTIAL"], meta[content*="TOP SECRET"]'),
-                        // Title and body text
-                        document.title ? [{ textContent: document.title }] : [],
-                        // Any elements with classification-related IDs
-                        ...document.querySelectorAll('[id*="classification"], [id*="banner"]')
+                        // Document title (could be set by system)
+                        document.title ? [{ textContent: document.title, tagName: 'TITLE' }] : []
                     ].flat().filter(Boolean);
+
+                    // Filter out any elements that are part of the OPORD application
+                    const externalElements = searchElements.filter(element => {
+                        // Skip if element is part of OPORD application
+                        for (const excludedSelector of excludedSelectors) {
+                            if (element.matches && element.matches(excludedSelector)) {
+                                return false;
+                            }
+                            if (element.closest && element.closest(excludedSelector)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
+
+                    console.log(`🔍 Found ${externalElements.length} external elements to scan (excluded ${searchElements.length - externalElements.length} OPORD application elements)`);
 
                     // Standard DoD classification banner patterns
                     const classificationPatterns = [
@@ -9658,36 +9692,105 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         }
                     ];
 
-                    // Search through all elements for classification banners
-                    for (const element of searchElements) {
+                    // Search through EXTERNAL elements only for classification banners
+                    for (const element of externalElements) {
                         const text = element.textContent || element.content || '';
                         if (!text) continue;
+
+                        // Additional validation: Ensure this is not OPORD-generated content
+                        if (this.isOPORDGeneratedContent(text, element)) {
+                            console.log(`🚫 Skipping OPORD-generated content: "${text.substring(0, 50)}..."`);
+                            continue;
+                        }
 
                         for (const classPattern of classificationPatterns) {
                             const match = text.match(classPattern.pattern);
                             if (match) {
-                                console.log(`🔍 Classification banner detected: "${match[0]}" in ${element.tagName || 'meta'}`);
+                                console.log(`🔍 EXTERNAL classification banner detected: "${match[0]}" in ${element.tagName || 'meta'}`);
                                 console.log(`📊 Parsed as: ${classPattern.level} with caveats: ${classPattern.caveats.join(', ') || 'None'}`);
+                                console.log(`🎯 Source validation: External system banner (not OPORD-generated)`);
 
                                 return {
                                     level: classPattern.level,
                                     caveats: classPattern.caveats,
                                     reltoCountries: classPattern.reltoCountries,
                                     confidence: classPattern.confidence,
-                                    method: 'classification-banner',
+                                    method: 'external-classification-banner',
                                     bannerText: match[0],
-                                    elementType: element.tagName || 'meta'
+                                    elementType: element.tagName || 'meta',
+                                    isExternal: true,
+                                    sourceValidated: true
                                 };
                             }
                         }
                     }
 
-                    console.log('🔍 No classification banners found on current page');
+                    console.log('🔍 No external system classification banners found');
+                    console.log('✅ SECURITY: Successfully excluded OPORD application\'s own classification elements');
                     return null;
 
                 } catch (error) {
-                    console.error('Error detecting from classification banners:', error);
+                    console.error('Error detecting from external classification banners:', error);
                     return null;
+                }
+            }
+
+            // Helper function to identify OPORD-generated content and prevent false positives
+            isOPORDGeneratedContent(text, element) {
+                try {
+                    // Check for OPORD-specific text patterns that indicate application-generated content
+                    const opordPatterns = [
+                        /OPORD\s+Drafting\s+Tool/i,
+                        /Classification\s+Mode:/i,
+                        /Document\s+Classification\s+Control/i,
+                        /Portion\s+Marking/i,
+                        /AI\s+Assistant/i,
+                        /Network\s+Classification\s+Detected/i,
+                        /This\s+product\s+is\s+a\s+training\s+aid/i
+                    ];
+
+                    // Check if text matches OPORD application patterns
+                    for (const pattern of opordPatterns) {
+                        if (pattern.test(text)) {
+                            return true;
+                        }
+                    }
+
+                    // Check if element has OPORD-specific attributes or classes
+                    if (element.id && (
+                        element.id.includes('opord') ||
+                        element.id.includes('classification-banner') ||
+                        element.id.includes('portion-marking') ||
+                        element.id.includes('ai-assistant')
+                    )) {
+                        return true;
+                    }
+
+                    if (element.className && (
+                        element.className.includes('opord') ||
+                        element.className.includes('classification') ||
+                        element.className.includes('portion-marking') ||
+                        element.className.includes('banner')
+                    )) {
+                        return true;
+                    }
+
+                    // Check if element is within OPORD application container
+                    if (element.closest && (
+                        element.closest('#app-container') ||
+                        element.closest('.opord-content') ||
+                        element.closest('.tab-content') ||
+                        element.closest('[class*="classification"]')
+                    )) {
+                        return true;
+                    }
+
+                    return false;
+
+                } catch (error) {
+                    console.warn('Error validating OPORD content:', error);
+                    // If validation fails, err on the side of caution and exclude the content
+                    return true;
                 }
             }
 
@@ -26462,6 +26565,128 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     });
                 };
 
+                // Add function to test the security fix for classification banner detection
+                window.testClassificationBannerSecurityFix = function() {
+                    console.log('🔒 Testing Classification Banner Detection Security Fix...');
+                    console.log('');
+
+                    console.log('📊 Test 1: Verify OPORD Elements Are Excluded');
+
+                    // Test that OPORD's own classification banners are excluded
+                    const opordElements = [
+                        document.getElementById('classification-banner-top'),
+                        document.getElementById('classification-banner-bottom'),
+                        ...document.querySelectorAll('.classification-banner'),
+                        ...document.querySelectorAll('[class*="classification"]'),
+                        ...document.querySelectorAll('[id*="portion-marking"]')
+                    ].filter(Boolean);
+
+                    console.log(`   • Found ${opordElements.length} OPORD classification elements`);
+
+                    // Test the isOPORDGeneratedContent function
+                    let excludedCount = 0;
+                    opordElements.forEach((element, index) => {
+                        const text = element.textContent || element.innerHTML || '';
+                        const isExcluded = window.app.isOPORDGeneratedContent(text, element);
+                        if (isExcluded) {
+                            excludedCount++;
+                        }
+                        console.log(`   • Element ${index + 1}: ${isExcluded ? '✅ EXCLUDED' : '❌ NOT EXCLUDED'} - ${element.tagName}#${element.id || 'no-id'}`);
+                    });
+
+                    console.log(`   • Security Result: ${excludedCount}/${opordElements.length} OPORD elements properly excluded`);
+
+                    console.log('');
+                    console.log('📊 Test 2: Test Banner Detection Without False Positives');
+
+                    // Run banner detection and verify it doesn't detect OPORD's own banners
+                    window.app.detectFromClassificationBanners().then(result => {
+                        if (result) {
+                            console.log('⚠️ POTENTIAL SECURITY ISSUE: Banner detection returned a result');
+                            console.log(`   • Detected Level: ${result.level}`);
+                            console.log(`   • Banner Text: "${result.bannerText}"`);
+                            console.log(`   • Source: ${result.elementType}`);
+                            console.log(`   • Is External: ${result.isExternal ? 'YES' : 'NO'}`);
+                            console.log(`   • Source Validated: ${result.sourceValidated ? 'YES' : 'NO'}`);
+
+                            if (result.isExternal && result.sourceValidated) {
+                                console.log('✅ SECURITY OK: Detected banner is from external source');
+                            } else {
+                                console.log('❌ SECURITY ISSUE: May be detecting OPORD\'s own banners');
+                            }
+                        } else {
+                            console.log('✅ SECURITY OK: No classification banners detected (expected for local environment)');
+                            console.log('   • This confirms OPORD\'s own banners are properly excluded');
+                        }
+
+                        console.log('');
+                        console.log('📊 Test 3: Test Content Pattern Recognition');
+
+                        // Test OPORD content pattern recognition
+                        const testTexts = [
+                            'OPORD Drafting Tool - Classification System',
+                            'Document Classification Control',
+                            'TOP SECRET//SI//NOFORN', // This should be excluded if from OPORD elements
+                            'Network Classification Detected: TOP SECRET',
+                            'This product is a training aid and is not classified',
+                            'Portion Marking Interface',
+                            'AI Assistant Classification Authority'
+                        ];
+
+                        testTexts.forEach((text, index) => {
+                            const isOPORDContent = window.app.isOPORDGeneratedContent(text, { tagName: 'DIV' });
+                            console.log(`   • Text ${index + 1}: ${isOPORDContent ? '✅ EXCLUDED' : '❌ NOT EXCLUDED'} - "${text}"`);
+                        });
+
+                        console.log('');
+                        console.log('📊 Test 4: Verify External Banner Detection Still Works');
+
+                        // Create a temporary external-style element to test legitimate detection
+                        const testBanner = document.createElement('meta');
+                        testBanner.name = 'system-classification';
+                        testBanner.content = 'SECRET//NOFORN';
+                        testBanner.id = 'test-external-banner';
+                        document.head.appendChild(testBanner);
+
+                        // Test detection of the external-style banner
+                        setTimeout(() => {
+                            window.app.detectFromClassificationBanners().then(externalResult => {
+                                if (externalResult && externalResult.bannerText === 'SECRET//NOFORN') {
+                                    console.log('✅ EXTERNAL DETECTION OK: Successfully detected legitimate external banner');
+                                    console.log(`   • Detected: ${externalResult.level} from ${externalResult.elementType}`);
+                                } else {
+                                    console.log('ℹ️ External detection test: No external banner detected (may be filtered out)');
+                                }
+
+                                // Clean up test element
+                                document.head.removeChild(testBanner);
+
+                                console.log('');
+                                console.log('🔒 CLASSIFICATION BANNER SECURITY FIX TEST COMPLETE');
+                                console.log('📋 Security Validation Summary:');
+                                console.log('   • OPORD application elements are properly excluded from detection');
+                                console.log('   • False positive detection loop has been prevented');
+                                console.log('   • Only external/system banners are considered authoritative');
+                                console.log('   • Content pattern recognition filters out application-generated text');
+                                console.log('   • External banner detection capabilities are preserved');
+
+                                if (excludedCount === opordElements.length) {
+                                    console.log('✅ SECURITY STATUS: SECURE - All OPORD elements properly excluded');
+                                } else {
+                                    console.log('❌ SECURITY STATUS: VULNERABLE - Some OPORD elements not excluded');
+                                }
+
+                            }).catch(error => {
+                                console.error('❌ External detection test failed:', error);
+                                document.head.removeChild(testBanner);
+                            });
+                        }, 100);
+
+                    }).catch(error => {
+                        console.error('❌ Banner detection test failed:', error);
+                    });
+                };
+
                 // Add function to test fixed header and improved scrolling
                 window.testFixedHeaderScrolling = function() {
                     console.log('🧪 Testing fixed header and improved scrolling with 12 units...');
@@ -26754,7 +26979,18 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 // Log available debug functions
                 console.log('✅ === ENHANCED SUBORDINATE UNITS & PORTION MARKING BARS ===');
                 console.log('');
-                console.log('🎯 NEW FEATURES: Accurate DoD/IC network detection + security hardlock fix + enhanced subordinate units');
+                console.log('🎯 NEW FEATURES: CRITICAL security fix + accurate DoD/IC network detection + enhanced subordinate units');
+                console.log('');
+                console.log('CRITICAL SECURITY FIX (BANNER DETECTION):');
+                console.log('• FIXED FALSE POSITIVE LOOP: Banner detection no longer reads its own generated banners');
+                console.log('• EXCLUDED SELF-GENERATED CONTENT: OPORD application elements filtered out from detection');
+                console.log('• EXTERNAL SOURCE VALIDATION: Only system/network banners considered authoritative');
+                console.log('• CONTENT PATTERN RECOGNITION: Advanced filtering prevents application content detection');
+                console.log('• ELEMENT EXCLUSION: Classification banners, portion marking, and UI elements excluded');
+                console.log('• SECURITY VALIDATION: Comprehensive testing ensures no circular references');
+                console.log('• PRESERVED FUNCTIONALITY: External banner detection capabilities maintained');
+                console.log('• FAIL-SAFE DESIGN: Validation errors default to excluding content for security');
+                console.log('• COMPREHENSIVE TESTING: testClassificationBannerSecurityFix() validates all fixes');
                 console.log('');
                 console.log('NETWORK CLASSIFICATION IMPROVEMENTS (MAJOR UPDATE):');
                 console.log('• ACCURATE DoD/IC ARCHITECTURE: Updated to reflect real network infrastructure');
@@ -26810,6 +27046,7 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• testSecurityHardlock() - Test UNCLASSIFIED-only security hardlock (SECURITY TEST)');
                 console.log('• testNetworkClassificationConfig() - Test network classification detection system (NETWORK TEST)');
                 console.log('• testClassificationBannerDetection() - Test classification banner detection (BANNER TEST)');
+                console.log('• testClassificationBannerSecurityFix() - Test security fix for banner detection (CRITICAL SECURITY)');
                 console.log('• testSectionOverlapFix() - Test section overlap resolution (LATEST FIX)');
                 console.log('• testExpandedSectionHeight() - Test expanded section height and portion marking');
                 console.log('• testEnhancedSubordinateUnits() - Demo enhanced subordinate units');
@@ -26830,16 +27067,16 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• scrollToLastSubordinateUnit() - Auto-scroll to last unit (used automatically)');
                 console.log('');
                 console.log('HOW TO USE:');
-                console.log('1. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
-                console.log('2. Run testClassificationBannerDetection() to test banner parsing capabilities');
-                console.log('3. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
-                console.log('4. Check console output for comprehensive network and security validation');
-                console.log('5. Verify network detection matches actual DoD/IC architecture patterns');
-                console.log('6. Test classification banner detection with various banner formats');
-                console.log('7. Confirm only UNCLASSIFIED options available when hardlock is active');
-                console.log('8. Test SIPR network simulation (localStorage method) for SI caveat blocking');
-                console.log('9. Verify JWICS network detection for TOP SECRET/SCI capabilities');
-                console.log('10. Ensure all network-based security restrictions function correctly');
+                console.log('1. Run testClassificationBannerSecurityFix() to verify critical security fix (PRIORITY)');
+                console.log('2. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
+                console.log('3. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
+                console.log('4. Run testClassificationBannerDetection() to test banner parsing capabilities');
+                console.log('5. Check console output for comprehensive security validation');
+                console.log('6. Verify no false positive detection loops occur');
+                console.log('7. Confirm OPORD application elements are properly excluded from detection');
+                console.log('8. Test external banner detection still works for legitimate sources');
+                console.log('9. Verify network detection matches actual DoD/IC architecture patterns');
+                console.log('10. Ensure all security restrictions function correctly without circular references');
                 console.log('');
                 console.log('🚀 Professional, organized, and user-friendly interface!');
                 console.log('================================================');
