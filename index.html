@@ -8825,6 +8825,13 @@ Copyright (c) [2025] [Larry Hedrick]-->
                     // Initialize secure classification escalation system (SECURE BY DEFAULT)
                     this.initializeSecureClassificationEscalation();
 
+                    // CRITICAL: Apply network authorization restrictions immediately after DOM is ready
+                    setTimeout(() => {
+                        const networkAuth = this.determineNetworkAuthorization();
+                        console.log(`🔒 CRITICAL SECURITY: Applying immediate network restrictions for ${networkAuth}`);
+                        this.applyNetworkAuthorizationRestrictions(networkAuth);
+                    }, 200); // Ensure DOM elements are fully loaded
+
                     // Initialize network classification detection
                     this.initializeNetworkClassificationDetection();
 
@@ -9422,6 +9429,11 @@ Copyright (c) [2025] [Larry Hedrick]-->
                 try {
                     console.log('🔒 Setting secure classification defaults...');
 
+                    // CRITICAL: Determine network authorization level
+                    const networkAuth = this.determineNetworkAuthorization();
+                    console.log(`🌐 Network authorization determined: ${networkAuth}`);
+                    console.log(`🌐 Current domain: ${window.location.hostname}`);
+
                     // Force all classification elements to UNCLASSIFIED
                     this.currentClassification = 'UNCLASSIFIED';
                     this.currentCaveats = [];
@@ -9430,8 +9442,16 @@ Copyright (c) [2025] [Larry Hedrick]-->
                     // Set AI Assistant to UNCLASSIFIED-only authority
                     this.aiClassificationAuthority = 'UNCLASSIFIED_ONLY';
 
-                    // Update UI elements to reflect secure defaults
+                    // Update escalation state with network authorization
+                    if (this.classificationEscalationState) {
+                        this.classificationEscalationState.networkAuthorization = networkAuth;
+                    }
+
+                    // Update UI elements to reflect secure defaults AND network restrictions
                     setTimeout(() => {
+                        // CRITICAL FIX: Apply network authorization restrictions
+                        this.applyNetworkAuthorizationRestrictions(networkAuth);
+
                         // Set classification selector to UNCLASSIFIED
                         const classificationSelector = document.getElementById('classification-selector');
                         if (classificationSelector) {
@@ -9462,6 +9482,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         this.updateAISecurityDisclaimer();
 
                         console.log('✅ Secure classification defaults applied to all UI elements');
+                        console.log(`✅ Network authorization restrictions applied: ${networkAuth}`);
 
                     }, 100); // Small delay to ensure DOM is ready
 
@@ -9470,6 +9491,329 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
                 } catch (error) {
                     console.error('❌ Error setting secure classification defaults:', error);
+                }
+            }
+
+            // CRITICAL SECURITY FIX: Apply network authorization restrictions to UI elements
+            applyNetworkAuthorizationRestrictions(networkAuth) {
+                try {
+                    console.log(`🔒 CRITICAL: Applying network authorization restrictions for ${networkAuth}`);
+
+                    // Determine which classification levels are authorized
+                    const authorizedLevels = this.getAuthorizedClassificationLevels(networkAuth);
+                    const authorizedPortionMarkings = this.getAuthorizedPortionMarkings(networkAuth);
+
+                    console.log(`   • Authorized levels: ${authorizedLevels.join(', ')}`);
+                    console.log(`   • Authorized portion markings: ${authorizedPortionMarkings.join(', ')}`);
+
+                    // Restrict main classification selector
+                    this.restrictClassificationSelector(authorizedLevels);
+
+                    // Restrict portion marking selectors
+                    this.restrictPortionMarkingSelectors(authorizedPortionMarkings);
+
+                    // Restrict caveats and RELTO based on network authorization
+                    this.restrictCaveatsAndRelto(networkAuth);
+
+                    console.log(`✅ Network authorization restrictions applied successfully`);
+
+                } catch (error) {
+                    console.error('❌ CRITICAL ERROR applying network authorization restrictions:', error);
+                    // Fail-safe: If restriction fails, force UNCLASSIFIED-only
+                    this.forceUnclassifiedOnlyMode();
+                }
+            }
+
+            // Get authorized classification levels based on network authorization
+            getAuthorizedClassificationLevels(networkAuth) {
+                switch (networkAuth) {
+                    case 'UNCLASSIFIED':
+                        return ['UNCLASSIFIED'];
+                    case 'CUI':
+                        return ['UNCLASSIFIED', 'CUI'];
+                    case 'CONFIDENTIAL':
+                        return ['UNCLASSIFIED', 'CUI', 'CONFIDENTIAL'];
+                    case 'SECRET':
+                        return ['UNCLASSIFIED', 'CUI', 'CONFIDENTIAL', 'SECRET'];
+                    case 'TOP SECRET':
+                        return ['UNCLASSIFIED', 'CUI', 'CONFIDENTIAL', 'SECRET', 'TOP SECRET'];
+                    default:
+                        return ['UNCLASSIFIED']; // Fail-safe
+                }
+            }
+
+            // Get authorized portion markings based on network authorization
+            getAuthorizedPortionMarkings(networkAuth) {
+                console.log(`🔒 CRITICAL: Determining authorized portion markings for network: ${networkAuth}`);
+
+                switch (networkAuth) {
+                    case 'UNCLASSIFIED':
+                        // Commercial domains (.com, .io, etc.) - UNCLASSIFIED only
+                        console.log('   • Commercial/UNCLASSIFIED network: Only (U) markings authorized');
+                        return ['U'];
+
+                    case 'CUI':
+                        // CUI-authorized networks - UNCLASSIFIED + CUI
+                        console.log('   • CUI network: (U) and (CUI) markings authorized');
+                        return ['U', 'CUI'];
+
+                    case 'CONFIDENTIAL':
+                        // CONFIDENTIAL networks - up to CONFIDENTIAL
+                        console.log('   • CONFIDENTIAL network: (U), (CUI), (C) markings authorized');
+                        return ['U', 'CUI', 'C'];
+
+                    case 'SECRET':
+                        // NIPR (.mil/.gov) and SIPR (.smil.mil) networks - up to SECRET
+                        console.log('   • SECRET network (NIPR/SIPR): (U), (CUI), (C), (S) markings authorized');
+                        return ['U', 'CUI', 'C', 'S'];
+
+                    case 'TOP SECRET':
+                        // JWICS (.ic.gov/.ic.mil) networks - up to TOP SECRET
+                        console.log('   • TOP SECRET network (JWICS): (U), (CUI), (C), (S), (TS) markings authorized');
+                        return ['U', 'CUI', 'C', 'S', 'TS'];
+
+                    default:
+                        // Fail-safe: Default to UNCLASSIFIED only
+                        console.log('   • Unknown network type: Defaulting to (U) only for security');
+                        return ['U'];
+                }
+            }
+
+            // Restrict classification selector to authorized levels only
+            restrictClassificationSelector(authorizedLevels) {
+                try {
+                    const classificationSelector = document.getElementById('classification-selector');
+                    if (!classificationSelector) return;
+
+                    const options = classificationSelector.querySelectorAll('option');
+                    let restrictedCount = 0;
+
+                    options.forEach(option => {
+                        if (authorizedLevels.includes(option.value)) {
+                            // Authorized level - show and enable
+                            option.style.display = '';
+                            option.disabled = false;
+                            option.classList.remove('classification-restricted');
+                        } else {
+                            // Unauthorized level - hide completely (need-to-know compliance)
+                            option.style.display = 'none';
+                            option.disabled = true;
+                            option.selected = false;
+                            option.classList.add('classification-restricted');
+                            restrictedCount++;
+                        }
+                    });
+
+                    console.log(`   • Classification selector: ${restrictedCount} levels restricted`);
+
+                } catch (error) {
+                    console.error('❌ Error restricting classification selector:', error);
+                }
+            }
+
+            // Restrict portion marking selectors to authorized markings only
+            restrictPortionMarkingSelectors(authorizedMarkings) {
+                try {
+                    console.log(`🔒 CRITICAL: Restricting portion marking selectors to authorized markings: [${authorizedMarkings.join(', ')}]`);
+
+                    const portionSelectors = document.querySelectorAll('[id$="-classification"]');
+                    console.log(`   • Found ${portionSelectors.length} portion marking selectors to restrict`);
+
+                    let totalRestricted = 0;
+                    let totalAuthorized = 0;
+
+                    portionSelectors.forEach((selector, index) => {
+                        const selectorId = selector.id;
+                        const options = selector.querySelectorAll('option');
+                        let selectorRestricted = 0;
+                        let selectorAuthorized = 0;
+
+                        console.log(`   • Processing selector ${index + 1}: ${selectorId} (${options.length} options)`);
+
+                        options.forEach(option => {
+                            if (authorizedMarkings.includes(option.value)) {
+                                // Authorized marking - show and enable
+                                option.style.display = '';
+                                option.disabled = false;
+                                option.classList.remove('classification-restricted');
+                                selectorAuthorized++;
+
+                                // Set to (U) if currently selected option is being restricted
+                                if (option.value === 'U' && !option.selected) {
+                                    const currentSelected = selector.querySelector('option:checked') || selector.querySelector('option[selected]');
+                                    if (currentSelected && !authorizedMarkings.includes(currentSelected.value)) {
+                                        option.selected = true;
+                                        console.log(`     • Auto-selected (U) for ${selectorId} due to restricted current selection`);
+                                    }
+                                }
+                            } else {
+                                // Unauthorized marking - hide completely (need-to-know compliance)
+                                option.style.display = 'none';
+                                option.disabled = true;
+                                option.selected = false;
+                                option.classList.add('classification-restricted');
+                                selectorRestricted++;
+                            }
+                        });
+
+                        totalRestricted += selectorRestricted;
+                        totalAuthorized += selectorAuthorized;
+
+                        console.log(`     • ${selectorId}: ${selectorAuthorized} authorized, ${selectorRestricted} restricted`);
+
+                        // Ensure selector has a valid selection
+                        const hasValidSelection = Array.from(selector.options).some(option =>
+                            option.selected && authorizedMarkings.includes(option.value)
+                        );
+
+                        if (!hasValidSelection) {
+                            // Force selection to (U) if no valid selection
+                            const uOption = selector.querySelector('option[value="U"]');
+                            if (uOption) {
+                                uOption.selected = true;
+                                console.log(`     • Force-selected (U) for ${selectorId} - no valid selection found`);
+                            }
+                        }
+                    });
+
+                    console.log(`   ✅ Portion marking restriction complete:`);
+                    console.log(`     • Total selectors processed: ${portionSelectors.length}`);
+                    console.log(`     • Total markings authorized: ${totalAuthorized}`);
+                    console.log(`     • Total markings restricted: ${totalRestricted}`);
+                    console.log(`     • Authorized markings: [${authorizedMarkings.join(', ')}]`);
+
+                } catch (error) {
+                    console.error('❌ CRITICAL ERROR restricting portion marking selectors:', error);
+                    // Fail-safe: Force all portion selectors to (U)
+                    this.forceAllPortionSelectorsToU();
+                }
+            }
+
+            // Fail-safe: Force all portion selectors to (U) only
+            forceAllPortionSelectorsToU() {
+                try {
+                    console.log('🚨 FAIL-SAFE: Forcing all portion selectors to (U) only');
+
+                    const portionSelectors = document.querySelectorAll('[id$="-classification"]');
+                    portionSelectors.forEach(selector => {
+                        const options = selector.querySelectorAll('option');
+                        options.forEach(option => {
+                            if (option.value === 'U') {
+                                option.style.display = '';
+                                option.disabled = false;
+                                option.selected = true;
+                            } else {
+                                option.style.display = 'none';
+                                option.disabled = true;
+                                option.selected = false;
+                            }
+                        });
+                    });
+
+                    console.log('✅ FAIL-SAFE: All portion selectors forced to (U)');
+
+                } catch (error) {
+                    console.error('❌ CRITICAL: Fail-safe portion selector restriction failed:', error);
+                }
+            }
+
+            // Restrict caveats and RELTO based on network authorization
+            restrictCaveatsAndRelto(networkAuth) {
+                try {
+                    if (networkAuth === 'UNCLASSIFIED') {
+                        // For UNCLASSIFIED networks, hide all caveats and RELTO options
+                        this.hideAllCaveats();
+                        this.hideAllReltoCountries();
+                        console.log('   • Caveats and RELTO: All options hidden for UNCLASSIFIED network');
+                    } else {
+                        // For classified networks, show appropriate caveats based on authorization
+                        this.restrictCaveatsByAuthorization(networkAuth);
+                        this.restrictReltoByAuthorization(networkAuth);
+                    }
+
+                } catch (error) {
+                    console.error('❌ Error restricting caveats and RELTO:', error);
+                }
+            }
+
+            // Hide all caveat options for UNCLASSIFIED networks
+            hideAllCaveats() {
+                try {
+                    const caveatsSelector = document.getElementById('caveats-selector');
+                    if (!caveatsSelector) return;
+
+                    const options = caveatsSelector.querySelectorAll('option');
+                    options.forEach(option => {
+                        option.style.display = 'none';
+                        option.disabled = true;
+                        option.selected = false;
+                    });
+
+                    // Hide the entire caveats selector container
+                    const caveatsContainer = caveatsSelector.closest('.form-group') || caveatsSelector.parentElement;
+                    if (caveatsContainer) {
+                        caveatsContainer.style.display = 'none';
+                    }
+
+                } catch (error) {
+                    console.error('❌ Error hiding caveats:', error);
+                }
+            }
+
+            // Hide all RELTO country options for UNCLASSIFIED networks
+            hideAllReltoCountries() {
+                try {
+                    const reltoSelector = document.getElementById('relto-countries-selector');
+                    if (!reltoSelector) return;
+
+                    const options = reltoSelector.querySelectorAll('option');
+                    options.forEach(option => {
+                        option.style.display = 'none';
+                        option.disabled = true;
+                        option.selected = false;
+                    });
+
+                    // Hide the entire RELTO selector container
+                    const reltoContainer = reltoSelector.closest('.form-group') || reltoSelector.parentElement;
+                    if (reltoContainer) {
+                        reltoContainer.style.display = 'none';
+                    }
+
+                } catch (error) {
+                    console.error('❌ Error hiding RELTO countries:', error);
+                }
+            }
+
+            // Force UNCLASSIFIED-only mode as fail-safe
+            forceUnclassifiedOnlyMode() {
+                try {
+                    console.log('🚨 FAIL-SAFE: Forcing UNCLASSIFIED-only mode');
+
+                    // Force all selectors to UNCLASSIFIED/U only
+                    const allSelectors = document.querySelectorAll('#classification-selector, [id$="-classification"]');
+                    allSelectors.forEach(selector => {
+                        const options = selector.querySelectorAll('option');
+                        options.forEach(option => {
+                            if (option.value === 'UNCLASSIFIED' || option.value === 'U') {
+                                option.style.display = '';
+                                option.disabled = false;
+                                option.selected = true;
+                            } else {
+                                option.style.display = 'none';
+                                option.disabled = true;
+                                option.selected = false;
+                            }
+                        });
+                    });
+
+                    // Hide caveats and RELTO
+                    this.hideAllCaveats();
+                    this.hideAllReltoCountries();
+
+                    console.log('✅ FAIL-SAFE: UNCLASSIFIED-only mode enforced');
+
+                } catch (error) {
+                    console.error('❌ CRITICAL: Fail-safe mode failed:', error);
                 }
             }
 
@@ -27180,6 +27524,381 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     });
                 };
 
+                // CRITICAL SECURITY TEST: Test portion marking restrictions
+                window.testPortionMarkingRestrictions = function() {
+                    console.log('🔒 CRITICAL SECURITY TEST: Portion Marking Restrictions');
+                    console.log('');
+
+                    console.log('📊 Test 1: Network Authorization Detection');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const networkAuth = window.app.determineNetworkAuthorization();
+                    const authorizedMarkings = window.app.getAuthorizedPortionMarkings(networkAuth);
+
+                    console.log(`   • Current Domain: ${currentDomain}`);
+                    console.log(`   • Network Authorization: ${networkAuth}`);
+                    console.log(`   • Authorized Portion Markings: [${authorizedMarkings.join(', ')}]`);
+
+                    console.log('');
+                    console.log('📊 Test 2: Portion Selector Identification');
+                    const portionSelectors = document.querySelectorAll('[id$="-classification"]');
+                    const expectedSelectors = [
+                        'situation-classification',
+                        'mission-classification',
+                        'execution-classification',
+                        'sustainment-classification',
+                        'command-classification'
+                    ];
+
+                    console.log(`   • Found ${portionSelectors.length} portion selectors`);
+                    console.log(`   • Expected ${expectedSelectors.length} selectors`);
+
+                    expectedSelectors.forEach(expectedId => {
+                        const found = document.getElementById(expectedId);
+                        console.log(`   • ${expectedId}: ${found ? '✅ Found' : '❌ Missing'}`);
+                    });
+
+                    console.log('');
+                    console.log('📊 Test 3: Detailed Portion Marking Analysis');
+
+                    let totalCompliant = 0;
+                    let totalNonCompliant = 0;
+
+                    portionSelectors.forEach((selector, index) => {
+                        const selectorId = selector.id;
+                        console.log(`   • Analyzing ${selectorId}:`);
+
+                        const allOptions = selector.querySelectorAll('option');
+                        const visibleOptions = Array.from(allOptions).filter(opt =>
+                            opt.style.display !== 'none' && !opt.disabled
+                        );
+                        const hiddenOptions = Array.from(allOptions).filter(opt =>
+                            opt.style.display === 'none' || opt.disabled
+                        );
+
+                        console.log(`     - Total options: ${allOptions.length}`);
+                        console.log(`     - Visible options: ${visibleOptions.length}`);
+                        console.log(`     - Hidden options: ${hiddenOptions.length}`);
+
+                        // Check each option against authorization
+                        let selectorCompliant = true;
+                        allOptions.forEach(option => {
+                            const isAuthorized = authorizedMarkings.includes(option.value);
+                            const isVisible = option.style.display !== 'none' && !option.disabled;
+
+                            if (isAuthorized && !isVisible) {
+                                console.log(`     ❌ Authorized marking hidden: ${option.value}`);
+                                selectorCompliant = false;
+                            } else if (!isAuthorized && isVisible) {
+                                console.log(`     ❌ Unauthorized marking visible: ${option.value}`);
+                                selectorCompliant = false;
+                            } else if (isAuthorized && isVisible) {
+                                console.log(`     ✅ Authorized marking visible: ${option.value}`);
+                            } else {
+                                console.log(`     ✅ Unauthorized marking hidden: ${option.value}`);
+                            }
+                        });
+
+                        if (selectorCompliant) {
+                            totalCompliant++;
+                            console.log(`     ✅ ${selectorId}: COMPLIANT`);
+                        } else {
+                            totalNonCompliant++;
+                            console.log(`     ❌ ${selectorId}: NON-COMPLIANT`);
+                        }
+
+                        // Check current selection
+                        const selectedOption = selector.querySelector('option:checked') ||
+                                             Array.from(selector.options).find(opt => opt.selected);
+                        if (selectedOption) {
+                            const selectionAuthorized = authorizedMarkings.includes(selectedOption.value);
+                            console.log(`     - Current selection: ${selectedOption.value} (${selectionAuthorized ? 'Authorized' : 'UNAUTHORIZED'})`);
+                            if (!selectionAuthorized) {
+                                console.log(`     ❌ CRITICAL: Unauthorized marking selected!`);
+                                selectorCompliant = false;
+                            }
+                        } else {
+                            console.log(`     - No current selection`);
+                        }
+                    });
+
+                    console.log('');
+                    console.log('📊 Test 4: Network-Specific Compliance Validation');
+
+                    switch (networkAuth) {
+                        case 'UNCLASSIFIED':
+                            console.log('   • Commercial Domain Requirements:');
+                            console.log('     - Only (U) markings should be visible');
+                            console.log('     - All classified markings (CUI, C, S, TS) should be hidden');
+                            break;
+                        case 'SECRET':
+                            console.log('   • NIPR/SIPR Network Requirements:');
+                            console.log('     - (U), (CUI), (C), (S) markings should be visible');
+                            console.log('     - (TS) markings should be hidden');
+                            break;
+                        case 'TOP SECRET':
+                            console.log('   • JWICS Network Requirements:');
+                            console.log('     - All markings (U), (CUI), (C), (S), (TS) should be visible');
+                            break;
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 5: Manual Restriction Application Test');
+                    console.log('   • Testing manual application of restrictions...');
+
+                    try {
+                        window.app.restrictPortionMarkingSelectors(authorizedMarkings);
+                        console.log('   ✅ Manual restriction application successful');
+                    } catch (error) {
+                        console.log('   ❌ Manual restriction application failed:', error);
+                    }
+
+                    console.log('');
+                    console.log('🔒 PORTION MARKING RESTRICTIONS TEST COMPLETE');
+                    console.log('📋 Compliance Summary:');
+                    console.log(`   • Total selectors: ${portionSelectors.length}`);
+                    console.log(`   • Compliant selectors: ${totalCompliant}`);
+                    console.log(`   • Non-compliant selectors: ${totalNonCompliant}`);
+                    console.log(`   • Network authorization: ${networkAuth}`);
+                    console.log(`   • Authorized markings: [${authorizedMarkings.join(', ')}]`);
+
+                    if (totalNonCompliant === 0) {
+                        console.log('✅ SECURITY STATUS: FULLY COMPLIANT - All portion marking restrictions properly applied');
+                    } else {
+                        console.log('❌ SECURITY STATUS: NON-COMPLIANT - Critical security failures detected');
+                        console.log('🚨 IMMEDIATE ACTION REQUIRED: Fix portion marking restriction failures');
+                    }
+                };
+
+                // CRITICAL SECURITY TEST: Test commercial domain enforcement
+                window.testCommercialDomainEnforcement = function() {
+                    console.log('🚨 CRITICAL SECURITY TEST: Commercial Domain Enforcement');
+                    console.log('');
+
+                    console.log('📊 Test 1: Domain Detection');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const commercialDomains = ['.com', '.io', '.org', '.net', '.info', '.biz'];
+                    const isCommercial = commercialDomains.some(domain => currentDomain.endsWith(domain));
+
+                    console.log(`   • Current Domain: ${currentDomain}`);
+                    console.log(`   • Is Commercial: ${isCommercial}`);
+
+                    if (isCommercial) {
+                        console.log('   ✅ Commercial domain detected - UNCLASSIFIED enforcement should be active');
+                    } else {
+                        console.log('   ℹ️ Non-commercial domain - higher classifications may be authorized');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 2: Network Authorization Determination');
+                    const networkAuth = window.app.determineNetworkAuthorization();
+                    console.log(`   • Determined Network Authorization: ${networkAuth}`);
+
+                    if (isCommercial && networkAuth !== 'UNCLASSIFIED') {
+                        console.log('   ❌ CRITICAL FAILURE: Commercial domain not restricted to UNCLASSIFIED');
+                        console.log('   🚨 SECURITY VIOLATION: Higher classifications available on commercial network');
+                    } else if (isCommercial && networkAuth === 'UNCLASSIFIED') {
+                        console.log('   ✅ SECURITY COMPLIANT: Commercial domain properly restricted to UNCLASSIFIED');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 3: Classification Selector Restrictions');
+                    const classificationSelector = document.getElementById('classification-selector');
+                    if (classificationSelector) {
+                        const allOptions = classificationSelector.querySelectorAll('option');
+                        const visibleOptions = Array.from(allOptions).filter(option =>
+                            option.style.display !== 'none' && !option.disabled
+                        );
+                        const hiddenOptions = Array.from(allOptions).filter(option =>
+                            option.style.display === 'none' || option.disabled
+                        );
+
+                        console.log(`   • Total Options: ${allOptions.length}`);
+                        console.log(`   • Visible Options: ${visibleOptions.length}`);
+                        console.log(`   • Hidden Options: ${hiddenOptions.length}`);
+
+                        console.log('   • Visible Options:');
+                        visibleOptions.forEach(option => {
+                            console.log(`     - ${option.value}: ${option.textContent}`);
+                        });
+
+                        if (isCommercial) {
+                            if (visibleOptions.length === 1 && visibleOptions[0].value === 'UNCLASSIFIED') {
+                                console.log('   ✅ SECURITY COMPLIANT: Only UNCLASSIFIED visible on commercial domain');
+                            } else {
+                                console.log('   ❌ CRITICAL FAILURE: Classified options visible on commercial domain');
+                                console.log('   🚨 SECURITY VIOLATION: Need-to-know principle violated');
+                            }
+                        }
+                    } else {
+                        console.log('   ❌ Classification selector not found');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 4: Portion Marking Restrictions (CRITICAL SECURITY)');
+                    const portionSelectors = document.querySelectorAll('[id$="-classification"]');
+                    console.log(`   • Found ${portionSelectors.length} portion marking selectors`);
+
+                    const expectedPortionSelectors = ['situation-classification', 'mission-classification', 'execution-classification', 'sustainment-classification', 'command-classification'];
+                    console.log(`   • Expected selectors: ${expectedPortionSelectors.join(', ')}`);
+
+                    let totalVisiblePortionOptions = 0;
+                    let totalHiddenPortionOptions = 0;
+                    let criticalFailures = [];
+
+                    portionSelectors.forEach((selector, index) => {
+                        const selectorId = selector.id;
+                        const allOptions = selector.querySelectorAll('option');
+                        const visibleOptions = Array.from(allOptions).filter(option =>
+                            option.style.display !== 'none' && !option.disabled
+                        );
+                        const hiddenOptions = Array.from(allOptions).filter(option =>
+                            option.style.display === 'none' || option.disabled
+                        );
+
+                        totalVisiblePortionOptions += visibleOptions.length;
+                        totalHiddenPortionOptions += hiddenOptions.length;
+
+                        console.log(`   • Selector ${index + 1} (${selectorId}):`);
+                        console.log(`     - Total options: ${allOptions.length}`);
+                        console.log(`     - Visible options: ${visibleOptions.length}`);
+                        console.log(`     - Hidden options: ${hiddenOptions.length}`);
+
+                        // List visible options
+                        const visibleValues = visibleOptions.map(opt => opt.value);
+                        console.log(`     - Visible values: [${visibleValues.join(', ')}]`);
+
+                        // List hidden options
+                        const hiddenValues = hiddenOptions.map(opt => opt.value);
+                        if (hiddenValues.length > 0) {
+                            console.log(`     - Hidden values: [${hiddenValues.join(', ')}]`);
+                        }
+
+                        // Check for commercial domain compliance
+                        if (isCommercial) {
+                            if (visibleOptions.length !== 1 || visibleValues[0] !== 'U') {
+                                criticalFailures.push(`${selectorId}: Expected only (U), found [${visibleValues.join(', ')}]`);
+                            }
+
+                            // Check that classified markings are hidden
+                            const classifiedMarkings = ['CUI', 'C', 'S', 'TS'];
+                            const visibleClassified = visibleValues.filter(val => classifiedMarkings.includes(val));
+                            if (visibleClassified.length > 0) {
+                                criticalFailures.push(`${selectorId}: Classified markings visible: [${visibleClassified.join(', ')}]`);
+                            }
+                        }
+
+                        // Check current selection
+                        const selectedOption = selector.querySelector('option:checked') ||
+                                             Array.from(selector.options).find(opt => opt.selected);
+                        if (selectedOption) {
+                            console.log(`     - Current selection: ${selectedOption.value}`);
+
+                            if (isCommercial && selectedOption.value !== 'U') {
+                                criticalFailures.push(`${selectorId}: Non-U marking selected: ${selectedOption.value}`);
+                            }
+                        } else {
+                            console.log(`     - No selection found`);
+                            if (isCommercial) {
+                                criticalFailures.push(`${selectorId}: No valid selection (should default to U)`);
+                            }
+                        }
+                    });
+
+                    console.log('');
+                    console.log('📊 Portion Marking Summary:');
+                    console.log(`   • Total selectors: ${portionSelectors.length}`);
+                    console.log(`   • Total visible options: ${totalVisiblePortionOptions}`);
+                    console.log(`   • Total hidden options: ${totalHiddenPortionOptions}`);
+
+                    if (isCommercial) {
+                        const expectedVisiblePerSelector = 1; // Only (U) should be visible
+                        const expectedTotalVisible = portionSelectors.length * expectedVisiblePerSelector;
+
+                        console.log(`   • Expected visible (commercial): ${expectedTotalVisible}`);
+                        console.log(`   • Actual visible: ${totalVisiblePortionOptions}`);
+
+                        if (criticalFailures.length === 0 && totalVisiblePortionOptions === expectedTotalVisible) {
+                            console.log('   ✅ SECURITY COMPLIANT: Only (U) markings visible on commercial domain');
+                        } else {
+                            console.log('   ❌ CRITICAL SECURITY FAILURES:');
+                            criticalFailures.forEach(failure => {
+                                console.log(`     • ${failure}`);
+                            });
+                            if (totalVisiblePortionOptions !== expectedTotalVisible) {
+                                console.log(`     • Total visible mismatch: Expected ${expectedTotalVisible}, Found ${totalVisiblePortionOptions}`);
+                            }
+                        }
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 5: Caveats and RELTO Restrictions');
+
+                    const caveatsSelector = document.getElementById('caveats-selector');
+                    const reltoSelector = document.getElementById('relto-countries-selector');
+
+                    if (caveatsSelector) {
+                        const caveatsContainer = caveatsSelector.closest('.form-group') || caveatsSelector.parentElement;
+                        const caveatsHidden = caveatsContainer && caveatsContainer.style.display === 'none';
+                        console.log(`   • Caveats Selector Hidden: ${caveatsHidden}`);
+
+                        if (isCommercial && !caveatsHidden) {
+                            console.log('   ❌ CRITICAL FAILURE: Caveats selector visible on commercial domain');
+                        } else if (isCommercial && caveatsHidden) {
+                            console.log('   ✅ SECURITY COMPLIANT: Caveats selector hidden on commercial domain');
+                        }
+                    }
+
+                    if (reltoSelector) {
+                        const reltoContainer = reltoSelector.closest('.form-group') || reltoSelector.parentElement;
+                        const reltoHidden = reltoContainer && reltoContainer.style.display === 'none';
+                        console.log(`   • RELTO Selector Hidden: ${reltoHidden}`);
+
+                        if (isCommercial && !reltoHidden) {
+                            console.log('   ❌ CRITICAL FAILURE: RELTO selector visible on commercial domain');
+                        } else if (isCommercial && reltoHidden) {
+                            console.log('   ✅ SECURITY COMPLIANT: RELTO selector hidden on commercial domain');
+                        }
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 6: Manual Selection Blocking');
+
+                    if (isCommercial) {
+                        console.log('   • Testing manual classification selection blocking...');
+                        const manualResult = window.app.handleManualClassificationExceedance('SECRET', [], []);
+
+                        if (manualResult === false) {
+                            console.log('   ✅ SECURITY COMPLIANT: Manual SECRET selection blocked on commercial domain');
+                        } else {
+                            console.log('   ❌ CRITICAL FAILURE: Manual SECRET selection allowed on commercial domain');
+                        }
+                    }
+
+                    console.log('');
+                    console.log('🔒 COMMERCIAL DOMAIN ENFORCEMENT TEST COMPLETE');
+
+                    if (isCommercial) {
+                        console.log('📋 CRITICAL SECURITY REQUIREMENTS FOR COMMERCIAL DOMAINS:');
+                        console.log('   • ✅ Network authorization must be UNCLASSIFIED');
+                        console.log('   • ✅ Only UNCLASSIFIED option visible in classification selector');
+                        console.log('   • ✅ Only (U) markings visible in portion selectors');
+                        console.log('   • ✅ Caveats selector must be hidden');
+                        console.log('   • ✅ RELTO countries selector must be hidden');
+                        console.log('   • ✅ Manual classified selection must be blocked');
+                        console.log('   • ✅ No warnings about higher classifications (need-to-know compliance)');
+
+                        console.log('');
+                        console.log('🎯 SECURITY STATUS:');
+                        if (networkAuth === 'UNCLASSIFIED') {
+                            console.log('✅ COMPLIANT: Commercial domain properly restricted to UNCLASSIFIED');
+                        } else {
+                            console.log('❌ NON-COMPLIANT: CRITICAL SECURITY FAILURE - IMMEDIATE FIX REQUIRED');
+                        }
+                    } else {
+                        console.log('ℹ️ Non-commercial domain - higher classification restrictions may apply based on network type');
+                    }
+                };
+
                 // Add function to test silent security enforcement (need-to-know compliance)
                 window.testSilentSecurityEnforcement = function() {
                     console.log('🔒 Testing Silent Security Enforcement (Need-to-Know Compliance)...');
@@ -27910,7 +28629,34 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 // Log available debug functions
                 console.log('✅ === ENHANCED SUBORDINATE UNITS & PORTION MARKING BARS ===');
                 console.log('');
-                console.log('🎯 NEW FEATURES: Silent security enforcement + secure escalation + CRITICAL security fix + network detection');
+                console.log('🎯 CRITICAL FIX: Commercial domain enforcement + silent security + secure escalation + network detection');
+                console.log('');
+                console.log('PORTION MARKING NETWORK RESTRICTIONS (CRITICAL SECURITY):');
+                console.log('• NETWORK AUTHORIZATION ALIGNMENT: All portion selectors restricted based on detected network type');
+                console.log('• COMMERCIAL DOMAIN ENFORCEMENT: Only (U) markings visible on .com/.io/.org/.net domains');
+                console.log('• NIPR NETWORK COMPLIANCE: (U), (CUI), (C), (S) markings on .mil/.gov networks');
+                console.log('• SIPR NETWORK COMPLIANCE: (U), (CUI), (C), (S) markings on .smil.mil networks');
+                console.log('• JWICS NETWORK COMPLIANCE: (U), (CUI), (C), (S), (TS) markings on .ic.gov/.ic.mil networks');
+                console.log('• COMPLETE HIDING: Unauthorized markings hidden (style.display = none) for need-to-know compliance');
+                console.log('• AUTOMATIC SELECTION: Current selections auto-adjust to (U) when unauthorized markings detected');
+                console.log('• FAIL-SAFE ENFORCEMENT: If restriction fails, all portion selectors forced to (U) only');
+                console.log('• CONSISTENCY VERIFICATION: Portion restrictions applied simultaneously with main classification restrictions');
+                console.log('• COMPREHENSIVE COVERAGE: All 5 OPORD section selectors (situation, mission, execution, sustainment, command)');
+                console.log('• DETAILED LOGGING: Complete audit trail of restriction application and compliance validation');
+                console.log('');
+                console.log('COMMERCIAL DOMAIN ENFORCEMENT (CRITICAL SECURITY FIX):');
+                console.log('• AUTOMATIC DETECTION: Commercial domains (.com, .io, .org, .net) automatically detected');
+                console.log('• UNCLASSIFIED-ONLY RESTRICTION: Commercial networks restricted to UNCLASSIFIED content only');
+                console.log('• UI ELEMENT HIDING: Classified options completely hidden (not just disabled)');
+                console.log('• CLASSIFICATION SELECTOR: Only "UNCLASSIFIED" option visible and selectable');
+                console.log('• PORTION MARKINGS: Only "(U)" markings visible in all portion selectors');
+                console.log('• CAVEATS HIDDEN: Entire caveats selector container hidden from view');
+                console.log('• RELTO HIDDEN: Entire RELTO countries selector container hidden from view');
+                console.log('• MANUAL BLOCKING: Manual attempts to select classified levels blocked with warnings');
+                console.log('• IMMEDIATE APPLICATION: Restrictions applied on page load and during initialization');
+                console.log('• FAIL-SAFE MODE: If restriction fails, system forces UNCLASSIFIED-only mode');
+                console.log('• NETWORK AUTHORIZATION: determineNetworkAuthorization() returns UNCLASSIFIED for commercial domains');
+                console.log('• SECURITY COMPLIANCE: Prevents classified content access on unsecured commercial networks');
                 console.log('');
                 console.log('SILENT SECURITY ENFORCEMENT (NEED-TO-KNOW COMPLIANCE):');
                 console.log('• NO VISIBLE WARNING BANNERS: Removed all red warning notifications about blocked escalations');
@@ -28000,6 +28746,8 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• Consistent styling across all OPORD sections');
                 console.log('');
                 console.log('TESTING FUNCTIONS:');
+                console.log('• testPortionMarkingRestrictions() - Test portion marking network restrictions (CRITICAL SECURITY)');
+                console.log('• testCommercialDomainEnforcement() - Test commercial domain restrictions (CRITICAL SECURITY)');
                 console.log('• testSilentSecurityEnforcement() - Test silent security enforcement (NEED-TO-KNOW COMPLIANCE)');
                 console.log('• testSecureClassificationEscalation() - Test secure escalation system (NEW SECURITY FEATURE)');
                 console.log('• testSecurityHardlock() - Test UNCLASSIFIED-only security hardlock (SECURITY TEST)');
@@ -28026,19 +28774,21 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• scrollToLastSubordinateUnit() - Auto-scroll to last unit (used automatically)');
                 console.log('');
                 console.log('HOW TO USE:');
-                console.log('1. Run testSilentSecurityEnforcement() to verify need-to-know compliance (PRIORITY)');
-                console.log('2. Run testSecureClassificationEscalation() to verify secure escalation system (NEW FEATURE)');
-                console.log('3. Run testClassificationBannerSecurityFix() to verify critical security fix (SECURITY)');
-                console.log('4. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
-                console.log('5. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
-                console.log('6. Run testClassificationBannerDetection() to test banner parsing capabilities');
-                console.log('7. Check console output for comprehensive security validation');
-                console.log('8. Verify no visible warning banners appear for automatic restrictions');
-                console.log('9. Test that manual exceedance attempts show appropriate warnings');
-                console.log('10. Confirm silent enforcement of commercial domain restrictions');
-                console.log('11. Verify seamless user experience for authorized classification levels');
-                console.log('12. Ensure audit logging preserved while maintaining need-to-know compliance');
-                console.log('13. Test that users remain unaware of classification levels they cannot access');
+                console.log('1. Run testPortionMarkingRestrictions() to verify portion marking network restrictions (CRITICAL)');
+                console.log('2. Run testCommercialDomainEnforcement() to verify commercial domain restrictions (CRITICAL)');
+                console.log('3. Run testSilentSecurityEnforcement() to verify need-to-know compliance (PRIORITY)');
+                console.log('4. Run testSecureClassificationEscalation() to verify secure escalation system (NEW FEATURE)');
+                console.log('5. Run testClassificationBannerSecurityFix() to verify critical security fix (SECURITY)');
+                console.log('6. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
+                console.log('7. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
+                console.log('8. Run testClassificationBannerDetection() to test banner parsing capabilities');
+                console.log('9. Check console output for comprehensive security validation');
+                console.log('10. Verify portion marking selectors show only authorized markings for network type');
+                console.log('11. Test that unauthorized portion markings are completely hidden (not just disabled)');
+                console.log('12. Confirm all 5 OPORD section portion selectors are properly restricted');
+                console.log('13. Verify current selections default to (U) when unauthorized markings detected');
+                console.log('14. Ensure portion marking restrictions align with main classification restrictions');
+                console.log('15. Test that users remain unaware of classification levels they cannot access');
                 console.log('');
                 console.log('🚀 Professional, organized, and user-friendly interface!');
                 console.log('================================================');
