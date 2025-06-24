@@ -13,7 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Copyright (c) [2025] [Larry Hedrick]-->
-    <!--Line 8374 to remove classification restrictions-->
+    <!--REMOVE LINE 8807 TO ACTIVATE OTHER CLASSIFICATIONS AND FEATURES-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LSCO OPORD Drafting Tool - Professional Edition</title>
@@ -8805,7 +8805,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
             setupClassificationSystem() {
                 try {
                     // REMOVE THIS LINE TO ACTIVATE OTHER CLASSIFICATIONS AND FEATURES
-                                
+                    this.restrictClassificationToUnclassified();           
 
                     // Initialize network classification detection
                     this.initializeNetworkClassificationDetection();
@@ -9006,18 +9006,25 @@ Copyright (c) [2025] [Larry Hedrick]-->
             }
 
             restrictClassificationToUnclassified() {
-                // DEVELOPMENT MODE: Enable full classification spectrum for testing
-                console.log('🔓 DEVELOPMENT MODE: ENABLING FULL CLASSIFICATION SPECTRUM');
+                // SECURITY HARDLOCK: Restrict all classification levels to UNCLASSIFIED only
+                console.log('🔒 SECURITY HARDLOCK: RESTRICTING TO UNCLASSIFIED-ONLY MODE');
 
-                // DISABLE restriction flag for portion marking detection and AI Assistant
-                this.classificationRestrictedToUnclassified = false; // DISABLED FOR DEVELOPMENT
+                // ENABLE restriction flag for portion marking detection and AI Assistant
+                this.classificationRestrictedToUnclassified = true; // SECURITY HARDLOCK ENABLED
 
-                // Update portion marking buttons to reflect full access
-                this.updatePortionMarkingButtons();
-                this.aiClassificationAuthority = 'FULL_SPECTRUM'; // Enable AI full spectrum authority
+                // Force current classification to UNCLASSIFIED
+                this.currentClassification = 'UNCLASSIFIED';
+                this.currentCaveats = [];
+                this.currentReltoCountries = [];
 
-                // Update AI security disclaimer to reflect full spectrum authority
+                // Restrict AI Assistant to UNCLASSIFIED-only authority
+                this.aiClassificationAuthority = 'UNCLASSIFIED_ONLY'; // Restrict AI to UNCLASSIFIED only
+
+                // Update AI security disclaimer to reflect restricted authority
                 this.updateAISecurityDisclaimer();
+
+                // Update portion marking buttons to reflect restricted access
+                this.updatePortionMarkingButtons();
 
                 setTimeout(() => {
                     const allSelectors = document.querySelectorAll('#classification-selector, #caveats-selector, #relto-countries-selector, [id$="-classification"]');
@@ -9026,14 +9033,56 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
                         const options = selector.querySelectorAll('option');
                         options.forEach(option => {
-                            // DEVELOPMENT MODE: Enable all options
-                            option.disabled = false;
-                            option.style.display = '';
-                            option.classList.remove('classification-disabled');
+                            // SECURITY HARDLOCK: Disable all options except UNCLASSIFIED
+                            if (option.value === 'UNCLASSIFIED' || option.value === 'U') {
+                                option.disabled = false;
+                                option.style.display = '';
+                                option.classList.remove('classification-disabled');
+                                option.selected = true; // Force selection of UNCLASSIFIED
+                            } else {
+                                option.disabled = true;
+                                option.style.display = 'none'; // Hide classified options
+                                option.classList.add('classification-disabled');
+                                option.selected = false; // Deselect any classified options
+                            }
                         });
+
+                        // Force selector value to UNCLASSIFIED
+                        if (selector.id === 'classification-selector') {
+                            selector.value = 'UNCLASSIFIED';
+                        } else if (selector.id.endsWith('-classification')) {
+                            selector.value = 'U';
+                        }
                     });
-                    console.log('✅ DEVELOPMENT MODE: All classification levels, caveats, and RELTO countries are now enabled');
-                }, 500); // Increased timeout to ensure draft content is loaded
+
+                    // Clear any classified caveats and RELTO countries
+                    const caveatsSelector = document.getElementById('caveats-selector');
+                    if (caveatsSelector) {
+                        Array.from(caveatsSelector.options).forEach(option => {
+                            option.selected = false;
+                        });
+                    }
+
+                    const reltoSelector = document.getElementById('relto-countries-selector');
+                    if (reltoSelector) {
+                        Array.from(reltoSelector.options).forEach(option => {
+                            option.selected = false;
+                        });
+                    }
+
+                    // Update classification banners to show UNCLASSIFIED
+                    this.updateClassificationBanners();
+
+                    console.log('🔒 SECURITY HARDLOCK: System restricted to UNCLASSIFIED-only operation');
+                    console.log('🚫 All classified levels, caveats, and RELTO countries are now disabled');
+
+                    // Show security notification to user
+                    this.showNotification(
+                        '🔒 Security Mode: System restricted to UNCLASSIFIED content only',
+                        'warning',
+                        8000
+                    );
+                }, 500); // Timeout to ensure DOM elements are loaded
             }
 
             enableAllClassifications() {
@@ -9331,6 +9380,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
                     console.log('🔍 Attempting to detect network classification...');
 
                     const detectionResults = await Promise.allSettled([
+                        this.detectFromClassificationBanners(),
                         this.detectFromDomainName(),
                         this.detectFromNetworkInfo(),
                         this.detectFromUserAgent(),
@@ -9513,6 +9563,134 @@ Copyright (c) [2025] [Larry Hedrick]-->
                 }
             }
 
+            async detectFromClassificationBanners() {
+                try {
+                    console.log('🔍 Scanning for existing classification banners...');
+
+                    // Search for classification banners in various page elements
+                    const searchElements = [
+                        // Page headers and footers
+                        ...document.querySelectorAll('header, footer, .header, .footer'),
+                        // Classification banner elements
+                        ...document.querySelectorAll('[class*="classification"], [class*="banner"]'),
+                        // Meta tags
+                        ...document.querySelectorAll('meta[name*="classification"], meta[content*="SECRET"], meta[content*="CONFIDENTIAL"], meta[content*="TOP SECRET"]'),
+                        // Title and body text
+                        document.title ? [{ textContent: document.title }] : [],
+                        // Any elements with classification-related IDs
+                        ...document.querySelectorAll('[id*="classification"], [id*="banner"]')
+                    ].flat().filter(Boolean);
+
+                    // Standard DoD classification banner patterns
+                    const classificationPatterns = [
+                        // TOP SECRET patterns
+                        {
+                            pattern: /TOP\s+SECRET\/\/SI\/\/REL\s+TO\s+USA,?\s*FVEY/gi,
+                            level: 'TOP SECRET',
+                            caveats: ['SI'],
+                            reltoCountries: ['FVEY'],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /TOP\s+SECRET\/\/SI\/\/NOFORN/gi,
+                            level: 'TOP SECRET',
+                            caveats: ['SI'],
+                            reltoCountries: ['NOFORN'],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /TOP\s+SECRET\/\/SI/gi,
+                            level: 'TOP SECRET',
+                            caveats: ['SI'],
+                            reltoCountries: [],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /TOP\s+SECRET\/\/NOFORN/gi,
+                            level: 'TOP SECRET',
+                            caveats: [],
+                            reltoCountries: ['NOFORN'],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /TOP\s+SECRET/gi,
+                            level: 'TOP SECRET',
+                            caveats: [],
+                            reltoCountries: [],
+                            confidence: 95
+                        },
+                        // SECRET patterns
+                        {
+                            pattern: /SECRET\/\/REL\s+TO\s+USA,?\s*FVEY/gi,
+                            level: 'SECRET',
+                            caveats: [],
+                            reltoCountries: ['FVEY'],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /SECRET\/\/NOFORN/gi,
+                            level: 'SECRET',
+                            caveats: [],
+                            reltoCountries: ['NOFORN'],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /SECRET/gi,
+                            level: 'SECRET',
+                            caveats: [],
+                            reltoCountries: [],
+                            confidence: 95
+                        },
+                        // UNCLASSIFIED patterns
+                        {
+                            pattern: /UNCLASSIFIED\/\/FOUO/gi,
+                            level: 'UNCLASSIFIED',
+                            caveats: ['FOUO'],
+                            reltoCountries: [],
+                            confidence: 100
+                        },
+                        {
+                            pattern: /UNCLASSIFIED/gi,
+                            level: 'UNCLASSIFIED',
+                            caveats: [],
+                            reltoCountries: [],
+                            confidence: 90
+                        }
+                    ];
+
+                    // Search through all elements for classification banners
+                    for (const element of searchElements) {
+                        const text = element.textContent || element.content || '';
+                        if (!text) continue;
+
+                        for (const classPattern of classificationPatterns) {
+                            const match = text.match(classPattern.pattern);
+                            if (match) {
+                                console.log(`🔍 Classification banner detected: "${match[0]}" in ${element.tagName || 'meta'}`);
+                                console.log(`📊 Parsed as: ${classPattern.level} with caveats: ${classPattern.caveats.join(', ') || 'None'}`);
+
+                                return {
+                                    level: classPattern.level,
+                                    caveats: classPattern.caveats,
+                                    reltoCountries: classPattern.reltoCountries,
+                                    confidence: classPattern.confidence,
+                                    method: 'classification-banner',
+                                    bannerText: match[0],
+                                    elementType: element.tagName || 'meta'
+                                };
+                            }
+                        }
+                    }
+
+                    console.log('🔍 No classification banners found on current page');
+                    return null;
+
+                } catch (error) {
+                    console.error('Error detecting from classification banners:', error);
+                    return null;
+                }
+            }
+
             async detectFromDomainName() {
                 try {
                     const hostname = window.location.hostname.toLowerCase();
@@ -9520,48 +9698,63 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
                     console.log(`🔍 Analyzing domain: ${domain}`);
 
-                    // DoD/Military domain patterns with SIPR detection
+                    // DoD/IC network architecture patterns (accurate as of 2024)
                     const classificationPatterns = {
-                        'SECRET': {
-                            domains: ['.smil.mil', '.secret.', '.s.', '.sipr.'],
-                            confidence: 95,
-                            isSIPR: true // SIPR networks carry SECRET classification
-                        },
                         'TOP SECRET': {
-                            domains: ['.topsecret.', '.ts.', '.jwics.'],
+                            domains: ['.ic.gov', '.ic.mil'],
                             confidence: 95,
-                            isSIPR: false // JWICS is separate from SIPR
+                            isSIPR: false, // JWICS/NSANET are separate from SIPR
+                            isJWICS: true,
+                            description: 'JWICS/NSANET - Joint Worldwide Intelligence Communications System'
                         },
-                        'CONFIDENTIAL': {
-                            domains: ['.confidential.', '.c.', '.fouo.'],
-                            confidence: 90,
-                            isSIPR: false
+                        'SECRET': {
+                            domains: ['.smil.mil'],
+                            confidence: 95,
+                            isSIPR: true, // SIPR networks carry SECRET classification
+                            isJWICS: false,
+                            description: 'SIPR - SECRET Internet Protocol Router Network'
                         },
                         'UNCLASSIFIED': {
-                            domains: ['.mil', '.gov', '.nipr.', '.unclass.'],
-                            confidence: 80,
-                            isSIPR: false
+                            domains: ['.mil', '.gov'],
+                            confidence: 85,
+                            isSIPR: false,
+                            isJWICS: false,
+                            description: 'NIPR - Non-classified Internet Protocol Router Network'
                         }
                     };
 
                     for (const [level, config] of Object.entries(classificationPatterns)) {
                         for (const pattern of config.domains) {
                             if (hostname.includes(pattern)) {
-                                console.log(`🔍 Domain classification detected: ${level} (${pattern})`);
+                                console.log(`🔍 ${config.description} detected: ${level} (${pattern})`);
 
                                 // Check for SIPR network detection
                                 const isSIPR = config.isSIPR || false;
+                                const isJWICS = config.isJWICS || false;
+
                                 if (isSIPR) {
                                     console.log('🔒 SIPR NETWORK DETECTED - SI caveats will be blocked');
+                                } else if (isJWICS) {
+                                    console.log('🔒 JWICS/NSANET DETECTED - Full TOP SECRET/SCI capabilities');
+                                }
+
+                                // Set appropriate default caveats based on network type
+                                let defaultCaveats = [];
+                                if (level === 'SECRET' && isSIPR) {
+                                    defaultCaveats = ['NOFORN']; // SIPR typically uses NOFORN
+                                } else if (level === 'TOP SECRET' && isJWICS) {
+                                    defaultCaveats = []; // JWICS can handle various caveats
                                 }
 
                                 return {
                                     level,
-                                    caveats: level === 'UNCLASSIFIED' ? [] : ['NOFORN'],
+                                    caveats: defaultCaveats,
                                     reltoCountries: [],
                                     confidence: config.confidence,
                                     method: 'domain',
-                                    isSIPR: isSIPR
+                                    isSIPR: isSIPR,
+                                    isJWICS: isJWICS,
+                                    networkType: config.description
                                 };
                             }
                         }
@@ -21703,7 +21896,7 @@ LOGPAC ECHO: ${this.offsetCoordinate(locationInfo.coordinates, -1500, -500)}`;
                 try {
                     // Check if classification restriction is active
                     if (this.classificationRestrictedToUnclassified) {
-                        this.aiClassificationAuthority = 'UNCLASSIFIED';
+                        this.aiClassificationAuthority = 'UNCLASSIFIED_ONLY';
                         console.log('🔒 AI Classification Authority: UNCLASSIFIED ONLY (Security Lock Active)');
                     } else {
                         // When restriction is removed, AI can utilize full classification spectrum
@@ -25924,6 +26117,351 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     }, testUnits.length * 200 + 1000);
                 };
 
+                // Add function to test security hardlock functionality
+                window.testSecurityHardlock = function() {
+                    console.log('🔒 Testing UNCLASSIFIED-only security hardlock...');
+
+                    // Test 1: Check restriction flag
+                    console.log('📊 Test 1: Checking restriction flag...');
+                    console.log(`   • classificationRestrictedToUnclassified: ${window.app.classificationRestrictedToUnclassified}`);
+                    console.log(`   • aiClassificationAuthority: ${window.app.aiClassificationAuthority}`);
+                    console.log(`   • currentClassification: ${window.app.currentClassification}`);
+
+                    // Test 2: Check classification selectors
+                    console.log('📊 Test 2: Checking classification selectors...');
+                    const classificationSelector = document.getElementById('classification-selector');
+                    if (classificationSelector) {
+                        const options = classificationSelector.querySelectorAll('option');
+                        let enabledOptions = [];
+                        let disabledOptions = [];
+
+                        options.forEach(option => {
+                            if (option.disabled || option.style.display === 'none') {
+                                disabledOptions.push(option.value);
+                            } else {
+                                enabledOptions.push(option.value);
+                            }
+                        });
+
+                        console.log(`   • Enabled options: ${enabledOptions.join(', ')}`);
+                        console.log(`   • Disabled options: ${disabledOptions.join(', ')}`);
+                        console.log(`   • Current value: ${classificationSelector.value}`);
+
+                        if (enabledOptions.length === 1 && enabledOptions[0] === 'UNCLASSIFIED') {
+                            console.log('   ✅ Classification selector properly restricted to UNCLASSIFIED');
+                        } else {
+                            console.log('   ❌ Classification selector not properly restricted');
+                        }
+                    } else {
+                        console.log('   ⚠️ Classification selector not found');
+                    }
+
+                    // Test 3: Check caveats selector
+                    console.log('📊 Test 3: Checking caveats selector...');
+                    const caveatsSelector = document.getElementById('caveats-selector');
+                    if (caveatsSelector) {
+                        const selectedCaveats = Array.from(caveatsSelector.selectedOptions).map(opt => opt.value);
+                        console.log(`   • Selected caveats: ${selectedCaveats.join(', ') || 'None'}`);
+
+                        if (selectedCaveats.length === 0) {
+                            console.log('   ✅ Caveats selector properly cleared');
+                        } else {
+                            console.log('   ❌ Caveats selector not properly cleared');
+                        }
+                    } else {
+                        console.log('   ⚠️ Caveats selector not found');
+                    }
+
+                    // Test 4: Check RELTO countries selector
+                    console.log('📊 Test 4: Checking RELTO countries selector...');
+                    const reltoSelector = document.getElementById('relto-countries-selector');
+                    if (reltoSelector) {
+                        const selectedCountries = Array.from(reltoSelector.selectedOptions).map(opt => opt.value);
+                        console.log(`   • Selected RELTO countries: ${selectedCountries.join(', ') || 'None'}`);
+
+                        if (selectedCountries.length === 0) {
+                            console.log('   ✅ RELTO countries selector properly cleared');
+                        } else {
+                            console.log('   ❌ RELTO countries selector not properly cleared');
+                        }
+                    } else {
+                        console.log('   ⚠️ RELTO countries selector not found');
+                    }
+
+                    // Test 5: Check portion marking buttons
+                    console.log('📊 Test 5: Testing portion marking buttons...');
+
+                    // Add a test unit to check portion marking
+                    window.addSubordinateUnit();
+
+                    setTimeout(() => {
+                        const container = document.getElementById('subordinate-units-container');
+                        const lastEntry = container?.lastElementChild;
+
+                        if (lastEntry) {
+                            const id = lastEntry.id.split('-')[2];
+                            const taskInput = document.getElementById(`unit-task-${id}`);
+                            const portionBtn = document.getElementById(`portion-btn-${id}`);
+
+                            if (taskInput && portionBtn) {
+                                // Expand portion marking interface
+                                portionBtn.click();
+
+                                setTimeout(() => {
+                                    const portionButtons = lastEntry.querySelectorAll('.portion-marking-btn');
+                                    console.log(`   • Found ${portionButtons.length} portion marking buttons`);
+
+                                    const buttonTexts = Array.from(portionButtons).map(btn => btn.textContent);
+                                    console.log(`   • Available buttons: ${buttonTexts.join(', ')}`);
+
+                                    if (portionButtons.length === 1 && buttonTexts[0] === '(U)') {
+                                        console.log('   ✅ Portion marking buttons properly restricted to UNCLASSIFIED only');
+                                    } else {
+                                        console.log('   ❌ Portion marking buttons not properly restricted');
+                                    }
+
+                                    // Test 6: Check AI Assistant authority
+                                    console.log('📊 Test 6: Checking AI Assistant authority...');
+                                    console.log(`   • AI Classification Authority: ${window.app.aiClassificationAuthority}`);
+
+                                    if (window.app.aiClassificationAuthority === 'UNCLASSIFIED_ONLY') {
+                                        console.log('   ✅ AI Assistant properly restricted to UNCLASSIFIED only');
+                                    } else {
+                                        console.log('   ❌ AI Assistant not properly restricted');
+                                    }
+
+                                    // Test 7: Check classification banners
+                                    console.log('📊 Test 7: Checking classification banners...');
+                                    const topBanner = document.getElementById('classification-banner-top');
+                                    const bottomBanner = document.getElementById('classification-banner-bottom');
+
+                                    if (topBanner) {
+                                        console.log(`   • Top banner: ${topBanner.textContent}`);
+                                    }
+                                    if (bottomBanner) {
+                                        console.log(`   • Bottom banner: ${bottomBanner.textContent}`);
+                                    }
+
+                                    // Final summary
+                                    console.log('🔒 SECURITY HARDLOCK TEST COMPLETE');
+                                    console.log('📋 Summary:');
+                                    console.log('   • System should be restricted to UNCLASSIFIED-only operation');
+                                    console.log('   • All classified options should be disabled/hidden');
+                                    console.log('   • Only (U) portion marking should be available');
+                                    console.log('   • AI Assistant should be restricted to UNCLASSIFIED content');
+                                    console.log('   • Classification banners should show UNCLASSIFIED');
+
+                                    if (window.app.classificationRestrictedToUnclassified) {
+                                        console.log('✅ HARDLOCK STATUS: ACTIVE - System properly restricted');
+                                    } else {
+                                        console.log('❌ HARDLOCK STATUS: INACTIVE - System not restricted');
+                                    }
+
+                                }, 500);
+                            }
+                        }
+                    }, 300);
+                };
+
+                // Add function to test network classification configuration
+                window.testNetworkClassificationConfig = function() {
+                    console.log('🌐 Testing Network Classification Configuration System...');
+                    console.log('');
+
+                    // Test 1: Current Network State
+                    console.log('📊 Test 1: Current Network Classification State');
+                    const networkState = window.app.networkClassificationState;
+                    if (networkState) {
+                        console.log(`   • Detection Status: ${networkState.detected ? 'DETECTED' : 'NOT DETECTED'}`);
+                        console.log(`   • Network Level: ${networkState.level}`);
+                        console.log(`   • Caveats: ${networkState.caveats?.join(', ') || 'None'}`);
+                        console.log(`   • RELTO Countries: ${networkState.reltoCountries?.join(', ') || 'None'}`);
+                        console.log(`   • Confidence: ${networkState.confidence}%`);
+                        console.log(`   • Detection Method: ${networkState.detectionMethod}`);
+                        console.log(`   • Last Detection: ${networkState.lastDetection || 'Never'}`);
+                        console.log(`   • Auto Applied: ${networkState.autoApplied ? 'YES' : 'NO'}`);
+                        console.log(`   • SIPR Network: ${networkState.isSIPR ? 'YES' : 'NO'}`);
+                        console.log(`   • SI Caveats Blocked: ${networkState.siCaveatsBlocked ? 'YES' : 'NO'}`);
+                    } else {
+                        console.log('   ⚠️ Network classification state not initialized');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 2: Network Detection Methods');
+                    console.log('   The system uses 7 detection methods (prioritized by confidence):');
+                    console.log('   1. Classification Banner Detection - Scans for existing classification banners (95-100% confidence)');
+                    console.log('   2. Domain Name Analysis - Checks for DoD/IC network domains (85-95% confidence)');
+                    console.log('   3. Network Information API - Analyzes connection characteristics');
+                    console.log('   4. User Agent Analysis - Looks for government/military system indicators');
+                    console.log('   5. Security Headers - Checks meta tags for classification indicators');
+                    console.log('   6. Local Storage - Checks for stored classification preferences');
+                    console.log('   7. Environment Variables - Analyzes timezone and system indicators');
+
+                    console.log('');
+                    console.log('📊 Test 3: DoD/IC Network Architecture (Accurate 2024)');
+                    console.log('   TOP SECRET Networks:');
+                    console.log('     • .ic.gov - Intelligence Community Government domains (JWICS/NSANET)');
+                    console.log('     • .ic.mil - Intelligence Community Military domains (JWICS/NSANET)');
+                    console.log('     • Handles: TOP SECRET, TOP SECRET//SI, TOP SECRET//SI//NOFORN, etc.');
+                    console.log('   SECRET Networks (SIPR):');
+                    console.log('     • .smil.mil - SECRET Internet Protocol Router Network');
+                    console.log('     • Handles: SECRET, SECRET//NOFORN, SECRET//REL TO FVEY');
+                    console.log('     • Automatically blocks SI (Special Intelligence) caveats');
+                    console.log('   UNCLASSIFIED Networks (NIPR):');
+                    console.log('     • .mil - Military domains (Non-classified Internet Protocol Router Network)');
+                    console.log('     • .gov - Government domains (Non-classified Internet Protocol Router Network)');
+                    console.log('     • Handles: UNCLASSIFIED, UNCLASSIFIED//FOUO');
+                    console.log('   NOTE: No dedicated CONFIDENTIAL networks exist in DoD/IC infrastructure.');
+                    console.log('         CONFIDENTIAL information is processed on higher classification networks.');
+
+                    console.log('');
+                    console.log('📊 Test 4: SIPR Network Security Controls');
+                    console.log('   When SIPR network is detected:');
+                    console.log('   • SI (Special Intelligence) caveats are automatically blocked');
+                    console.log('   • Real-time input monitoring prevents SI caveat entry');
+                    console.log('   • Portion marking buttons exclude SI combinations');
+                    console.log('   • Security notifications warn users of restrictions');
+                    console.log('   • Text fields are automatically cleaned of SI content');
+
+                    console.log('');
+                    console.log('📊 Test 5: Auto-Application Logic');
+                    console.log('   • High Confidence (≥80%): Automatically applies network classification');
+                    console.log('   • Medium Confidence (50-79%): Suggests classification update with user choice');
+                    console.log('   • Low Confidence (<50%): Logs detection but no action');
+                    console.log('   • Manual Override: User selections override automatic detection');
+
+                    console.log('');
+                    console.log('📊 Test 6: Current Domain Analysis');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    console.log(`   • Current Domain: ${currentDomain}`);
+
+                    // Analyze current domain using accurate DoD/IC patterns
+                    if (currentDomain.includes('.smil.mil')) {
+                        console.log('   🔒 SIPR NETWORK DETECTED - SECRET classification expected');
+                        console.log('   🚫 SI (Special Intelligence) caveats will be automatically blocked');
+                    } else if (currentDomain.includes('.ic.gov') || currentDomain.includes('.ic.mil')) {
+                        console.log('   🔒 JWICS/NSANET DETECTED - TOP SECRET classification expected');
+                        console.log('   ✅ Full TOP SECRET/SCI capabilities available');
+                    } else if (currentDomain.includes('.mil') || currentDomain.includes('.gov')) {
+                        console.log('   🔓 NIPR Government network detected - UNCLASSIFIED expected');
+                    } else if (currentDomain === 'localhost' || currentDomain.startsWith('127.') || currentDomain.startsWith('192.168.') || currentDomain.startsWith('10.')) {
+                        console.log('   🏠 Local development environment - Default UNCLASSIFIED');
+                    } else {
+                        console.log('   🌐 Public/commercial network - Default UNCLASSIFIED');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 7: Classification Banner Detection Test');
+                    console.log('   Testing classification banner detection on current page...');
+
+                    // Test the classification banner detection
+                    window.app.detectFromClassificationBanners().then(result => {
+                        if (result) {
+                            console.log(`   ✅ Classification banner detected: ${result.level}`);
+                            console.log(`   📄 Banner text: "${result.bannerText}"`);
+                            console.log(`   🎯 Confidence: ${result.confidence}%`);
+                            console.log(`   📍 Found in: ${result.elementType}`);
+                        } else {
+                            console.log('   ℹ️ No classification banners found on current page');
+                        }
+                    }).catch(error => {
+                        console.log('   ❌ Banner detection error:', error);
+                    });
+
+                    console.log('📊 Test 8: Manual Network Classification Test');
+                    console.log('   You can manually test network classification by setting localStorage:');
+                    console.log('   • localStorage.setItem("system-classification", "SECRET")');
+                    console.log('   • localStorage.setItem("network-classification", "TOP SECRET")');
+                    console.log('   • Then reload the page to see detection in action');
+
+                    console.log('');
+                    console.log('📊 Test 9: Security Compliance Validation');
+                    const compliance = window.app.validateNetworkClassificationCompliance();
+                    console.log(`   • Network Compliance Status: ${compliance ? 'COMPLIANT' : 'NON-COMPLIANT'}`);
+
+                    if (!compliance && networkState?.detected) {
+                        console.log(`   ⚠️ Document classification may exceed network authorization`);
+                        console.log(`   • Network Level: ${networkState.level}`);
+                        console.log(`   • Document Level: ${window.app.currentClassification}`);
+                    }
+
+                    console.log('');
+                    console.log('🌐 NETWORK CLASSIFICATION CONFIGURATION TEST COMPLETE');
+                    console.log('📋 Summary (Updated for Accurate DoD/IC Architecture):');
+                    console.log('   • Classification banner detection provides authoritative source (95-100% confidence)');
+                    console.log('   • Accurate DoD/IC network patterns: NIPR (.mil/.gov), SIPR (.smil.mil), JWICS (.ic.gov/.ic.mil)');
+                    console.log('   • No dedicated CONFIDENTIAL networks (processed on higher classification networks)');
+                    console.log('   • SIPR networks automatically block SI caveats for security compliance');
+                    console.log('   • JWICS/NSANET provides full TOP SECRET/SCI capabilities');
+                    console.log('   • Network detection runs automatically every 30 seconds');
+                    console.log('   • High-confidence detections auto-apply appropriate settings');
+                    console.log('   • System maintains compliance with network authorization levels');
+                    console.log('   • Manual overrides are respected and preserved');
+
+                    // Trigger a manual detection for demonstration
+                    console.log('');
+                    console.log('🔄 Triggering manual network detection...');
+                    window.app.detectNetworkClassification().then(() => {
+                        console.log('✅ Manual network detection complete - check above for results');
+                    }).catch(error => {
+                        console.log('❌ Manual network detection failed:', error);
+                    });
+                };
+
+                // Add function to test classification banner detection specifically
+                window.testClassificationBannerDetection = function() {
+                    console.log('🏷️ Testing Classification Banner Detection System...');
+                    console.log('');
+
+                    console.log('📊 Test 1: Current Page Banner Scan');
+                    window.app.detectFromClassificationBanners().then(result => {
+                        if (result) {
+                            console.log('✅ Classification banner detected on current page:');
+                            console.log(`   • Classification Level: ${result.level}`);
+                            console.log(`   • Banner Text: "${result.bannerText}"`);
+                            console.log(`   • Caveats: ${result.caveats?.join(', ') || 'None'}`);
+                            console.log(`   • RELTO Countries: ${result.reltoCountries?.join(', ') || 'None'}`);
+                            console.log(`   • Confidence: ${result.confidence}%`);
+                            console.log(`   • Found in Element: ${result.elementType}`);
+                            console.log(`   • Detection Method: ${result.method}`);
+                        } else {
+                            console.log('ℹ️ No classification banners found on current page');
+                        }
+
+                        console.log('');
+                        console.log('📊 Test 2: Supported Banner Patterns');
+                        console.log('   The system recognizes these standard DoD classification banners:');
+                        console.log('   TOP SECRET Patterns:');
+                        console.log('     • "TOP SECRET//SI//REL TO USA, FVEY" (100% confidence)');
+                        console.log('     • "TOP SECRET//SI//NOFORN" (100% confidence)');
+                        console.log('     • "TOP SECRET//SI" (100% confidence)');
+                        console.log('     • "TOP SECRET//NOFORN" (100% confidence)');
+                        console.log('     • "TOP SECRET" (95% confidence)');
+                        console.log('   SECRET Patterns:');
+                        console.log('     • "SECRET//REL TO USA, FVEY" (100% confidence)');
+                        console.log('     • "SECRET//NOFORN" (100% confidence)');
+                        console.log('     • "SECRET" (95% confidence)');
+                        console.log('   UNCLASSIFIED Patterns:');
+                        console.log('     • "UNCLASSIFIED//FOUO" (100% confidence)');
+                        console.log('     • "UNCLASSIFIED" (90% confidence)');
+
+                        console.log('');
+                        console.log('📊 Test 3: Banner Detection Priority');
+                        console.log('   Classification banner detection has the highest priority because:');
+                        console.log('   • Represents the actual system authorization level');
+                        console.log('   • Provides authoritative source for maximum classification');
+                        console.log('   • Includes specific caveats and RELTO designations');
+                        console.log('   • Used by system administrators to mark authorized levels');
+                        console.log('   • Confidence levels: 90-100% (highest among all detection methods)');
+
+                        console.log('');
+                        console.log('🏷️ CLASSIFICATION BANNER DETECTION TEST COMPLETE');
+
+                    }).catch(error => {
+                        console.error('❌ Classification banner detection failed:', error);
+                    });
+                };
+
                 // Add function to test fixed header and improved scrolling
                 window.testFixedHeaderScrolling = function() {
                     console.log('🧪 Testing fixed header and improved scrolling with 12 units...');
@@ -26216,7 +26754,31 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 // Log available debug functions
                 console.log('✅ === ENHANCED SUBORDINATE UNITS & PORTION MARKING BARS ===');
                 console.log('');
-                console.log('🎯 NEW FEATURES: Section overlap fix + enhanced subordinate units layout + compact portion marking bars');
+                console.log('🎯 NEW FEATURES: Accurate DoD/IC network detection + security hardlock fix + enhanced subordinate units');
+                console.log('');
+                console.log('NETWORK CLASSIFICATION IMPROVEMENTS (MAJOR UPDATE):');
+                console.log('• ACCURATE DoD/IC ARCHITECTURE: Updated to reflect real network infrastructure');
+                console.log('• CLASSIFICATION BANNER DETECTION: New authoritative detection method (95-100% confidence)');
+                console.log('• CORRECTED NETWORK PATTERNS: NIPR (.mil/.gov), SIPR (.smil.mil), JWICS (.ic.gov/.ic.mil)');
+                console.log('• REMOVED CONFIDENTIAL NETWORKS: No dedicated CONFIDENTIAL networks exist in DoD/IC');
+                console.log('• ENHANCED SIPR CONTROLS: Automatic SI caveat blocking for SIPR network compliance');
+                console.log('• JWICS/NSANET SUPPORT: Full TOP SECRET/SCI capabilities for Intelligence Community');
+                console.log('• PRIORITY-BASED DETECTION: Classification banners take precedence as authoritative source');
+                console.log('• COMPREHENSIVE BANNER PARSING: Supports complex DoD classification banner formats');
+                console.log('• REAL-WORLD COMPLIANCE: Matches actual DoD and IC network security policies');
+                console.log('• ENHANCED TESTING: New testClassificationBannerDetection() function');
+                console.log('');
+                console.log('SECURITY HARDLOCK IMPROVEMENTS:');
+                console.log('• FIXED HARDLOCK FUNCTION: restrictClassificationToUnclassified() now properly restricts system');
+                console.log('• UNCLASSIFIED-ONLY MODE: All classification levels except UNCLASSIFIED are disabled/hidden');
+                console.log('• PORTION MARKING RESTRICTION: Only (U) buttons available when hardlock is active');
+                console.log('• AI ASSISTANT RESTRICTION: AI authority set to UNCLASSIFIED_ONLY mode');
+                console.log('• CLASSIFICATION SELECTORS: All classified options disabled and hidden from UI');
+                console.log('• CAVEATS CLEARED: All classified caveats automatically cleared and disabled');
+                console.log('• RELTO COUNTRIES CLEARED: All RELTO country selections cleared and disabled');
+                console.log('• SECURITY NOTIFICATIONS: User notified when hardlock is active');
+                console.log('• COMPREHENSIVE TESTING: testSecurityHardlock() function validates all restrictions');
+                console.log('• FAIL-SAFE DESIGN: System defaults to restricted mode for security compliance');
                 console.log('');
                 console.log('SUBORDINATE UNITS IMPROVEMENTS:');
                 console.log('• Professional card-based layout with gradient styling');
@@ -26245,6 +26807,9 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• Consistent styling across all OPORD sections');
                 console.log('');
                 console.log('TESTING FUNCTIONS:');
+                console.log('• testSecurityHardlock() - Test UNCLASSIFIED-only security hardlock (SECURITY TEST)');
+                console.log('• testNetworkClassificationConfig() - Test network classification detection system (NETWORK TEST)');
+                console.log('• testClassificationBannerDetection() - Test classification banner detection (BANNER TEST)');
                 console.log('• testSectionOverlapFix() - Test section overlap resolution (LATEST FIX)');
                 console.log('• testExpandedSectionHeight() - Test expanded section height and portion marking');
                 console.log('• testEnhancedSubordinateUnits() - Demo enhanced subordinate units');
@@ -26265,16 +26830,16 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• scrollToLastSubordinateUnit() - Auto-scroll to last unit (used automatically)');
                 console.log('');
                 console.log('HOW TO USE:');
-                console.log('1. Run testSectionOverlapFix() to verify layout fixes');
-                console.log('2. Navigate to Execution tab → "Tasks to Subordinate Units"');
-                console.log('3. Add multiple units and verify no overlap with Sustainment section');
-                console.log('4. Check that action buttons are only at the bottom of the page');
-                console.log('5. Verify all sections (Execution, Sustainment, Command) are accessible');
-                console.log('6. Test portion marking interfaces expand without clipping');
-                console.log('7. Confirm proper spacing between all sections');
-                console.log('8. Verify unlimited height for execution section content');
-                console.log('9. Check that Tasks to Staff subsection remains accessible');
-                console.log('10. Test scrolling behavior within subordinate units container');
+                console.log('1. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
+                console.log('2. Run testClassificationBannerDetection() to test banner parsing capabilities');
+                console.log('3. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
+                console.log('4. Check console output for comprehensive network and security validation');
+                console.log('5. Verify network detection matches actual DoD/IC architecture patterns');
+                console.log('6. Test classification banner detection with various banner formats');
+                console.log('7. Confirm only UNCLASSIFIED options available when hardlock is active');
+                console.log('8. Test SIPR network simulation (localStorage method) for SI caveat blocking');
+                console.log('9. Verify JWICS network detection for TOP SECRET/SCI capabilities');
+                console.log('10. Ensure all network-based security restrictions function correctly');
                 console.log('');
                 console.log('🚀 Professional, organized, and user-friendly interface!');
                 console.log('================================================');
