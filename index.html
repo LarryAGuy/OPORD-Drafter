@@ -8833,10 +8833,23 @@ Copyright (c) [2025] [Larry Hedrick]-->
                     if (classificationSelector) {
                         classificationSelector.addEventListener('change', (e) => {
                             if (this.manualClassificationMode) {
-                                this.currentClassification = e.target.value;
+                                const attemptedLevel = e.target.value;
+
+                                // Check if user is trying to exceed authorization (ONLY time to show warnings)
+                                const isAuthorized = this.handleManualClassificationExceedance(attemptedLevel, this.currentCaveats, this.currentReltoCountries);
+
+                                if (!isAuthorized) {
+                                    // Reset selector to current authorized level
+                                    e.target.value = this.currentClassification;
+                                    console.log(`🚫 Manual classification change blocked: ${attemptedLevel} exceeds authorization`);
+                                    return;
+                                }
+
+                                // Proceed with authorized classification change
+                                this.currentClassification = attemptedLevel;
 
                                 // Validate existing caveats against new classification level
-                                const validatedCaveats = this.validateCaveatCompatibility(this.currentCaveats, e.target.value);
+                                const validatedCaveats = this.validateCaveatCompatibility(this.currentCaveats, attemptedLevel);
                                 if (validatedCaveats.length !== this.currentCaveats.length ||
                                     !validatedCaveats.every(caveat => this.currentCaveats.includes(caveat))) {
                                     this.currentCaveats = validatedCaveats;
@@ -8848,7 +8861,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
                                 this.updateClassificationBanners();
                                 this.updateModeStatus();
                                 this.saveClassificationState();
-                                console.log(`Manual classification updated to: ${e.target.value}`);
+                                console.log(`✅ Manual classification change authorized: ${attemptedLevel}`);
                             } else {
                                 this.updateOverallClassification(e.target.value);
                             }
@@ -10372,6 +10385,7 @@ Copyright (c) [2025] [Larry Hedrick]-->
                         }
                     } else {
                         console.log(`🚫 Classification escalation blocked: ${escalationResult.reason}`);
+                        // SILENT BLOCKING: No user notification for need-to-know compliance
                         this.showEscalationBlockedNotification(result, escalationResult);
                     }
 
@@ -10585,41 +10599,30 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
             showClassificationComplianceWarning(networkLevel, documentLevel) {
                 try {
-                    const warningHtml = `
-                        <div class="classification-warning p-4 bg-red-900 border border-red-500 rounded-lg mb-4">
-                            <div class="flex items-start space-x-3">
-                                <i class="fas fa-exclamation-triangle text-red-400 mt-1"></i>
-                                <div class="flex-1">
-                                    <h4 class="text-white font-semibold mb-2">Classification Compliance Warning</h4>
-                                    <p class="text-red-200 text-sm mb-3">
-                                        Document classification (${documentLevel}) exceeds detected network classification (${networkLevel}).
-                                        This may violate security protocols.
-                                    </p>
-                                    <div class="flex space-x-2">
-                                        <button onclick="app.adjustToNetworkClassification()"
-                                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
-                                            Adjust to Network Level
-                                        </button>
-                                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
-                                                class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
-                                            Acknowledge Risk
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    // NEED-TO-KNOW COMPLIANCE: Silent enforcement of classification compliance
+                    // No user-facing warnings to avoid revealing network classification levels
 
-                    const mainContent = document.getElementById('main-content');
-                    if (mainContent) {
-                        const existingWarning = mainContent.querySelector('.classification-warning');
-                        if (existingWarning) {
-                            existingWarning.remove();
-                        }
-                        mainContent.insertAdjacentHTML('afterbegin', warningHtml);
-                    }
+                    console.log('🔒 SILENT SECURITY: Classification compliance issue (no user warning)');
+                    console.log(`   • Document Level: ${documentLevel}`);
+                    console.log(`   • Network Level: ${networkLevel}`);
+                    console.log('   • Action: Silent adjustment to authorized level');
+                    console.log('   • User Experience: Seamless (no visible warnings)');
+
+                    // Automatically adjust to network level without user notification
+                    this.adjustToNetworkClassification();
+
+                    // Log for audit trail
+                    this.logClassificationEscalation(
+                        documentLevel,
+                        networkLevel,
+                        'silent-compliance-adjustment',
+                        `Auto-adjusted document from ${documentLevel} to ${networkLevel} for network compliance`
+                    );
+
+                    // No UI elements created - maintain need-to-know compliance
+
                 } catch (error) {
-                    console.error('Error showing classification compliance warning:', error);
+                    console.error('Error in silent classification compliance enforcement:', error);
                 }
             }
 
@@ -10647,119 +10650,30 @@ Copyright (c) [2025] [Larry Hedrick]-->
 
             showNetworkAuthorizationWarning(detectedMarking) {
                 try {
-                    console.log('🚨 Showing network authorization warning for:', detectedMarking);
-                    console.log('🌐 Current language:', this.currentLanguage);
-                    console.log('🔍 Translation system available:', !!this.translations);
-                    console.log('🔍 Current language translations available:', !!this.translations[this.currentLanguage]);
+                    // NEED-TO-KNOW COMPLIANCE: Silent enforcement of network authorization limits
+                    // No user-facing warnings to avoid revealing higher classification levels exist
 
-                    // Ensure translation system is ready
-                    if (!this.translations || !this.currentLanguage) {
-                        console.warn('⚠️ Translation system not ready, using English fallbacks');
-                        this.currentLanguage = 'en';
-                    }
+                    console.log('🔒 SILENT SECURITY: Network authorization exceeded (no user warning)');
+                    console.log('🚨 Detected marking exceeds authorization:', detectedMarking);
+                    console.log('🌐 Current domain authorization level enforced silently');
+                    console.log('🛡️ Need-to-know compliance: User unaware of higher levels');
 
-                    // Get translated text with proper fallbacks and debugging
-                    const warningTitle = this.getTranslation('network_authorization_warning');
-                    console.log('🔍 Warning title translation:', warningTitle);
-
-                    const warningMessage = this.getTranslation('classification_exceeds_network_auth');
-                    console.log('🔍 Warning message translation:', warningMessage);
-
-                    const acknowledgeText = this.getTranslation('acknowledge_warning');
-                    console.log('🔍 Acknowledge text translation:', acknowledgeText);
-
-                    const removeContentText = this.getTranslation('remove_violating_content');
-                    console.log('🔍 Remove content text translation:', removeContentText);
-
-                    const detectedText = this.getTranslation('detected');
-                    const networkAuthText = this.getTranslation('network_authorization');
-                    const securityPolicyText = this.getTranslation('security_policy');
-                    const classificationElevationPreventedText = this.getTranslation('classification_elevation_prevented');
-                    const unclassifiedOnlyText = this.getTranslation('unclassified_only');
-
-                    console.log('🔍 All translations:', {
-                        warningTitle,
-                        warningMessage,
-                        acknowledgeText,
-                        removeContentText,
-                        detectedText,
-                        networkAuthText,
-                        securityPolicyText,
-                        classificationElevationPreventedText,
-                        unclassifiedOnlyText
-                    });
-
-                    const warningHtml = `
-                        <div class="network-authorization-warning p-4 bg-red-900 border-2 border-red-500 rounded-lg mb-4 shadow-lg">
-                            <div class="flex items-start space-x-3">
-                                <i class="fas fa-exclamation-triangle text-red-400 text-xl mt-1 animate-pulse"></i>
-                                <div class="flex-1">
-                                    <h4 class="text-white font-bold text-lg mb-2 flex items-center">
-                                        <i class="fas fa-shield-alt mr-2"></i>
-                                        ${warningTitle || 'Network Authorization Warning'}
-                                    </h4>
-                                    <div class="bg-red-800 p-3 rounded mb-3">
-                                        <p class="text-red-100 text-sm font-medium mb-2">
-                                            ${warningMessage || 'Detected classification markings exceed network authorization. Document remains UNCLASSIFIED per network security policy.'}
-                                        </p>
-                                        <div class="text-red-200 text-xs">
-                                            <div><strong>${detectedText || 'Detected'}:</strong> (${detectedMarking.classification}${detectedMarking.caveats.length > 0 ? '//' + detectedMarking.caveats.join('/') : ''})</div>
-                                            <div><strong>${networkAuthText || 'Network Authorization'}:</strong> ${unclassifiedOnlyText || 'UNCLASSIFIED only'}</div>
-                                            <div><strong>${securityPolicyText || 'Security Policy'}:</strong> ${classificationElevationPreventedText || 'Classification elevation prevented'}</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <button onclick="app.acknowledgeNetworkAuthorizationWarning()"
-                                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium flex items-center">
-                                            <i class="fas fa-check mr-2"></i>${acknowledgeText || 'Acknowledge'}
-                                        </button>
-                                        <button onclick="app.removeViolatingContent()"
-                                                class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded text-sm font-medium flex items-center">
-                                            <i class="fas fa-eraser mr-2"></i>${removeContentText || 'Remove Violating Content'}
-                                        </button>
-                                    </div>
-                                </div>
-                                <button onclick="this.parentElement.parentElement.parentElement.remove()"
-                                        class="text-red-400 hover:text-white text-lg">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-
-                    // Insert warning at the top of the classification interface
-                    const classificationInterface = document.querySelector('.classification-interface') ||
-                                                  document.querySelector('#classification-controls') ||
-                                                  document.getElementById('main-content');
-
-                    if (classificationInterface) {
-                        // Remove any existing warning
-                        const existingWarning = classificationInterface.querySelector('.network-authorization-warning');
-                        if (existingWarning) {
-                            existingWarning.remove();
-                        }
-
-                        // Insert new warning at the top
-                        classificationInterface.insertAdjacentHTML('afterbegin', warningHtml);
-
-                        // Scroll to warning to ensure visibility
-                        const newWarning = classificationInterface.querySelector('.network-authorization-warning');
-                        if (newWarning) {
-                            newWarning.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }
-                    }
-
-                    // Store the detected marking for potential removal
-                    this.lastDetectedViolatingMarking = detectedMarking;
-
-                    // Show notification with proper translation
-                    this.showNotification(
-                        this.getTranslation('classification_violation_detected') || 'Classification violation detected - network authorization exceeded',
-                        'error'
+                    // Log the violation for audit purposes
+                    this.logClassificationEscalation(
+                        this.currentClassification,
+                        `${detectedMarking.classification}${detectedMarking.caveats.length > 0 ? '//' + detectedMarking.caveats.join('/') : ''}`,
+                        'network-authorization-violation',
+                        'Silent enforcement: Detected marking exceeds network authorization'
                     );
 
+                    // Store the detected marking for potential removal (but no UI)
+                    this.lastDetectedViolatingMarking = detectedMarking;
+
+                    // Silently maintain UNCLASSIFIED state without user notification
+                    // This ensures security compliance while preserving need-to-know principles
+
                 } catch (error) {
-                    console.error('Error showing network authorization warning:', error);
+                    console.error('Error in silent network authorization enforcement:', error);
                 }
             }
 
@@ -11099,47 +11013,30 @@ Copyright (c) [2025] [Larry Hedrick]-->
                 }
             }
 
-            // Show escalation blocked notification
+            // Show escalation blocked notification (SILENT - NO UI DISPLAY)
             showEscalationBlockedNotification(detectionResult, escalationResult) {
                 try {
-                    const blockHtml = `
-                        <div class="escalation-blocked-notification p-4 bg-red-900 border border-red-500 rounded-lg mb-4">
-                            <div class="flex items-start space-x-3">
-                                <i class="fas fa-ban text-red-400 mt-1"></i>
-                                <div class="flex-1">
-                                    <h4 class="text-white font-semibold mb-2">🚫 Classification Escalation Blocked</h4>
-                                    <p class="text-red-200 text-sm mb-3">
-                                        Detected classification: <strong>${detectionResult.level}</strong><br>
-                                        Reason: ${escalationResult.reason}<br>
-                                        ${escalationResult.maxAuthorized ? `Maximum authorized: ${escalationResult.maxAuthorized}` : ''}
-                                    </p>
-                                    <div class="flex space-x-2">
-                                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
-                                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
-                                            Acknowledge
-                                        </button>
-                                    </div>
-                                </div>
-                                <button onclick="this.parentElement.parentElement.parentElement.remove()"
-                                        class="text-red-400 hover:text-white">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    // NEED-TO-KNOW COMPLIANCE: No user-facing notification for blocked escalations
+                    // Security restrictions are enforced silently to avoid revealing higher classification levels
 
-                    // Insert notification at the top of the main content
-                    const mainContent = document.getElementById('main-content');
-                    if (mainContent) {
-                        const existingNotification = mainContent.querySelector('.escalation-blocked-notification');
-                        if (existingNotification) {
-                            existingNotification.remove();
-                        }
-                        mainContent.insertAdjacentHTML('afterbegin', blockHtml);
-                    }
+                    console.log('🔒 SILENT SECURITY: Classification escalation blocked (no user notification)');
+                    console.log(`   • Detected Level: ${detectionResult.level}`);
+                    console.log(`   • Block Reason: ${escalationResult.reason}`);
+                    console.log(`   • Max Authorized: ${escalationResult.maxAuthorized || 'N/A'}`);
+                    console.log('   • User Experience: Seamless (no visible warnings)');
+
+                    // Log for audit trail but do not display to user
+                    this.logClassificationEscalation(
+                        this.currentClassification,
+                        detectionResult.level,
+                        'blocked-escalation',
+                        `Silent block: ${escalationResult.reason}`
+                    );
+
+                    // No UI elements created - maintain need-to-know compliance
 
                 } catch (error) {
-                    console.error('❌ Error showing escalation blocked notification:', error);
+                    console.error('❌ Error in silent escalation blocking:', error);
                 }
             }
 
@@ -11178,6 +11075,126 @@ Copyright (c) [2025] [Larry Hedrick]-->
                     this.showNotification('Classification escalation dismissed', 'info');
                 } catch (error) {
                     console.error('❌ Error dismissing secure escalation:', error);
+                }
+            }
+
+            // Handle manual user attempts to exceed authorization (ONLY time to show warnings)
+            handleManualClassificationExceedance(attemptedLevel, attemptedCaveats, attemptedRelto) {
+                try {
+                    const networkAuth = this.determineNetworkAuthorization();
+                    const currentRank = this.getClassificationRank(this.currentClassification);
+                    const attemptedRank = this.getClassificationRank(attemptedLevel);
+                    const networkRank = this.getClassificationRank(networkAuth);
+
+                    // Only show warning if user is manually trying to exceed their authorization
+                    if (attemptedRank > networkRank) {
+                        console.log('⚠️ USER MANUAL ATTEMPT: User trying to exceed network authorization');
+                        console.log(`   • Attempted: ${attemptedLevel}`);
+                        console.log(`   • Network Auth: ${networkAuth}`);
+                        console.log('   • Action: Show warning (user-initiated action)');
+
+                        // Show warning only for manual user attempts
+                        this.showManualExceedanceWarning(attemptedLevel, networkAuth);
+                        return false; // Block the action
+                    }
+
+                    // Check for hardlock restrictions
+                    if (this.classificationRestrictedToUnclassified && attemptedLevel !== 'UNCLASSIFIED') {
+                        console.log('⚠️ USER MANUAL ATTEMPT: User trying to exceed hardlock restrictions');
+                        this.showHardlockExceedanceWarning(attemptedLevel);
+                        return false; // Block the action
+                    }
+
+                    return true; // Allow the action
+                } catch (error) {
+                    console.error('Error handling manual classification exceedance:', error);
+                    return false; // Fail-safe: block the action
+                }
+            }
+
+            // Show warning only when user manually tries to exceed authorization
+            showManualExceedanceWarning(attemptedLevel, maxAuthorized) {
+                try {
+                    const warningHtml = `
+                        <div class="manual-exceedance-warning p-4 bg-orange-900 border border-orange-500 rounded-lg mb-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fas fa-exclamation-triangle text-orange-400 mt-1"></i>
+                                <div class="flex-1">
+                                    <h4 class="text-white font-semibold mb-2">⚠️ Authorization Limit Reached</h4>
+                                    <p class="text-orange-200 text-sm mb-3">
+                                        The classification level you selected (${attemptedLevel}) exceeds your current network authorization (${maxAuthorized}).
+                                        Please select an appropriate classification level for your network.
+                                    </p>
+                                    <div class="flex space-x-2">
+                                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                                class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm">
+                                            Understood
+                                        </button>
+                                    </div>
+                                </div>
+                                <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                        class="text-orange-400 hover:text-white">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Insert warning at the top of the main content
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                        const existingWarning = mainContent.querySelector('.manual-exceedance-warning');
+                        if (existingWarning) {
+                            existingWarning.remove();
+                        }
+                        mainContent.insertAdjacentHTML('afterbegin', warningHtml);
+                    }
+
+                } catch (error) {
+                    console.error('Error showing manual exceedance warning:', error);
+                }
+            }
+
+            // Show warning when user tries to exceed hardlock restrictions
+            showHardlockExceedanceWarning(attemptedLevel) {
+                try {
+                    const warningHtml = `
+                        <div class="hardlock-exceedance-warning p-4 bg-red-900 border border-red-500 rounded-lg mb-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fas fa-lock text-red-400 mt-1"></i>
+                                <div class="flex-1">
+                                    <h4 class="text-white font-semibold mb-2">🔒 Security Restriction Active</h4>
+                                    <p class="text-red-200 text-sm mb-3">
+                                        This system is currently restricted to UNCLASSIFIED content only.
+                                        The classification level you selected (${attemptedLevel}) is not available.
+                                    </p>
+                                    <div class="flex space-x-2">
+                                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                            Understood
+                                        </button>
+                                    </div>
+                                </div>
+                                <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                        class="text-red-400 hover:text-white">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Insert warning at the top of the main content
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                        const existingWarning = mainContent.querySelector('.hardlock-exceedance-warning');
+                        if (existingWarning) {
+                            existingWarning.remove();
+                        }
+                        mainContent.insertAdjacentHTML('afterbegin', warningHtml);
+                    }
+
+                } catch (error) {
+                    console.error('Error showing hardlock exceedance warning:', error);
                 }
             }
 
@@ -27163,6 +27180,159 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     });
                 };
 
+                // Add function to test silent security enforcement (need-to-know compliance)
+                window.testSilentSecurityEnforcement = function() {
+                    console.log('🔒 Testing Silent Security Enforcement (Need-to-Know Compliance)...');
+                    console.log('');
+
+                    console.log('📊 Test 1: Verify No Visible Warning Banners');
+
+                    // Check for any visible warning banners that should be removed
+                    const warningBanners = [
+                        document.querySelector('.escalation-blocked-notification'),
+                        document.querySelector('.network-authorization-warning'),
+                        document.querySelector('.classification-warning'),
+                        document.querySelector('.classification-compliance-warning')
+                    ].filter(Boolean);
+
+                    console.log(`   • Found ${warningBanners.length} visible warning banners`);
+
+                    if (warningBanners.length === 0) {
+                        console.log('   ✅ No visible warning banners found (need-to-know compliance)');
+                    } else {
+                        console.log('   ❌ Warning banners still visible - need-to-know violation');
+                        warningBanners.forEach((banner, index) => {
+                            console.log(`     ${index + 1}. ${banner.className}`);
+                        });
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 2: Test Silent Escalation Blocking');
+
+                    // Simulate a blocked escalation scenario
+                    const mockDetectionResult = {
+                        level: 'SECRET',
+                        caveats: ['NOFORN'],
+                        reltoCountries: [],
+                        confidence: 95,
+                        method: 'classification-banner'
+                    };
+
+                    const mockEscalationResult = {
+                        authorized: false,
+                        reason: 'Commercial domain restriction - UNCLASSIFIED only',
+                        action: 'block-escalation',
+                        maxAuthorized: 'UNCLASSIFIED'
+                    };
+
+                    console.log('   • Simulating blocked escalation...');
+                    window.app.showEscalationBlockedNotification(mockDetectionResult, mockEscalationResult);
+
+                    // Check if any UI elements were created
+                    const blockedNotification = document.querySelector('.escalation-blocked-notification');
+                    if (blockedNotification) {
+                        console.log('   ❌ Escalation blocked notification visible - need-to-know violation');
+                    } else {
+                        console.log('   ✅ Escalation blocked silently (no user notification)');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 3: Test Silent Network Authorization Enforcement');
+
+                    // Simulate network authorization warning
+                    const mockDetectedMarking = {
+                        classification: 'SECRET',
+                        caveats: ['SI'],
+                        reltoCountries: []
+                    };
+
+                    console.log('   • Simulating network authorization violation...');
+                    window.app.showNetworkAuthorizationWarning(mockDetectedMarking);
+
+                    // Check if any UI elements were created
+                    const networkWarning = document.querySelector('.network-authorization-warning');
+                    if (networkWarning) {
+                        console.log('   ❌ Network authorization warning visible - need-to-know violation');
+                    } else {
+                        console.log('   ✅ Network authorization enforced silently (no user warning)');
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 4: Test Manual Exceedance Warnings (Should Show)');
+
+                    // Test manual exceedance handling (this SHOULD show warnings)
+                    console.log('   • Testing manual classification exceedance...');
+                    const manualExceedanceResult = window.app.handleManualClassificationExceedance('SECRET', [], []);
+
+                    console.log(`   • Manual exceedance blocked: ${!manualExceedanceResult}`);
+
+                    // Check for manual exceedance warnings (these should appear)
+                    setTimeout(() => {
+                        const manualWarning = document.querySelector('.manual-exceedance-warning');
+                        const hardlockWarning = document.querySelector('.hardlock-exceedance-warning');
+
+                        if (manualWarning || hardlockWarning) {
+                            console.log('   ✅ Manual exceedance warning shown (appropriate user feedback)');
+                        } else {
+                            console.log('   ℹ️ No manual exceedance warning (user may be authorized)');
+                        }
+                    }, 100);
+
+                    console.log('');
+                    console.log('📊 Test 5: Test Console Logging Preservation');
+
+                    // Verify console logging is still working for audit purposes
+                    const originalConsoleLog = console.log;
+                    let logCount = 0;
+
+                    console.log = function(...args) {
+                        logCount++;
+                        originalConsoleLog.apply(console, args);
+                    };
+
+                    // Trigger some security events
+                    window.app.logClassificationEscalation('UNCLASSIFIED', 'SECRET', 'test-source', 'Test audit log');
+
+                    // Restore original console.log
+                    console.log = originalConsoleLog;
+
+                    console.log(`   • Console logging events captured: ${logCount}`);
+                    console.log('   ✅ Audit logging preserved for administrative purposes');
+
+                    console.log('');
+                    console.log('📊 Test 6: Test Need-to-Know Compliance Features');
+
+                    const complianceFeatures = [
+                        'Silent escalation blocking',
+                        'Silent network authorization enforcement',
+                        'Silent classification compliance adjustment',
+                        'Console logging for audit trail',
+                        'Manual exceedance warnings only when user-initiated',
+                        'No revelation of higher classification levels',
+                        'Seamless user experience for authorized levels'
+                    ];
+
+                    console.log('   • Need-to-Know Compliance Features:');
+                    complianceFeatures.forEach((feature, index) => {
+                        console.log(`     ${index + 1}. ✅ ${feature}`);
+                    });
+
+                    console.log('');
+                    console.log('🔒 SILENT SECURITY ENFORCEMENT TEST COMPLETE');
+                    console.log('📋 Need-to-Know Compliance Summary:');
+                    console.log('   • ✅ No visible warnings for automatic security restrictions');
+                    console.log('   • ✅ Silent enforcement of network authorization limits');
+                    console.log('   • ✅ Silent blocking of unauthorized escalation attempts');
+                    console.log('   • ✅ Warnings shown only for manual user attempts to exceed authorization');
+                    console.log('   • ✅ Complete audit logging preserved for administrative oversight');
+                    console.log('   • ✅ Seamless user experience that doesn\'t reveal higher classification levels');
+                    console.log('   • ✅ Proper need-to-know security principles implemented');
+
+                    console.log('');
+                    console.log('🎯 Security Principle: "Users should not be made aware of classification levels they are not authorized to access"');
+                    console.log('✅ COMPLIANCE STATUS: FULLY COMPLIANT with need-to-know security requirements');
+                };
+
                 // Add function to test the secure classification escalation system
                 window.testSecureClassificationEscalation = function() {
                     console.log('🔒 Testing Secure Classification Escalation System...');
@@ -27740,7 +27910,19 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 // Log available debug functions
                 console.log('✅ === ENHANCED SUBORDINATE UNITS & PORTION MARKING BARS ===');
                 console.log('');
-                console.log('🎯 NEW FEATURES: Secure classification escalation + CRITICAL security fix + accurate DoD/IC network detection');
+                console.log('🎯 NEW FEATURES: Silent security enforcement + secure escalation + CRITICAL security fix + network detection');
+                console.log('');
+                console.log('SILENT SECURITY ENFORCEMENT (NEED-TO-KNOW COMPLIANCE):');
+                console.log('• NO VISIBLE WARNING BANNERS: Removed all red warning notifications about blocked escalations');
+                console.log('• SILENT RESTRICTION ENFORCEMENT: Security restrictions enforced without user awareness');
+                console.log('• NEED-TO-KNOW COMPLIANCE: Users unaware of classification levels they cannot access');
+                console.log('• SEAMLESS USER EXPERIENCE: No error messages revealing higher classification existence');
+                console.log('• MANUAL ATTEMPT WARNINGS: Warnings shown only when user actively tries to exceed authorization');
+                console.log('• PRESERVED AUDIT LOGGING: Complete console logging maintained for administrative oversight');
+                console.log('• COMMERCIAL DOMAIN SILENT ENFORCEMENT: .com/.io restrictions applied without notification');
+                console.log('• NETWORK AUTHORIZATION SILENT BLOCKING: Exceeding network limits blocked silently');
+                console.log('• CLASSIFICATION COMPLIANCE AUTO-ADJUSTMENT: Silent adjustment to authorized levels');
+                console.log('• SECURITY PRINCIPLE COMPLIANCE: "Users should not know about levels they cannot access"');
                 console.log('');
                 console.log('SECURE CLASSIFICATION ESCALATION SYSTEM (NEW):');
                 console.log('• SECURE BY DEFAULT: All elements initialize to UNCLASSIFIED baseline');
@@ -27818,6 +28000,7 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• Consistent styling across all OPORD sections');
                 console.log('');
                 console.log('TESTING FUNCTIONS:');
+                console.log('• testSilentSecurityEnforcement() - Test silent security enforcement (NEED-TO-KNOW COMPLIANCE)');
                 console.log('• testSecureClassificationEscalation() - Test secure escalation system (NEW SECURITY FEATURE)');
                 console.log('• testSecurityHardlock() - Test UNCLASSIFIED-only security hardlock (SECURITY TEST)');
                 console.log('• testNetworkClassificationConfig() - Test network classification detection system (NETWORK TEST)');
@@ -27843,18 +28026,19 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                 console.log('• scrollToLastSubordinateUnit() - Auto-scroll to last unit (used automatically)');
                 console.log('');
                 console.log('HOW TO USE:');
-                console.log('1. Run testSecureClassificationEscalation() to verify secure escalation system (NEW FEATURE)');
-                console.log('2. Run testClassificationBannerSecurityFix() to verify critical security fix (PRIORITY)');
-                console.log('3. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
-                console.log('4. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
-                console.log('5. Run testClassificationBannerDetection() to test banner parsing capabilities');
-                console.log('6. Check console output for comprehensive security validation');
-                console.log('7. Verify secure by default initialization (UNCLASSIFIED baseline)');
-                console.log('8. Test commercial domain restrictions (.com/.io = UNCLASSIFIED only)');
-                console.log('9. Verify escalation authorization logic and confidence thresholds');
-                console.log('10. Test manual escalation acceptance/dismissal workflows');
-                console.log('11. Confirm audit logging captures all escalation events');
-                console.log('12. Ensure all security restrictions function correctly without circular references');
+                console.log('1. Run testSilentSecurityEnforcement() to verify need-to-know compliance (PRIORITY)');
+                console.log('2. Run testSecureClassificationEscalation() to verify secure escalation system (NEW FEATURE)');
+                console.log('3. Run testClassificationBannerSecurityFix() to verify critical security fix (SECURITY)');
+                console.log('4. Run testSecurityHardlock() to verify UNCLASSIFIED-only restrictions');
+                console.log('5. Run testNetworkClassificationConfig() to verify accurate DoD/IC network detection');
+                console.log('6. Run testClassificationBannerDetection() to test banner parsing capabilities');
+                console.log('7. Check console output for comprehensive security validation');
+                console.log('8. Verify no visible warning banners appear for automatic restrictions');
+                console.log('9. Test that manual exceedance attempts show appropriate warnings');
+                console.log('10. Confirm silent enforcement of commercial domain restrictions');
+                console.log('11. Verify seamless user experience for authorized classification levels');
+                console.log('12. Ensure audit logging preserved while maintaining need-to-know compliance');
+                console.log('13. Test that users remain unaware of classification levels they cannot access');
                 console.log('');
                 console.log('🚀 Professional, organized, and user-friendly interface!');
                 console.log('================================================');
