@@ -9515,6 +9515,9 @@ Copyright (c) [2025] [Larry Hedrick]-->
                     // Restrict caveats and RELTO based on network authorization
                     this.restrictCaveatsAndRelto(networkAuth);
 
+                    // CRITICAL SECURITY FIX: Update portion marking buttons to respect network authorization
+                    this.updatePortionMarkingButtons();
+
                     console.log(`✅ Network authorization restrictions applied successfully`);
 
                 } catch (error) {
@@ -23782,18 +23785,24 @@ CLASSIFICATION GUIDELINES:
                     console.log('📊 Current classification:', this.currentClassification);
                     console.log('🏷️ Current caveats:', this.currentCaveats);
 
+                    // CRITICAL SECURITY FIX: Check network authorization first
+                    const networkAuth = this.determineNetworkAuthorization();
+                    const authorizedPortionMarkings = this.getAuthorizedPortionMarkings(networkAuth);
+                    console.log(`🌐 Network authorization: ${networkAuth}`);
+                    console.log(`🔒 Authorized portion markings: [${authorizedPortionMarkings.join(', ')}]`);
+
                     const markings = [
                         { code: '(U)', description: 'UNCLASSIFIED', color: '#007a33' }
                     ];
 
-                    // If restricted to UNCLASSIFIED, return only that
+                    // If restricted to UNCLASSIFIED by hardlock, return only that
                     if (this.classificationRestrictedToUnclassified) {
-                        console.log('🔒 Restricted to UNCLASSIFIED only');
+                        console.log('🔒 Hardlock active: Restricted to UNCLASSIFIED only');
                         return markings;
                     }
 
-                    // DEVELOPMENT MODE: Add all classification levels
-                    console.log('🔓 DEVELOPMENT MODE: Adding all classification levels');
+                    // CRITICAL SECURITY: Respect network authorization restrictions
+                    console.log('🔒 NETWORK AUTHORIZATION MODE: Restricting based on network authorization');
 
                     // Check for SIPR network restrictions
                     const siCaveatsBlocked = this.networkClassificationState?.siCaveatsBlocked || false;
@@ -23801,11 +23810,26 @@ CLASSIFICATION GUIDELINES:
                         console.log('🔒 SIPR NETWORK: SI caveats will be excluded from portion markings');
                     }
 
-                    // Add primary classification levels
-                    markings.push({ code: '(CUI)', description: 'CONTROLLED UNCLASSIFIED INFORMATION', color: '#502b85' });
-                    markings.push({ code: '(C)', description: 'CONFIDENTIAL', color: '#0033a0' });
-                    markings.push({ code: '(S)', description: 'SECRET', color: '#c8102e' });
-                    markings.push({ code: '(TS)', description: 'TOP SECRET', color: '#ff8c00' });
+                    // Only add markings that are authorized by network authorization
+                    if (authorizedPortionMarkings.includes('CUI')) {
+                        markings.push({ code: '(CUI)', description: 'CONTROLLED UNCLASSIFIED INFORMATION', color: '#502b85' });
+                        console.log('✅ Added CUI marking (network authorized)');
+                    }
+
+                    if (authorizedPortionMarkings.includes('C')) {
+                        markings.push({ code: '(C)', description: 'CONFIDENTIAL', color: '#0033a0' });
+                        console.log('✅ Added CONFIDENTIAL marking (network authorized)');
+                    }
+
+                    if (authorizedPortionMarkings.includes('S')) {
+                        markings.push({ code: '(S)', description: 'SECRET', color: '#c8102e' });
+                        console.log('✅ Added SECRET marking (network authorized)');
+                    }
+
+                    if (authorizedPortionMarkings.includes('TS')) {
+                        markings.push({ code: '(TS)', description: 'TOP SECRET', color: '#ff8c00' });
+                        console.log('✅ Added TOP SECRET marking (network authorized)');
+                    }
 
                     // Add NOFORN combinations (allowed on SIPR)
                     markings.push({ code: '(C//NOFORN)', description: 'CONFIDENTIAL//NOFORN', color: '#0033a0' });
@@ -27522,6 +27546,138 @@ This is a working draft. Use "Generate OPORD" for final formatted documents.`;
                     }).catch(error => {
                         console.error('❌ Classification banner detection failed:', error);
                     });
+                };
+
+                // CRITICAL SECURITY TEST: Test portion marking button restrictions
+                window.testPortionMarkingButtonRestrictions = function() {
+                    console.log('🚨 CRITICAL SECURITY TEST: Portion Marking Button Restrictions');
+                    console.log('');
+
+                    console.log('📊 Test 1: Network Authorization Detection');
+                    const currentDomain = window.location.hostname.toLowerCase();
+                    const networkAuth = window.app.determineNetworkAuthorization();
+                    const authorizedMarkings = window.app.getAuthorizedPortionMarkings(networkAuth);
+
+                    console.log(`   • Current Domain: ${currentDomain}`);
+                    console.log(`   • Network Authorization: ${networkAuth}`);
+                    console.log(`   • Authorized Portion Markings: [${authorizedMarkings.join(', ')}]`);
+
+                    console.log('');
+                    console.log('📊 Test 2: Available Portion Markings Function');
+                    const availableMarkings = window.app.getAvailablePortionMarkings();
+                    console.log(`   • Available markings count: ${availableMarkings.length}`);
+                    console.log('   • Available markings:');
+                    availableMarkings.forEach(marking => {
+                        console.log(`     - ${marking.code}: ${marking.description} (${marking.color})`);
+                    });
+
+                    // Check if available markings match network authorization
+                    const availableCodes = availableMarkings.map(m => m.code.replace(/[()]/g, ''));
+                    const unauthorizedMarkings = availableCodes.filter(code => !authorizedMarkings.includes(code));
+
+                    if (unauthorizedMarkings.length === 0) {
+                        console.log('   ✅ Available markings match network authorization');
+                    } else {
+                        console.log('   ❌ CRITICAL FAILURE: Unauthorized markings available:');
+                        unauthorizedMarkings.forEach(marking => {
+                            console.log(`     • UNAUTHORIZED: ${marking}`);
+                        });
+                    }
+
+                    console.log('');
+                    console.log('📊 Test 3: Force Update Portion Marking Buttons');
+                    console.log('   • Manually triggering portion marking button update...');
+                    window.app.updatePortionMarkingButtons();
+
+                    console.log('');
+                    console.log('📊 Test 4: Check Existing Portion Marking Buttons');
+                    const buttonContainers = document.querySelectorAll('.portion-marking-buttons');
+                    console.log(`   • Found ${buttonContainers.length} portion marking button containers`);
+
+                    let totalButtons = 0;
+                    let unauthorizedButtons = [];
+
+                    buttonContainers.forEach((container, index) => {
+                        const fieldId = container.id.replace('portion-buttons-', '');
+                        const buttons = container.querySelectorAll('.portion-marking-btn');
+                        totalButtons += buttons.length;
+
+                        console.log(`   • Container ${index + 1} (${fieldId}): ${buttons.length} buttons`);
+
+                        buttons.forEach(button => {
+                            const buttonText = button.textContent.trim();
+                            const buttonCode = buttonText.replace(/[()]/g, '');
+
+                            console.log(`     - Button: ${buttonText}`);
+
+                            if (!authorizedMarkings.includes(buttonCode)) {
+                                unauthorizedButtons.push(`${fieldId}: ${buttonText}`);
+                                console.log(`     ❌ UNAUTHORIZED BUTTON: ${buttonText}`);
+                            } else {
+                                console.log(`     ✅ Authorized button: ${buttonText}`);
+                            }
+                        });
+                    });
+
+                    console.log('');
+                    console.log('📊 Test 5: Add Test Field and Check Buttons');
+
+                    // Add a test field to verify button generation
+                    const testField = document.createElement('textarea');
+                    testField.id = 'test-portion-field';
+                    testField.style.display = 'none'; // Hidden test field
+                    document.body.appendChild(testField);
+
+                    console.log('   • Adding portion marking buttons to test field...');
+                    window.app.addPortionMarkingButtonsToField('test-portion-field', 'textarea');
+
+                    setTimeout(() => {
+                        const testContainer = document.getElementById('portion-buttons-test-portion-field');
+                        if (testContainer) {
+                            const testButtons = testContainer.querySelectorAll('.portion-marking-btn');
+                            console.log(`   • Test field generated ${testButtons.length} buttons`);
+
+                            testButtons.forEach(button => {
+                                const buttonText = button.textContent.trim();
+                                const buttonCode = buttonText.replace(/[()]/g, '');
+
+                                if (!authorizedMarkings.includes(buttonCode)) {
+                                    console.log(`   ❌ CRITICAL: Test field has unauthorized button: ${buttonText}`);
+                                } else {
+                                    console.log(`   ✅ Test field authorized button: ${buttonText}`);
+                                }
+                            });
+                        } else {
+                            console.log('   ❌ Test field portion marking container not created');
+                        }
+
+                        // Clean up test field
+                        testField.remove();
+                        const testPortionBar = document.getElementById('portion-bar-test-portion-field');
+                        if (testPortionBar) testPortionBar.remove();
+
+                    }, 100);
+
+                    console.log('');
+                    console.log('🔒 PORTION MARKING BUTTON RESTRICTIONS TEST COMPLETE');
+                    console.log('📋 Security Compliance Summary:');
+                    console.log(`   • Network authorization: ${networkAuth}`);
+                    console.log(`   • Authorized markings: [${authorizedMarkings.join(', ')}]`);
+                    console.log(`   • Available markings: ${availableMarkings.length}`);
+                    console.log(`   • Total button containers: ${buttonContainers.length}`);
+                    console.log(`   • Total buttons found: ${totalButtons}`);
+                    console.log(`   • Unauthorized buttons: ${unauthorizedButtons.length}`);
+
+                    if (unauthorizedButtons.length === 0) {
+                        console.log('✅ SECURITY STATUS: FULLY COMPLIANT - All portion marking buttons properly restricted');
+                    } else {
+                        console.log('❌ SECURITY STATUS: NON-COMPLIANT - Critical security failures detected');
+                        console.log('🚨 UNAUTHORIZED BUTTONS FOUND:');
+                        unauthorizedButtons.forEach(button => {
+                            console.log(`   • ${button}`);
+                        });
+                        console.log('🚨 IMMEDIATE ACTION REQUIRED: Fix portion marking button restrictions');
+                    }
                 };
 
                 // CRITICAL SECURITY TEST: Test portion marking restrictions
